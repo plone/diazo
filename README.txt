@@ -32,17 +32,12 @@ the theme::
 
   xsltproc --stringparam rulesuri rules.xml compiler.xsl theme.html > compiledtheme.xsl
 
-Running from Python
------------------------
 
-There is a little bit of support for generating a theme and printing
-it to stdout using lxml:
-
-  $ cd xdv
-  $ python tests/test_nodes.py
 
 To Do
 -------
+
+- Add support for <drop>
 
 - Make sure attribute merging is handled
 
