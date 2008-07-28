@@ -4,7 +4,8 @@
     xmlns:dyn="http://exslt.org/dynamic" xmlns:xml="http://www.w3.org/XML/1998/namespace"
     exclude-result-prefixes="dv dyn exsl xml" version="1.0">
     <xsl:output indent="yes"/>
-    <xsl:param name="rulesuri">rules.xml</xsl:param>
+    <xsl:param name="rulesuri">tests/rules-01.xml</xsl:param>
+    <xsl:param name="boilerplateurl">boilerplate.xsl</xsl:param>
     <!-- Multi-stage theme compiler -->
     <xsl:template match="/">
         <!-- Put unique xml:id values on all the theme html -->
@@ -33,7 +34,7 @@
         <!-- Stage 2, include the boilerplate and make a compiled
             XSLT. -->
         <xsl:variable name="stage2-rtf">
-            <xsl:apply-templates select="document('boilerplate.xsl')" mode="include-boilerplate">
+            <xsl:apply-templates select="document($boilerplateurl)" mode="include-boilerplate">
                 <xsl:with-param name="stage1" select="$stage1"/>
             </xsl:apply-templates>
         </xsl:variable>
