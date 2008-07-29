@@ -15,7 +15,33 @@
         <xsl:variable name="themehtml" select="exsl:node-set($themehtml-rtf)"/>
 
         <!-- Include the rules file, adding @xml:id attributes as it is included -->
+        <xsl:variable name="rules-rtf">
+            <xsl:apply-templates select="document($rulesuri)/*" mode="annotate-rules">
+                <xsl:with-param name="themehtml" select="$themehtml"/>
+            </xsl:apply-templates>
+        </xsl:variable>
+        <xsl:variable name="rules" select="exsl:node-set($rules-rtf)"/>
 
+        <!-- Make a pass through all the theme html, filtering 
+            as we go. This is where rule generation happens. -->
+        <xsl:variable name="stage1-rtf">
+            <xsl:apply-templates select="$themehtml" mode="apply-rules">
+                <xsl:with-param name="rules" select="$rules"/>
+            </xsl:apply-templates>
+        </xsl:variable>
+        <xsl:variable name="stage1" select="exsl:node-set($stage1-rtf)"/>
+
+        <!-- Stage 2, include the boilerplate and make a compiled
+            XSLT. -->
+        <xsl:variable name="stage2-rtf">
+            <xsl:apply-templates select="document($boilerplateurl)" mode="include-boilerplate">
+                <xsl:with-param name="stage1" select="$stage1"/>
+            </xsl:apply-templates>
+        </xsl:variable>
+        <xsl:variable name="stage2" select="exsl:node-set($stage2-rtf)"/>
+
+        <!-- We're done, so generate some output -->
+        <xsl:copy-of select="$stage2"/>
     </xsl:template>
     <xsl:template match="node()|@*" mode="include-boilerplate">
         <xsl:param name="stage1"/>
@@ -107,6 +133,9 @@
                         </xsl:attribute>
                     </xsl:element>
                 </xsl:copy>
+            </xsl:when>
+            <xsl:when test="name($matching-rule)='drop'">
+                <!-- Do nothing.  We want to get rid of this node. -->
             </xsl:when>
             <xsl:otherwise>
                 <xsl:copy>

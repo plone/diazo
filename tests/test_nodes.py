@@ -5,9 +5,9 @@ class XDV:
 
     def __init__(self, testnumber):
         testnumber = testnumber
-        themefn = "theme.html"
-        rulesfn = "rules.xml"
-        contentfn = "content.html"
+        themefn = "tests/theme-%s.html"      % testnumber
+        rulesfn = "tests/rules-%s.xml"       % testnumber
+        contentfn = "tests/content-%s.html"  % testnumber
 
         themedoc = etree.ElementTree(file=themefn)
         contentdoc = etree.ElementTree(file=contentfn)
@@ -19,13 +19,14 @@ class XDV:
         # Make a compiled version
         params = {
             'rulesuri': rulesfn,
-            'boilerplate': 'boilerplate.xsl',
             }
         ct = compiler(themedoc, **params)
+        for msg in compiler.error_log:
+            print msg
         print str(ct)
 
 def main():
-    xdv = XDV("01")
+    xdv = XDV("00")
 
 
 if __name__ == "__main__":
