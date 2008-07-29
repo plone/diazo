@@ -33,7 +33,6 @@ the theme::
   xsltproc --stringparam rulesuri rules.xml compiler.xsl theme.html > compiledtheme.xsl
 
 
-
 To Do
 -------
 
