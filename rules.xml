@@ -3,6 +3,6 @@
     <replace theme="/html/head/title" content="/html/head/title"/>
     <copy theme="//td/h1[@id='pageheading']" content="/html/head/title/text()"/>
     <copy theme="/html/body/h1" content="/html/head/title/text()"/>
-    <replace theme="//td/div[@id='pagecontent']" content="/html/body/*"/>
+    <copy theme="//td/div[@id='pagecontent']" content="/html/body/div[@id='content']/*"/>
     <append theme="/html/head" content="/html/head/link|/html/head/script|/html/head/meta"/>
 </rules>
