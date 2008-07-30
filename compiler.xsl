@@ -36,6 +36,7 @@
         <xsl:variable name="stage2-rtf">
             <xsl:apply-templates select="document($boilerplateurl)" mode="include-boilerplate">
                 <xsl:with-param name="stage1" select="$stage1"/>
+                <xsl:with-param name="rules" select="$rules"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="stage2" select="exsl:node-set($stage2-rtf)"/>
@@ -51,8 +52,21 @@
     -->
     <xsl:template match="node()|@*" mode="include-boilerplate">
         <xsl:param name="stage1"/>
+        <xsl:param name="rules"/>
         <xsl:choose>
+            <xsl:when test="@mode='insert-drop-rules'">
+                <!-- If there are any <drop @content> rules, put it in 
+                here. -->
+                <xsl:for-each select="$rules/dv:rules/dv:drop[@content]">
+                    <xsl:element name="xsl:template">
+                        <xsl:attribute name="match"><xsl:value-of select="@content"/></xsl:attribute>
+                        <xsl:attribute name="mode">initial-stage</xsl:attribute>
+                        <xsl:comment>Do nothing, skip these nodes</xsl:comment>
+                    </xsl:element>
+                </xsl:for-each>
+            </xsl:when>
             <xsl:when test="name()='dv:insert'">
+                <!-- Put the compiled theme in at this spot of the boilerplate -->
                 <xsl:apply-templates select="$stage1" mode="include-boilerplate">
                     <xsl:with-param name="stage1" select="$stage1"/>
                 </xsl:apply-templates>
@@ -61,6 +75,7 @@
                 <xsl:copy>
                     <xsl:apply-templates select="node()|@*" mode="include-boilerplate">
                         <xsl:with-param name="stage1" select="$stage1"/>
+                        <xsl:with-param name="rules" select="$rules"/>
                     </xsl:apply-templates>
                 </xsl:copy>
             </xsl:otherwise>
