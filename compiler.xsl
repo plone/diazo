@@ -42,11 +42,17 @@
 
         <!-- We're done, so generate some output -->
         <xsl:copy-of select="$stage2"/>
+
     </xsl:template>
+    <!-- 
+        
+        All the utility rules
+
+    -->
     <xsl:template match="node()|@*" mode="include-boilerplate">
         <xsl:param name="stage1"/>
         <xsl:choose>
-            <xsl:when test="@insert='insert'">
+            <xsl:when test="name()='dv:insert'">
                 <xsl:apply-templates select="$stage1" mode="include-boilerplate">
                     <xsl:with-param name="stage1" select="$stage1"/>
                 </xsl:apply-templates>
