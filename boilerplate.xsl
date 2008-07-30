@@ -19,6 +19,16 @@
         <!-- We're done, so generate some output by passing 
             through a final stage. -->
         <xsl:apply-templates select="$content" mode="final-stage"/>
+
+    </xsl:template>
+
+    <!-- 
+    
+        Utility templates
+    -->
+    <xsl:template match="none" mode="insert-drop-rules">
+        <!-- The compiler looks for this and replaces 
+        the @match and @mode. -->
     </xsl:template>
     <xsl:template match="node()|@*" mode="initial-stage">
         <xsl:copy>
