@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rules xmlns="http://openplans.org/deliverance">
+    <drop content="//div[@id='byline']"/>
+    <drop content="//div[@id='nomatchever']"/>
     <replace theme="/html/head/title" content="/html/head/title"/>
     <copy theme="//td/h1[@id='pageheading']" content="/html/head/title/text()"/>
     <copy theme="/html/body/h1" content="/html/head/title/text()"/>
