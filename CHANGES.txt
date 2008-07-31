@@ -1,9 +1,3 @@
-August 6
-------------------
-
-- Set media-type on transforms. Compiler outputs as text/xml and generated
-  transforms output in text/html, but run in xml mode.
-  (Laurence)
 
 July 31 
 ------------------
