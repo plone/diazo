@@ -6,5 +6,6 @@
     <copy theme="//td/h1[@id='pageheading']" content="/html/head/title/text()"/>
     <copy theme="/html/body/h1" content="/html/head/title/text()"/>
     <copy theme="//td/div[@id='pagecontent']" content="/html/body/div[@id='content']/*"/>
-    <append theme="/html/head" content="/html/head/link|/html/head/script|/html/head/meta"/>
+    <append theme="/html/head" content="/html/head/link|/html/head/meta"/>
+    <prepend theme="/html/head" content="/html/head/script"/>
 </rules>
