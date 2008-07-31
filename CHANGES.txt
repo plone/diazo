@@ -1,0 +1,8 @@
+
+July 31 
+------------------
+
+- Add support for <drop theme=""/>
+
+- Add support for <append> and change example rules.xml to demonstrate
+  it

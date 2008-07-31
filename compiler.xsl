@@ -59,7 +59,9 @@
                 here. -->
                 <xsl:for-each select="$rules/dv:rules/dv:drop[@content]">
                     <xsl:element name="xsl:template">
-                        <xsl:attribute name="match"><xsl:value-of select="@content"/></xsl:attribute>
+                        <xsl:attribute name="match">
+                            <xsl:value-of select="@content"/>
+                        </xsl:attribute>
                         <xsl:attribute name="mode">initial-stage</xsl:attribute>
                         <xsl:comment>Do nothing, skip these nodes</xsl:comment>
                     </xsl:element>
@@ -119,6 +121,37 @@
         <xsl:variable name="thisxmlid" select="@xml:id"/>
         <xsl:variable name="matching-rule" select="$rules//*[dv:matches/dv:xmlid=$thisxmlid]"/>
         <xsl:choose>
+            <xsl:when test="count($matching-rule) > 1">
+                <!-- Handle the case where an html node in the theme is the 
+                target of more than one @theme XPath in a rule.  Most likely, 
+                this is a mixture of <prepend> and <append>.  Ignore, for now, 
+                any other cases. Algorithm: make the node (e.g. <head>), copy 
+                in its attributes, insert all the <prepend> content, insert 
+                the theme subelements, insert the <append> content, then 
+                close the node. -->
+                <xsl:copy>
+                    <xsl:apply-templates select="@*" mode="apply-rules">
+                        <xsl:with-param name="rules" select="$rules"/>
+                    </xsl:apply-templates>
+                    <xsl:for-each select="$matching-rule[name()='prepend']">
+                        <xsl:element name="xsl:copy-of">
+                            <xsl:attribute name="select">
+                                <xsl:value-of select="@content"/>
+                            </xsl:attribute>
+                        </xsl:element>
+                    </xsl:for-each>
+                    <xsl:apply-templates select="node()" mode="apply-rules">
+                        <xsl:with-param name="rules" select="$rules"/>
+                    </xsl:apply-templates>
+                    <xsl:for-each select="$matching-rule[name()='append']">
+                        <xsl:element name="xsl:copy-of">
+                            <xsl:attribute name="select">
+                                <xsl:value-of select="@content"/>
+                            </xsl:attribute>
+                        </xsl:element>
+                    </xsl:for-each>
+                </xsl:copy>
+            </xsl:when>
             <xsl:when test="name($matching-rule)='copy'">
                 <!-- Copy the node and its attributes, but clear 
                     the children and content.  Just have an 
@@ -143,7 +176,7 @@
             </xsl:when>
             <xsl:when test="name($matching-rule)='append'">
                 <!-- Make the node and all its children, then 
-                    copy in the @content. -->
+                copy in the @content. -->
                 <xsl:copy>
                     <xsl:apply-templates select="node()|@*" mode="apply-rules">
                         <xsl:with-param name="rules" select="$rules"/>
@@ -155,8 +188,27 @@
                     </xsl:element>
                 </xsl:copy>
             </xsl:when>
+            <xsl:when test="name($matching-rule)='prepend'">
+                <!-- Make the node from the theme and the attributes, then 
+                    copy in all the nodes from the content, then add the 
+                    other child nodes for the theme. -->
+                <xsl:copy>
+                    <xsl:apply-templates select="@*" mode="apply-rules">
+                        <xsl:with-param name="rules" select="$rules"/>
+                    </xsl:apply-templates>
+                    <xsl:element name="xsl:copy-of">
+                        <xsl:attribute name="select">
+                            <xsl:value-of select="$matching-rule/@content"/>
+                        </xsl:attribute>
+                    </xsl:element>
+                    <xsl:apply-templates select="node()" mode="apply-rules">
+                        <xsl:with-param name="rules" select="$rules"/>
+                    </xsl:apply-templates>
+                </xsl:copy>
+            </xsl:when>
             <xsl:when test="name($matching-rule)='drop'">
-                <!-- Do nothing.  We want to get rid of this node. -->
+                <!-- Do nothing.  We want to get rid of this node 
+                    in the theme. -->
             </xsl:when>
             <xsl:otherwise>
                 <xsl:copy>
