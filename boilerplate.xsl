@@ -2,6 +2,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:dv="http://openplans.org/deliverance" xmlns:exsl="http://exslt.org/common"
     exclude-result-prefixes="exsl dv" version="1.0">
+    <xsl:output method="html"/>
+
     <xsl:template match="/">
 
         <!-- Pass incoming content through initial-stage filter. -->
