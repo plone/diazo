@@ -3,7 +3,7 @@
     xmlns:dv="http://openplans.org/deliverance" xmlns:exsl="http://exslt.org/common"
     xmlns:dyn="http://exslt.org/dynamic" xmlns:xml="http://www.w3.org/XML/1998/namespace"
     exclude-result-prefixes="dv dyn exsl xml" version="1.0">
-    <xsl:output indent="yes"/>
+    <xsl:output indent="yes" media-type="text/xml"/>
     <xsl:param name="rulesuri">rules.xml</xsl:param>
     <xsl:param name="boilerplateurl">boilerplate.xsl</xsl:param>
     <!-- Multi-stage theme compiler -->
