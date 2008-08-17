@@ -44,8 +44,6 @@ it to stdout using lxml:
 To Do
 -------
 
-- Add support for <drop>
-
 - Make sure attribute merging is handled
 
 
