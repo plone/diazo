@@ -1,0 +1,4 @@
+# 
+# Basic prepend.  Copy a <link> from the content and make sure 
+# that it shows up at the beginning of the <head>.
+/html/head/*[position()='1']/@id='fourth'

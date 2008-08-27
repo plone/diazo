@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://openplans.org/deliverance">
+    <append theme="/html/head" content="/html/head/link"/>
+</rules>

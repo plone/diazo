@@ -1,0 +1,6 @@
+# 
+# Make sure we can do a <prepend> and <append> on /html/head.
+# There is a special case for this in the code.
+/html/head/*[position()='1']/@id='veryfirst'
+/html/head/*[position()='5']/@id='last'
+

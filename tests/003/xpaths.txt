@@ -1,0 +1,4 @@
+# 
+# Basic append.  Copy a <link> from the content and make sure 
+# that it shows up at the end.
+/html/head/*[position()='4']/@id='fourth'
