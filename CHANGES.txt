@@ -1,3 +1,19 @@
+
+To Do
+-------------
+
+- Generate valid XHTML output despite the namespaces of the theme or
+  content nodes.  See NOTES.rst for more info.
+
+August 27
+---------
+
+- Support attribute merging.  For example, getting an attribute from
+  content <body> and adding or replacing the attributes on the theme
+  <body>.  See NOTES.rst for more.
+
+- Work on a test suite.
+
 August 6
 ------------------
 
