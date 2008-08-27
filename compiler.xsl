@@ -4,10 +4,12 @@
     xmlns:dyn="http://exslt.org/dynamic" xmlns:xml="http://www.w3.org/XML/1998/namespace"
     exclude-result-prefixes="dv dyn exsl xml" version="1.0">
     <xsl:output indent="yes" media-type="text/xml"/>
-    <xsl:param name="rulesuri">rules.xml</xsl:param>
+    <xsl:param name="rulesuri"
+        >/Users/paul/projects/deliverance/sandboxes/paul/xdv/tests/001/rules.xml</xsl:param>
     <xsl:param name="boilerplateurl">boilerplate.xsl</xsl:param>
     <!-- Multi-stage theme compiler -->
     <xsl:template match="/">
+
         <!-- Put unique xml:id values on all the theme html -->
         <xsl:variable name="themehtml-rtf">
             <xsl:apply-templates select="/html" mode="annotate-html"/>
@@ -133,6 +135,15 @@
                     <xsl:apply-templates select="@*" mode="apply-rules">
                         <xsl:with-param name="rules" select="$rules"/>
                     </xsl:apply-templates>
+                    <!-- At this point the theme node and its attributes 
+                    have been created.  To handle <attcopy>, we can 
+                    now copy over attributes, which will silently 
+                    overwrite the theme nodes' attributes. -->
+                    <xsl:for-each select="$matching-rule[name()='attcopy']">
+                        <xsl:element name="xsl:copy-of">
+                            <xsl:attribute name="select"><xsl:value-of select="@content"/></xsl:attribute>
+                        </xsl:element>
+                    </xsl:for-each>
                     <xsl:for-each select="$matching-rule[name()='prepend']">
                         <xsl:element name="xsl:copy-of">
                             <xsl:attribute name="select">
