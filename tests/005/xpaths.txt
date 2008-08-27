@@ -1,0 +1,4 @@
+# 
+# Basic <drop>.  Drop one node from the content.
+#
+not(//div[@id='contentdrop'])
