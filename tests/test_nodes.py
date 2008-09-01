@@ -5,12 +5,14 @@
 from lxml import etree
 import os
 import sys
+from StringIO import StringIO
 
 _HERE = os.path.abspath(os.path.dirname(__file__))
 
 class XDV:
 
     def __init__(self, testnumber):
+        self.errors = StringIO()
         testnumber = testnumber
         themefn = "%s/theme.html"           % testnumber
         contentfn = "%s/content.html"       % testnumber
@@ -34,7 +36,7 @@ class XDV:
         # If there were any messages from <xsl:message> in the
         # compiler step, print them to the console
         for msg in compiler.error_log:
-            print msg
+            print >>self.errors, msg
 
         # Apply the compiled version, then test against desired output
         processor = etree.XSLT(ct)
@@ -47,15 +49,32 @@ class XDV:
             if not this_xpath or this_xpath[0] == '#':
                 continue
             if not self.themed_content.xpath(this_xpath):
-                print "FAIL:", this_xpath, "is FALSE"
+                print >>self.errors, "FAIL:", this_xpath, "is FALSE"
 
         # Make a serialization
         self.themed_string = str(self.themed_content)
 
 def main():
-    test_num = sys.argv[1]
-    xdv = XDV(test_num)
-#    print xdv.themed_string
+    try:
+        test_num = sys.argv[1]
+    except IndexError:
+        test_num = 1
+        errors = 0
+        while True:
+            directory = '%03d' % test_num
+            if not os.path.isdir(directory):
+                break
+            xdv = XDV(directory)
+            result = xdv.errors.getvalue()
+            if result:
+                print 'Error running test %s...' % directory 
+                print result
+                errors += 1
+            test_num += 1
+        print "Ran %s tests with %s errors." % (test_num, errors)
+    else:
+        xdv = XDV(test_num)
+        print xdv.themed_string
 
 
 if __name__ == "__main__":
