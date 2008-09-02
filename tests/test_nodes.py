@@ -63,6 +63,7 @@ def main():
         while True:
             directory = '%03d' % test_num
             if not os.path.isdir(directory):
+                test_num -= 1
                 break
             xdv = XDV(directory)
             result = xdv.errors.getvalue()
