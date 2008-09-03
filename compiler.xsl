@@ -134,17 +134,6 @@
                     <xsl:apply-templates select="@*" mode="apply-rules">
                         <xsl:with-param name="rules" select="$rules"/>
                     </xsl:apply-templates>
-                    <!-- At this point the theme node and its attributes 
-                    have been created.  To handle <attcopy>, we can 
-                    now copy over attributes, which will silently 
-                    overwrite the theme nodes' attributes. -->
-                    <xsl:for-each select="$matching-rule[name()='attcopy']">
-                        <xsl:element name="xsl:copy-of">
-                            <xsl:attribute name="select">
-                                <xsl:value-of select="@content"/>
-                            </xsl:attribute>
-                        </xsl:element>
-                    </xsl:for-each>
                     <xsl:for-each select="$matching-rule[name()='prepend']">
                         <xsl:element name="xsl:copy-of">
                             <xsl:attribute name="select">
@@ -164,25 +153,6 @@
                     </xsl:for-each>
                 </xsl:copy>
             </xsl:when>
-            <xsl:when test="name($matching-rule)='attcopy'">
-                <!-- Merge attributes from the content node into the theme node -->
-                <xsl:copy>
-                    <!-- First copy the existing attributes from the 
-                        theme node. -->
-                    <xsl:apply-templates select="@*" mode="apply-rules">
-                        <xsl:with-param name="rules" select="$rules"/>
-                    </xsl:apply-templates>
-                    <!-- Now put in a rule to copy over nodes, possibly 
-                        overwriting, from the content node at runtime. -->
-                    <xsl:element name="xsl:copy-of">
-                        <xsl:attribute name="select">
-                            <xsl:value-of select="$matching-rule/@content"/>
-                        </xsl:attribute>
-                    </xsl:element>
-                </xsl:copy>
-            </xsl:when>
-            
-            
             <xsl:when test="name($matching-rule)='copy'">
                 <!-- Copy the node and its attributes, but clear 
                     the children and content.  Just have an 
