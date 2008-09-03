@@ -41,11 +41,12 @@ it to stdout using lxml:
   $ cd xdv
   $ python tests/test_nodes.py
 
-To Do
--------
+Usage
+------------
 
-- Make sure attribute merging is handled
+- Attribute merging can be performed using <prepend>.  For example::
 
+  <prepend theme="/html/body" content="/html/body/@class" />
 
 Not Supported
 --------------------
