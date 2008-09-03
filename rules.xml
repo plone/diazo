@@ -8,5 +8,4 @@
     <copy theme="//td/div[@id='pagecontent']" content="/html/body/div[@id='content']/*"/>
     <append theme="/html/head" content="/html/head/link|/html/head/meta"/>
     <prepend theme="/html/head" content="/html/head/script"/>
-<!--    <attcopy theme="/html/body" content="/html/body/div[@id='content']/@class"/>-->
 </rules>
