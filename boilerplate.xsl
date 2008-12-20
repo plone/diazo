@@ -42,6 +42,22 @@
     <xsl:template match="/" mode="apply-theme">
         <dv:insert/>
     </xsl:template>
+	<xsl:template match="*" priority="5" mode="final-stage">
+		<!-- Move elements without a namespace into 
+		the xhtml namespace. -->
+		<xsl:choose>
+			<xsl:when test="namespace-uri(.)">
+			  	<xsl:copy>
+			    	<xsl:apply-templates select="@*|node()" mode="final-stage"/>
+			  	</xsl:copy>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:element name="{name()}" namespace="http://www.w3.org/1999/xhtml">
+					<xsl:apply-templates select="@*|node()" mode="final-stage"/>
+				</xsl:element>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
     <xsl:template match="node()|@*" mode="final-stage">
         <xsl:copy>
             <xsl:apply-templates select="node()|@*" mode="final-stage"/>
