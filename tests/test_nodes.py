@@ -54,7 +54,6 @@ class XDV:
             if not this_xpath or this_xpath[0] == '#':
                 continue
             if not self.themed_content.xpath(this_xpath):
-                import pdb; pdb.set_trace()
                 print >>self.errors, "FAIL:", this_xpath, "is FALSE"
 
         # Make a serialization
