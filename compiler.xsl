@@ -170,13 +170,27 @@
                 </xsl:copy>
             </xsl:when>
             <xsl:when test="name($matching-rule)='replace'">
-                <!-- Toss out the theme node.  Simply 
-                <xsl:copy-of the @content. -->
-                <xsl:element name="xsl:copy-of">
-                    <xsl:attribute name="select">
-                        <xsl:value-of select="$matching-rule/@content"/>
-                    </xsl:attribute>
-                </xsl:element>
+                <!-- When the rule matches, toss out the theme node and
+                and <xsl:copy-of the @content. Otherwise keep theme node. -->
+                <xsl:element name="xsl:choose">
+                    <xsl:element name="xsl:when">
+                        <xsl:attribute name="test">
+                            <xsl:value-of select="$matching-rule/@content"/>
+                        </xsl:attribute>
+                        <xsl:element name="xsl:copy-of">
+                            <xsl:attribute name="select">
+                                <xsl:value-of select="$matching-rule/@content"/>
+                            </xsl:attribute>
+                        </xsl:element>
+                    </xsl:element>
+                    <xsl:element name="xsl:otherwise">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*" mode="apply-rules">
+                                <xsl:with-param name="rules" select="$rules"/>
+                            </xsl:apply-templates>
+                        </xsl:copy>
+                    </xsl:element>
+                </xsl:element>  
             </xsl:when>
             <xsl:when test="name($matching-rule)='append'">
                 <!-- Make the node and all its children, then 
