@@ -110,7 +110,7 @@
         </xsl:copy>
     </xsl:template>
     <xsl:template match="comment()" mode="annotate-html">
-	<xsl:element name="xsl:comment"><xsl:value-of select="."/></xsl:element>
+    <xsl:element name="xsl:comment"><xsl:value-of select="."/></xsl:element>
     </xsl:template>
     <xsl:template match="node()|@*" mode="annotate-html">
         <xsl:copy>
