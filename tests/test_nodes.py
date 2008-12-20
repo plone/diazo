@@ -40,7 +40,12 @@ class XDV:
 
         # Apply the compiled version, then test against desired output
         processor = etree.XSLT(ct)
-        self.themed_content = processor(contentdoc)
+        result = processor(contentdoc)
+        # Read the whole thing to strip off xhtml namespace.
+        # If we had xslt 2.0 then we could use xpath-default-namespace.
+        self.themed_content = etree.ElementTree(file=StringIO(str(result)), 
+                                                parser=etree.HTMLParser())
+        
         xp = "/html/head/*[position()='1']/@id"
         for xpath in open(xpathsfn).readlines():
             # Read the XPaths from the file, skipping blank lines and
@@ -49,6 +54,7 @@ class XDV:
             if not this_xpath or this_xpath[0] == '#':
                 continue
             if not self.themed_content.xpath(this_xpath):
+                import pdb; pdb.set_trace()
                 print >>self.errors, "FAIL:", this_xpath, "is FALSE"
 
         # Make a serialization
