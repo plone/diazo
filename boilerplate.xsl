@@ -42,7 +42,13 @@
     <xsl:template match="/" mode="apply-theme">
         <dv:insert/>
     </xsl:template>
-    <xsl:template match="*" priority="5" mode="final-stage">
+    <xsl:template match="style|script" priority="5" mode="final-stage">
+        <xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">
+            <xsl:apply-templates select="@*" mode="final-stage"/>
+            <xsl:value-of select="text()" disable-output-escaping="yes"/>
+        </xsl:element>
+    </xsl:template>
+    <xsl:template match="*" priority="3" mode="final-stage">
         <!-- Move elements without a namespace into 
         the xhtml namespace. -->
         <xsl:choose>
@@ -52,13 +58,13 @@
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:element name="{name()}" namespace="http://www.w3.org/1999/xhtml">
+                <xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">
                     <xsl:apply-templates select="@*|node()" mode="final-stage"/>
                 </xsl:element>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <xsl:template match="node()|@*" mode="final-stage">
+    <xsl:template match="node()|@*" priority="1" mode="final-stage">
         <xsl:copy>
             <xsl:apply-templates select="node()|@*" mode="final-stage"/>
         </xsl:copy>
