@@ -2,7 +2,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:dv="http://openplans.org/deliverance" xmlns:exsl="http://exslt.org/common"
     exclude-result-prefixes="exsl dv" version="1.0">
-  <xsl:output method="xml" indent="yes" omit-xml-declaration="yes" media-type="text/html"
+  <xsl:output method="xml" indent="no" omit-xml-declaration="yes"
+      media-type="text/html" encoding="utf-8"
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
