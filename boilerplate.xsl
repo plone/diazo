@@ -69,4 +69,10 @@
             <xsl:apply-templates select="node()|@*" mode="final-stage"/>
         </xsl:copy>
     </xsl:template>
+
+    <!-- 
+    
+        Extra templates
+    -->
+    <dv:insert-extra/>
 </xsl:stylesheet>

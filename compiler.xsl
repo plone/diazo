@@ -6,6 +6,7 @@
     <xsl:output indent="yes" media-type="text/xml"/>
     <xsl:param name="rulesuri">rules.xml</xsl:param>
     <xsl:param name="boilerplateurl">boilerplate.xsl</xsl:param>
+    <xsl:param name="extraurl"/>
     <!-- Multi-stage theme compiler -->
     <xsl:template match="/">
 
@@ -73,6 +74,12 @@
                 <xsl:apply-templates select="$stage1" mode="include-boilerplate">
                     <xsl:with-param name="stage1" select="$stage1"/>
                 </xsl:apply-templates>
+            </xsl:when>
+            <xsl:when test="name()='dv:insert-extra'">
+                <!-- Put the extra templates in at this spot of the boilerplate -->
+                <xsl:if test="$extraurl">
+                    <xsl:copy-of select="document($extraurl)/xsl:stylesheet/*" />
+                </xsl:if>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:copy>
