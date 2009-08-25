@@ -7,23 +7,25 @@ import os
 import sys
 from StringIO import StringIO
 
+if __name__ == '__main__':
+    __file__ = sys.argv[0]
+
 _HERE = os.path.abspath(os.path.dirname(__file__))
 
 class XDV:
 
-    def __init__(self, testnumber):
+    def __init__(self, testdir):
         self.errors = StringIO()
-        testnumber = testnumber
-        themefn = "%s/theme.html"           % testnumber
-        contentfn = "%s/content.html"       % testnumber
-        rulesfn = os.path.join(_HERE, "%s/rules.xml" % testnumber)
-        xpathsfn = "%s/xpaths.txt"            % testnumber
+        themefn = os.path.join(testdir, "theme.html")
+        contentfn = os.path.join(testdir, "content.html")
+        rulesfn = os.path.join(testdir, "rules.xml")
+        xpathsfn = os.path.join(testdir, "xpaths.txt")
 
         themedoc = etree.ElementTree(file=themefn, 
                                      parser=etree.HTMLParser())
         contentdoc = etree.ElementTree(file=contentfn, 
                                        parser=etree.HTMLParser())
-        compilerfn = "../compiler.xsl"
+        compilerfn = os.path.join(os.path.dirname(_HERE), "compiler.xsl")
         compilerdoc = etree.ElementTree(file=compilerfn)
         compiler = etree.XSLT(compilerdoc)
 
@@ -46,6 +48,10 @@ class XDV:
         self.themed_content = etree.ElementTree(file=StringIO(str(result)), 
                                                 parser=etree.HTMLParser())
         
+        # remove the extra meta content type
+        meta = self.themed_content.xpath("/html/head/meta[@http-equiv='Content-Type']")[0]
+        meta.getparent().remove(meta)
+        
         xp = "/html/head/*[position()='1']/@id"
         for xpath in open(xpathsfn).readlines():
             # Read the XPaths from the file, skipping blank lines and
@@ -57,7 +63,7 @@ class XDV:
                 print >>self.errors, "FAIL:", this_xpath, "is FALSE"
 
         # Make a serialization
-        self.themed_string = str(self.themed_content)
+        self.themed_string = etree.tostring(self.themed_content)
 
 def main():
     try:
@@ -66,7 +72,7 @@ def main():
         test_num = 1
         errors = 0
         while True:
-            directory = '%03d' % test_num
+            directory = os.path.join(_HERE, '%03d' % test_num)
             if not os.path.isdir(directory):
                 test_num -= 1
                 break
@@ -79,7 +85,8 @@ def main():
             test_num += 1
         print "Ran %s tests with %s errors." % (test_num, errors)
     else:
-        xdv = XDV(test_num)
+        test_dir = os.path.abspath(test_num)
+        xdv = XDV(test_dir)
         print xdv.themed_string
 
 

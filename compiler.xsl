@@ -250,15 +250,51 @@
                     in the theme. -->
             </xsl:when>
             <xsl:otherwise>
-                <xsl:copy>
-                    <xsl:apply-templates select="node()|@*" mode="apply-rules">
-                        <xsl:with-param name="rules" select="$rules"/>
-                    </xsl:apply-templates>
-                </xsl:copy>
+                <xsl:choose>
+                    <xsl:when test="local-name()='style' or local-name()=script">
+                        <xsl:apply-templates select="." mode="no-escape"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*" mode="apply-rules">
+                                <xsl:with-param name="rules" select="$rules"/>
+                            </xsl:apply-templates>
+                        </xsl:copy>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
     <xsl:template match="@xml:id" mode="apply-rules" priority="5">
+        <!-- Filter this out -->
+    </xsl:template>
+    <xsl:template match="*" mode="no-escape">
+        <!-- Emit xsl that avoids escaping -->
+        <xsl:element name="xsl:element">
+            <xsl:attribute name="name"><xsl:value-of select="local-name(.)"/></xsl:attribute>
+            <xsl:attribute name="namespace"><xsl:value-of select="namespace-uri(.)"/></xsl:attribute>
+            
+            <xsl:apply-templates select="@*" mode="no-escape"/>
+            
+            <xsl:element name="xsl:variable">
+                <xsl:attribute name="name">tag_text</xsl:attribute>
+                <xsl:value-of select="text()"/>
+            </xsl:element>
+            
+            <xsl:element name="xsl:value-of">
+                <xsl:attribute name="select">$tag_text</xsl:attribute>
+                <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
+            </xsl:element>
+        </xsl:element>
+    </xsl:template>
+    <xsl:template match="@*" mode="no-escape">
+        <xsl:element name="xsl:attribute">
+            <xsl:attribute name="name"><xsl:value-of select="local-name(.)"/></xsl:attribute>
+            <xsl:attribute name="namespace"><xsl:value-of select="namespace-uri(.)"/></xsl:attribute>
+            <xsl:value-of select="."/>
+        </xsl:element>
+    </xsl:template>
+    <xsl:template match="@xml:id" mode="no-escape" priority="5">
         <!-- Filter this out -->
     </xsl:template>
 </xsl:stylesheet>
