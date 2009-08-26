@@ -1,4 +1,4 @@
-UPDATE: The problems with xpath="" are now fixed. lxml is still adding the duplicate xmlns though.
+UPDATE: The problems with xpath="" are now fixed. The duplicate xmlns seemed to be an artefact of the test runner.
 
 This test demonstrates the problem with xmlns="" and incidentally an issue with 
 the way test_nodes.py works vis-a-vis xsltproc / mod_transform / dv.xdvserver.

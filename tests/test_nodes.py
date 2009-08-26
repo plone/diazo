@@ -45,7 +45,8 @@ class XDV:
         result = processor(contentdoc)
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_content = etree.ElementTree(file=StringIO(str(result)), 
+        self.themed_string = str(result)
+        self.themed_content = etree.ElementTree(file=StringIO(self.themed_string), 
                                                 parser=etree.HTMLParser())
         
         # remove the extra meta content type
@@ -61,9 +62,6 @@ class XDV:
                 continue
             if not self.themed_content.xpath(this_xpath):
                 print >>self.errors, "FAIL:", this_xpath, "is FALSE"
-
-        # Make a serialization
-        self.themed_string = etree.tostring(self.themed_content)
 
 def main():
     try:
@@ -88,6 +86,10 @@ def main():
         test_dir = os.path.abspath(test_num)
         xdv = XDV(test_dir)
         print xdv.themed_string
+        errors = xdv.errors.getvalue()
+        if errors:
+            print
+            print xdv.errors.getvalue()
 
 
 if __name__ == "__main__":
