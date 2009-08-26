@@ -164,31 +164,17 @@
                 </xsl:copy>
             </xsl:when>
             <xsl:when test="name($matching-rule)='copy'">
-                <!-- When the rule matches, copy the node and its attributes,
-                but clear the children and text, just have an <xsl:copy-of> 
-                for the @content. Otherwise keep theme node. -->
-                <xsl:element name="xsl:choose">
-                    <xsl:element name="xsl:when">
-                        <xsl:attribute name="test">
+                <!-- Copy the node and its attributes, but clear 
+                    the children and content.  Just have an 
+                    <xsl:copy-of> for the @content -->
+                <xsl:copy>
+                    <xsl:copy-of select="@*[name()!='xml:id']"/>
+                    <xsl:element name="xsl:copy-of">
+                        <xsl:attribute name="select">
                             <xsl:value-of select="$matching-rule/@content"/>
                         </xsl:attribute>
-                        <xsl:copy>
-                            <xsl:copy-of select="@*[name()!='xml:id']"/>
-                            <xsl:element name="xsl:copy-of">
-                                <xsl:attribute name="select">
-                                    <xsl:value-of select="$matching-rule/@content"/>
-                                </xsl:attribute>
-                            </xsl:element>
-                        </xsl:copy>
                     </xsl:element>
-                    <xsl:element name="xsl:otherwise">
-                        <xsl:copy>
-                            <xsl:apply-templates select="node()|@*" mode="apply-rules">
-                                <xsl:with-param name="rules" select="$rules"/>
-                            </xsl:apply-templates>
-                        </xsl:copy>
-                    </xsl:element>
-                </xsl:element>                
+                </xsl:copy>
             </xsl:when>
             <xsl:when test="name($matching-rule)='replace'">
                 <!-- When the rule matches, toss out the theme node and
