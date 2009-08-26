@@ -34,6 +34,9 @@ class XDV:
             'rulesuri': '"%s"' % rulesfn,
             }
         ct = compiler(themedoc, **params)
+        
+        # Serialize / parse the theme - this can catch problems with escaping.
+        ct = etree.fromstring(etree.tostring(ct))
 
         # If there were any messages from <xsl:message> in the
         # compiler step, print them to the console
@@ -45,7 +48,7 @@ class XDV:
         result = processor(contentdoc)
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = str(result)
+        self.themed_string = etree.tostring(result)
         self.themed_content = etree.ElementTree(file=StringIO(self.themed_string), 
                                                 parser=etree.HTMLParser())
         

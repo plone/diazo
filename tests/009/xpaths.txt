@@ -1,0 +1,2 @@
+# XPaths that must be true to "validate" this test
+not(contains(//script/text(), '&'))
