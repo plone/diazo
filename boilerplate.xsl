@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:dv="http://openplans.org/deliverance" xmlns:exsl="http://exslt.org/common"
-    exclude-result-prefixes="exsl dv" version="1.0">
+<xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:dv="http://openplans.org/deliverance"
+    xmlns:exsl="http://exslt.org/common"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    exclude-result-prefixes="exsl dv" >
   <xsl:output method="xml" indent="no" omit-xml-declaration="yes"
       media-type="text/html" encoding="utf-8"
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -43,7 +46,7 @@
     <xsl:template match="/" mode="apply-theme">
         <dv:insert/>
     </xsl:template>
-    <xsl:template match="style|script" priority="5" mode="final-stage">
+    <xsl:template match="style|script|xhtml:style|xhtml:script" priority="5" mode="final-stage">
         <xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">
             <xsl:apply-templates select="@*" mode="final-stage"/>
             <xsl:value-of select="text()" disable-output-escaping="yes"/>
