@@ -277,6 +277,32 @@
                     </xsl:apply-templates>
                 </xsl:copy>
             </xsl:when>
+            <xsl:when test="name($matching-rule)='after'">
+                <!-- Copy the content immediately after the theme -->
+                <xsl:copy>
+                    <xsl:apply-templates select="node()|@*" mode="apply-rules">
+                        <xsl:with-param name="rules" select="$rules"/>
+                    </xsl:apply-templates>
+                </xsl:copy>
+                <xsl:element name="xsl:copy-of">
+                    <xsl:attribute name="select">
+                        <xsl:value-of select="$matching-rule/@content"/>
+                    </xsl:attribute>
+                </xsl:element>
+            </xsl:when>
+            <xsl:when test="name($matching-rule)='before'">
+                <!-- Copy the content immediately before the theme -->
+                <xsl:element name="xsl:copy-of">
+                    <xsl:attribute name="select">
+                        <xsl:value-of select="$matching-rule/@content"/>
+                    </xsl:attribute>
+                </xsl:element>
+                <xsl:copy>
+                    <xsl:apply-templates select="node()|@*" mode="apply-rules">
+                        <xsl:with-param name="rules" select="$rules"/>
+                    </xsl:apply-templates>
+                </xsl:copy>
+            </xsl:when>
             <xsl:when test="name($matching-rule)='drop'">
                 <!-- Do nothing.  We want to get rid of this node 
                     in the theme. -->
