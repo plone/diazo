@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:dv="http://openplans.org/deliverance" xmlns:exsl="http://exslt.org/common"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:dyn="http://exslt.org/dynamic" xmlns:xml="http://www.w3.org/XML/1998/namespace"
     exclude-result-prefixes="dv dyn exsl xml" version="1.0">
     <xsl:output indent="yes" media-type="text/xml"/>
@@ -185,18 +186,11 @@
                 When not matched, style and script tags are not escaped.
             -->
             <xsl:otherwise>
-                <xsl:choose>
-                    <xsl:when test="local-name()='style' or local-name()=script">
-                        <xsl:apply-templates select="." mode="no-escape"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:copy>
-                            <xsl:apply-templates select="node()|@*" mode="apply-rules">
-                                <xsl:with-param name="rules" select="$rules"/>
-                            </xsl:apply-templates>
-                        </xsl:copy>
-                    </xsl:otherwise>
-                </xsl:choose>
+                <xsl:copy>
+                    <xsl:apply-templates select="node()|@*" mode="apply-rules">
+                        <xsl:with-param name="rules" select="$rules"/>
+                    </xsl:apply-templates>
+                </xsl:copy>
             </xsl:otherwise>
         </xsl:choose>
         <!--
@@ -213,34 +207,16 @@
     <xsl:template match="@xml:id" mode="apply-rules" priority="5">
         <!-- Filter this out -->
     </xsl:template>
-    <xsl:template match="*" mode="no-escape">
-        <!-- Emit xsl that avoids escaping -->
-        <xsl:element name="xsl:element">
-            <xsl:attribute name="name"><xsl:value-of select="local-name(.)"/></xsl:attribute>
-            <xsl:attribute name="namespace"><xsl:value-of select="namespace-uri(.)"/></xsl:attribute>
-            
-            <xsl:apply-templates select="@*" mode="no-escape"/>
-            
-            <xsl:element name="xsl:variable">
-                <xsl:attribute name="name">tag_text</xsl:attribute>
-                <xsl:value-of select="text()"/>
-            </xsl:element>
-            
-            <xsl:element name="xsl:value-of">
-                <xsl:attribute name="select">$tag_text</xsl:attribute>
-                <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
-            </xsl:element>
-        </xsl:element>
-    </xsl:template>
-    <xsl:template match="@*" mode="no-escape">
-        <xsl:element name="xsl:attribute">
-            <xsl:attribute name="name"><xsl:value-of select="local-name(.)"/></xsl:attribute>
-            <xsl:attribute name="namespace"><xsl:value-of select="namespace-uri(.)"/></xsl:attribute>
+    <xsl:template mode="apply-rules" priority="5"
+        match="text()[parent::style|parent::script|parent::xhtml:style|parent::xhtml:script]">
+        <xsl:element name="xsl:variable">
+            <xsl:attribute name="name">tag_text</xsl:attribute>
             <xsl:value-of select="."/>
         </xsl:element>
-    </xsl:template>
-    <xsl:template match="@xml:id" mode="no-escape" priority="5">
-        <!-- Filter this out -->
+        <xsl:element name="xsl:value-of">
+            <xsl:attribute name="select">$tag_text</xsl:attribute>
+            <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
+        </xsl:element>        
     </xsl:template>
     <!--
         Complex rule templates
