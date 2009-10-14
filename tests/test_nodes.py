@@ -5,6 +5,9 @@
 from lxml import etree
 import os
 import sys
+import traceback
+import pdb
+import difflib
 from StringIO import StringIO
 
 if __name__ == '__main__':
@@ -14,12 +17,14 @@ _HERE = os.path.abspath(os.path.dirname(__file__))
 
 class XDV:
 
-    def __init__(self, testdir):
+    def __init__(self, testdir, debug=False, writefiles=False):
         self.errors = StringIO()
         themefn = os.path.join(testdir, "theme.html")
         contentfn = os.path.join(testdir, "content.html")
         rulesfn = os.path.join(testdir, "rules.xml")
         xpathsfn = os.path.join(testdir, "xpaths.txt")
+        xslfn = os.path.join(testdir, "compiled.xsl")
+        outputfn = os.path.join(testdir, "output.html")
 
         themedoc = etree.ElementTree(file=themefn, 
                                      parser=etree.HTMLParser())
@@ -36,7 +41,23 @@ class XDV:
         ct = compiler(themedoc, **params)
         
         # Serialize / parse the theme - this can catch problems with escaping.
-        ct = etree.fromstring(etree.tostring(ct))
+        cts = etree.tostring(ct)
+        ct = etree.fromstring(cts)
+
+        # Compare to previous version
+        if os.path.exists(xslfn):
+            old = open(xslfn).read()
+            new = cts
+            if old != new:
+                print >>self.errors, "WARNING:", "compiled.xsl has CHANGED"
+                for line in difflib.unified_diff(old.split('\n'), new.split('\n'), xslfn, 'now'):
+                    print >>self.errors, line
+            if writefiles:
+                open(xslfn + '.old', 'w').write(old)
+
+        # Write the compiled xsl out to catch unexpected changes
+        if writefiles:
+            open(xslfn, 'w').write(cts)
 
         # If there were any messages from <xsl:message> in the
         # compiler step, print them to the console
@@ -51,11 +72,11 @@ class XDV:
         self.themed_string = etree.tostring(result)
         self.themed_content = etree.ElementTree(file=StringIO(self.themed_string), 
                                                 parser=etree.HTMLParser())
-        
+
         # remove the extra meta content type
         meta = self.themed_content.xpath("/html/head/meta[@http-equiv='Content-Type']")[0]
         meta.getparent().remove(meta)
-        
+
         xp = "/html/head/*[position()='1']/@id"
         for xpath in open(xpathsfn).readlines():
             # Read the XPaths from the file, skipping blank lines and
@@ -66,7 +87,22 @@ class XDV:
             if not self.themed_content.xpath(this_xpath):
                 print >>self.errors, "FAIL:", this_xpath, "is FALSE"
 
-def main():
+        # Compare to previous version
+        if os.path.exists(outputfn):
+            old = open(outputfn).read()
+            new = self.themed_string
+            if old != new:
+                print >>self.errors, "FAIL:", "output.html has CHANGED"
+                for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
+                    print >>self.errors, line
+            if writefiles:
+                open(outputfn + '.old', 'w').write(old)
+
+        # Write the compiled xsl out to catch unexpected changes
+        if writefiles:
+            open(outputfn, 'w').write(self.themed_string)
+
+def main(*args, **kwargs):
     try:
         test_num = sys.argv[1]
     except IndexError:
@@ -77,7 +113,7 @@ def main():
             if not os.path.isdir(directory):
                 test_num -= 1
                 break
-            xdv = XDV(directory)
+            xdv = XDV(directory, *args, **kwargs)
             result = xdv.errors.getvalue()
             if result:
                 print 'Error running test %s...' % directory 
@@ -87,7 +123,7 @@ def main():
         print "Ran %s tests with %s errors." % (test_num, errors)
     else:
         test_dir = os.path.abspath(test_num)
-        xdv = XDV(test_dir)
+        xdv = XDV(test_dir, *args, **kwargs)
         print xdv.themed_string
         errors = xdv.errors.getvalue()
         if errors:
@@ -96,4 +132,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    debug = '--debug' in sys.argv
+    if debug:
+        sys.argv.remove('--debug')
+    writefiles = '--writefiles' in sys.argv
+    if writefiles:
+        sys.argv.remove('--writefiles')
+    try:
+        main(debug=debug, writefiles=writefiles)
+    except:
+        type, value, tb = sys.exc_info()
+        traceback.print_exc()
+        if debug:
+            pdb.post_mortem(tb)
