@@ -1,0 +1,7 @@
+# 
+# Conditional <drop>. The entire portlet-wrapper should be dropped when the
+# content is empty. This time there are portlets.
+#
+/html/body/div[@id='portlet-wrapper']
+/html/body/div[@id='portlet-wrapper']/div[@id='portlets']/div[@id='portletA']
+/html/body/div[@id='portlet-wrapper']/div[@id='portlets']/div[@id='portletB']
