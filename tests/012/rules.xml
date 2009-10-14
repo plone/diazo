@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://openplans.org/deliverance">
+    <replace theme="//h1" content="//h2"/>
+    <after theme="//h1" content="/html/body/p"/>
+    <replace theme="//*[@id='marker']" content="//*[@id='missing']" nocontent="drop"/>
+    <after theme="//*[@id='marker']" content="//*[@id='footer']"/>
+</rules>

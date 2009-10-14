@@ -208,6 +208,7 @@
                     Do nothing.  We want to get rid of this node
                     in the theme.
                 -->
+                <!-- jump to after rules -->
                 <xsl:call-template name="after">
                     <xsl:with-param name="matching-rules" select="$matching-other"/>
                     <xsl:with-param name="rules" select="$rules"/>
@@ -215,9 +216,9 @@
             </xsl:when>
             <xsl:when test="$matching-this/@condition">
                 <!--
-                    <drop condition="xpath" ...
-                    When the rule matches, toss out the theme node and
-                    <xsl:copy-of the @content. Otherwise keep theme node.
+                    <drop condition="content" ...
+                    When the rule matches, toss out the theme node.
+                    Otherwise keep theme node.
                 -->
                 <xsl:element name="xsl:choose">
                     <xsl:element name="xsl:when">
@@ -272,6 +273,11 @@
                         <xsl:value-of select="$matching-this/@content"/>
                     </xsl:attribute>
                 </xsl:element>
+                <!-- jump to after rules -->
+                <xsl:call-template name="after">
+                    <xsl:with-param name="matching-rules" select="$matching-other"/>
+                    <xsl:with-param name="rules" select="$rules"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$matching-this">
                 <!-- <replace nocontent="theme" ...
@@ -287,6 +293,11 @@
                                 <xsl:value-of select="$matching-this/@content"/>
                             </xsl:attribute>
                         </xsl:element>
+                        <!-- jump to after rules -->
+                        <xsl:call-template name="after">
+                            <xsl:with-param name="matching-rules" select="$matching-other"/>
+                            <xsl:with-param name="rules" select="$rules"/>
+                        </xsl:call-template>
                     </xsl:element>
                     <xsl:element name="xsl:otherwise">
                         <xsl:call-template name="prepend-copy-append">
