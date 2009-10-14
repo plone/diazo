@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://openplans.org/deliverance">
+    <copy theme="//*[@id='portlets']" content="//*[@class='portlet']"/>
+    <drop theme="//*[@id='portlet-wrapper']" condition="not(//*[@class='portlet'])"/>
+</rules>
