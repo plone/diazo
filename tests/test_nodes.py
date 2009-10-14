@@ -52,8 +52,8 @@ class XDV:
                 print >>self.errors, "WARNING:", "compiled.xsl has CHANGED"
                 for line in difflib.unified_diff(old.split('\n'), new.split('\n'), xslfn, 'now'):
                     print >>self.errors, line
-            if writefiles:
-                open(xslfn + '.old', 'w').write(old)
+                if writefiles:
+                    open(xslfn + '.old', 'w').write(old)
 
         # Write the compiled xsl out to catch unexpected changes
         if writefiles:
@@ -95,8 +95,8 @@ class XDV:
                 print >>self.errors, "FAIL:", "output.html has CHANGED"
                 for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
                     print >>self.errors, line
-            if writefiles:
-                open(outputfn + '.old', 'w').write(old)
+                if writefiles:
+                    open(outputfn + '.old', 'w').write(old)
 
         # Write the compiled xsl out to catch unexpected changes
         if writefiles:
