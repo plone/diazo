@@ -1,0 +1,13 @@
+# 
+# External includes. Using @href to specify what to include
+# content is empty. This time there are no portlets.
+#
+/html/body/div[@id='external1']
+/html/body/div[@id='external2']
+/html/body/div[@id='external3']
+/html/body/div[@id='marker2']/div[@id='external4']
+/html/body/div[@id='marker2']/div[@id='external5']
+/html/body/div[@id='marker2']/div[@id='external6']
+
+# from the content
+/html/body/h2

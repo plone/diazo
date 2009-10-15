@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://openplans.org/deliverance">
+    <before theme="//*[@id='marker1']" content="//*[@id='external1']" href="extra.html"/>
+    <replace theme="//*[@id='marker1']" content="//*[@id='external2']" href="extra.html"/>
+    <after theme="//*[@id='marker1']" content="//*[@id='external3']" href="extra.html"/>
+    <prepend theme="//*[@id='marker2']" content="//*[@id='external4']" href="extra.html"/>
+    <copy theme="//*[@id='marker2']" content="//*[@id='external5']" href="extra.html"/>
+    <append theme="//*[@id='marker2']" content="//*[@id='external6']" href="extra.html"/>
+    <!-- From the content -->
+    <after theme="//*[@id='marker2']" content="/html/body/*"/>
+</rules>

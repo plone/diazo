@@ -186,7 +186,8 @@
         <xsl:for-each select="$matching-this">
             <xsl:element name="xsl:copy-of">
                 <xsl:attribute name="select">
-                    <xsl:value-of select="@content"/>
+                    <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                    ><xsl:value-of select="@content"/>
                 </xsl:attribute>
             </xsl:element>
         </xsl:for-each>
@@ -270,7 +271,8 @@
                 <xsl:copy-of the @content. -->
                 <xsl:element name="xsl:copy-of">
                     <xsl:attribute name="select">
-                        <xsl:value-of select="$matching-this/@content"/>
+                        <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>')</xsl:if
+                        ><xsl:value-of select="$matching-this/@content"/>
                     </xsl:attribute>
                 </xsl:element>
                 <!-- jump to after rules -->
@@ -286,11 +288,13 @@
                 <xsl:element name="xsl:choose">
                     <xsl:element name="xsl:when">
                         <xsl:attribute name="test">
-                            <xsl:value-of select="$matching-this/@content"/>
+                            <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>')</xsl:if
+                            ><xsl:value-of select="$matching-this/@content"/>
                         </xsl:attribute>
                         <xsl:element name="xsl:copy-of">
                             <xsl:attribute name="select">
-                                <xsl:value-of select="$matching-this/@content"/>
+                                <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>')</xsl:if
+                                ><xsl:value-of select="$matching-this/@content"/>
                             </xsl:attribute>
                         </xsl:element>
                         <!-- jump to after rules -->
@@ -331,7 +335,8 @@
                     <xsl:for-each select="$matching-this[name()='prepend']">
                         <xsl:element name="xsl:copy-of">
                             <xsl:attribute name="select">
-                                <xsl:value-of select="@content"/>
+                                <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                                ><xsl:value-of select="@content"/>
                             </xsl:attribute>
                         </xsl:element>
                     </xsl:for-each>
@@ -342,15 +347,16 @@
                             </xsl:message>
                         </xsl:when>
                         <xsl:when test="$matching-this[name()='copy']">
-                            <xsl:variable name="content" select="$matching-this[name()='copy']/@content"/>
+                            <xsl:variable name="this" select="$matching-this[name()='copy']"/>
                             <xsl:choose>
-                                <xsl:when test="$matching-this[name()='copy']/@nocontent='empty'">
+                                <xsl:when test="$this/@nocontent='empty'">
                                     <!-- Copy the node and its attributes, but clear 
                                         the children and content.  Just have an 
                                         <xsl:copy-of> for the @content -->
                                     <xsl:element name="xsl:copy-of">
                                         <xsl:attribute name="select">
-                                            <xsl:value-of select="$content"/>
+                                            <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>')</xsl:if
+                                            ><xsl:value-of select="$this/@content"/>
                                         </xsl:attribute>
                                     </xsl:element>
                                 </xsl:when>
@@ -361,11 +367,13 @@
                                     <xsl:element name="xsl:choose">
                                         <xsl:element name="xsl:when">
                                             <xsl:attribute name="test">
-                                                <xsl:value-of select="$content"/>
+                                                <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>')</xsl:if
+                                                ><xsl:value-of select="$this/@content"/>
                                             </xsl:attribute>
                                             <xsl:element name="xsl:copy-of">
                                                 <xsl:attribute name="select">
-                                                    <xsl:value-of select="$content"/>
+                                                    <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>')</xsl:if
+                                                    ><xsl:value-of select="$this/@content"/>
                                                 </xsl:attribute>
                                             </xsl:element>
                                         </xsl:element>
@@ -387,7 +395,8 @@
                     <xsl:for-each select="$matching-rules[name()='append']">
                         <xsl:element name="xsl:copy-of">
                             <xsl:attribute name="select">
-                                <xsl:value-of select="@content"/>
+                                <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                                ><xsl:value-of select="@content"/>
                             </xsl:attribute>
                         </xsl:element>
                     </xsl:for-each>
@@ -417,7 +426,8 @@
         <xsl:for-each select="$matching-this">
             <xsl:element name="xsl:copy-of">
                 <xsl:attribute name="select">
-                    <xsl:value-of select="@content"/>
+                    <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                    ><xsl:value-of select="@content"/>
                 </xsl:attribute>
             </xsl:element>
         </xsl:for-each>
