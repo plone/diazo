@@ -16,7 +16,8 @@ if __name__ == '__main__':
 _HERE = os.path.abspath(os.path.dirname(__file__))
 
 class XDV:
-
+    access_control = etree.XSLTAccessControl(read_file=True)
+    
     def __init__(self, testdir, debug=False, writefiles=False):
         self.errors = StringIO()
         themefn = os.path.join(testdir, "theme.html")
@@ -42,7 +43,7 @@ class XDV:
         
         # Serialize / parse the theme - this can catch problems with escaping.
         cts = etree.tostring(ct)
-        ct = etree.fromstring(cts)
+        ct = etree.fromstring(cts, base_url=contentfn) # XXX why does it take this as the base
 
         # Compare to previous version
         if os.path.exists(xslfn):
@@ -65,7 +66,7 @@ class XDV:
             print >>self.errors, msg
 
         # Apply the compiled version, then test against desired output
-        processor = etree.XSLT(ct)
+        processor = etree.XSLT(ct, access_control=self.access_control)
         result = processor(contentdoc)
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
