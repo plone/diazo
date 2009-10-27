@@ -33,11 +33,12 @@
     </xsl:template>
     <xsl:template match="/" mode="apply-theme">
         <html><head><title>Theming with portlets</title></head><body>
-        <xsl:choose><xsl:when test="(not(//*[@class='portlet']))"/><xsl:otherwise><div id="portlet-wrapper">
+        <xsl:if test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='aaa']"/></xsl:if><xsl:choose><xsl:when test="(not(//*[@class='portlet']))"/><xsl:otherwise><div id="portlet-wrapper"><xsl:if test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='portlets-title']"/></xsl:if>
             <div id="portlets"><xsl:choose><xsl:when test="//*[@class='portlet']"><xsl:copy-of select="//*[@class='portlet']"/></xsl:when><xsl:otherwise>
                 <div class="portlet" id="portlet1">Portlet</div>
             </xsl:otherwise></xsl:choose></div>
-        </div></xsl:otherwise></xsl:choose>
+        <xsl:if test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='manage-portlets-link']"/></xsl:if></div><xsl:if test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='bbb']"/></xsl:if></xsl:otherwise></xsl:choose>
+        <xsl:choose><xsl:when test="//*[@id='footer']"><xsl:copy-of select="//*[@id='footer']"/></xsl:when><xsl:otherwise><div id="footer">Footer</div></xsl:otherwise></xsl:choose>
     </body></html>
     </xsl:template>
     <xsl:template match="style|script|xhtml:style|xhtml:script" priority="5" mode="final-stage">
