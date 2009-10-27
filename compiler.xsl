@@ -204,7 +204,7 @@
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="debug"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
         <xsl:choose>
-            <xsl:when test="$matching-this[not(@condition)]">
+            <xsl:when test="$matching-this[not(@if-content)]">
                 <!--
                     Do nothing.  We want to get rid of this node
                     in the theme.
@@ -215,7 +215,7 @@
                     <xsl:with-param name="rules" select="$rules"/>
                 </xsl:call-template>
             </xsl:when>
-            <xsl:when test="$matching-this/@condition">
+            <xsl:when test="$matching-this/@if-content">
                 <!--
                     <drop condition="content" ...
                     When the rule matches, toss out the theme node.
@@ -224,7 +224,7 @@
                 <xsl:element name="xsl:choose">
                     <xsl:element name="xsl:when">
                         <xsl:attribute name="test">
-                            <xsl:for-each select="$matching-this/@condition">
+                            <xsl:for-each select="$matching-this/@if-content">
                                 <xsl:text>(</xsl:text><xsl:value-of select="."/><xsl:text>)</xsl:text>
                                 <xsl:if test="position() != last()">
                                     <xsl:text> or </xsl:text>
