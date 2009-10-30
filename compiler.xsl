@@ -192,7 +192,7 @@
                         </xsl:attribute>
                         <xsl:element name="xsl:copy-of">
                             <xsl:attribute name="select">
-                                <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                                <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
                                 ><xsl:value-of select="@content"/>
                             </xsl:attribute>
                         </xsl:element>
@@ -201,7 +201,7 @@
                 <xsl:otherwise>
                     <xsl:element name="xsl:copy-of">
                         <xsl:attribute name="select">
-                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
                             ><xsl:value-of select="@content"/>
                         </xsl:attribute>
                     </xsl:element>
@@ -288,7 +288,7 @@
                 <xsl:copy-of the @content. -->
                 <xsl:element name="xsl:copy-of">
                     <xsl:attribute name="select">
-                        <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>')</xsl:if
+                        <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>', .)</xsl:if
                         ><xsl:value-of select="$matching-this/@content"/>
                     </xsl:attribute>
                 </xsl:element>
@@ -305,14 +305,14 @@
                 <xsl:element name="xsl:choose">
                     <xsl:element name="xsl:when">
                         <xsl:attribute name="test">
-                            <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>')</xsl:if><xsl:choose>
+                            <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>', .)</xsl:if><xsl:choose>
                                 <xsl:when test="$matching-this/@if-condition"><xsl:value-of select="$matching-this/@if-condition"/></xsl:when>
                                 <xsl:otherwise><xsl:value-of select="$matching-this/@content"/></xsl:otherwise>
                             </xsl:choose>
                         </xsl:attribute>
                         <xsl:element name="xsl:copy-of">
                             <xsl:attribute name="select">
-                                <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>')</xsl:if
+                                <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>', .)</xsl:if
                                 ><xsl:value-of select="$matching-this/@content"/>
                             </xsl:attribute>
                         </xsl:element>
@@ -360,7 +360,7 @@
                                     </xsl:attribute>
                                     <xsl:element name="xsl:copy-of">
                                         <xsl:attribute name="select">
-                                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
                                             ><xsl:value-of select="@content"/>
                                         </xsl:attribute>
                                     </xsl:element>
@@ -369,7 +369,7 @@
                             <xsl:otherwise>
                                 <xsl:element name="xsl:copy-of">
                                     <xsl:attribute name="select">
-                                        <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                                        <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
                                         ><xsl:value-of select="@content"/>
                                     </xsl:attribute>
                                 </xsl:element>
@@ -391,7 +391,7 @@
                                         <xsl:copy-of> for the @content -->
                                     <xsl:element name="xsl:copy-of">
                                         <xsl:attribute name="select">
-                                            <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>')</xsl:if
+                                            <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>', .)</xsl:if
                                             ><xsl:value-of select="$this/@content"/>
                                         </xsl:attribute>
                                     </xsl:element>
@@ -403,14 +403,14 @@
                                     <xsl:element name="xsl:choose">
                                         <xsl:element name="xsl:when">
                                             <xsl:attribute name="test">
-                                                <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>')</xsl:if><xsl:choose>
+                                                <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>', .)</xsl:if><xsl:choose>
                                                     <xsl:when test="$this/@if-condition"><xsl:value-of select="$this/@if-condition"/></xsl:when>
                                                     <xsl:otherwise><xsl:value-of select="$this/@content"/></xsl:otherwise>
                                                 </xsl:choose>
                                             </xsl:attribute>
                                             <xsl:element name="xsl:copy-of">
                                                 <xsl:attribute name="select">
-                                                    <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>')</xsl:if
+                                                    <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>', .)</xsl:if
                                                     ><xsl:value-of select="$this/@content"/>
                                                 </xsl:attribute>
                                             </xsl:element>
@@ -439,7 +439,7 @@
                                     </xsl:attribute>
                                     <xsl:element name="xsl:copy-of">
                                         <xsl:attribute name="select">
-                                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
                                             ><xsl:value-of select="@content"/>
                                         </xsl:attribute>
                                     </xsl:element>
@@ -448,7 +448,7 @@
                             <xsl:otherwise>
                                 <xsl:element name="xsl:copy-of">
                                     <xsl:attribute name="select">
-                                        <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                                        <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
                                         ><xsl:value-of select="@content"/>
                                     </xsl:attribute>
                                 </xsl:element>
@@ -487,7 +487,7 @@
                         </xsl:attribute>
                         <xsl:element name="xsl:copy-of">
                             <xsl:attribute name="select">
-                                <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                                <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
                                 ><xsl:value-of select="@content"/>
                             </xsl:attribute>
                         </xsl:element>
@@ -496,7 +496,7 @@
                 <xsl:otherwise>
                     <xsl:element name="xsl:copy-of">
                         <xsl:attribute name="select">
-                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>')</xsl:if
+                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
                             ><xsl:value-of select="@content"/>
                         </xsl:attribute>
                     </xsl:element>

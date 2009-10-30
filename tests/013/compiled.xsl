@@ -33,8 +33,8 @@
     </xsl:template>
     <xsl:template match="/" mode="apply-theme">
         <html><head><title>External includes</title></head><body>
-        <xsl:copy-of select="document('extra.html')//*[@id='external1']"/><xsl:choose><xsl:when test="document('extra.html')//*[@id='external2']"><xsl:copy-of select="document('extra.html')//*[@id='external2']"/><xsl:copy-of select="document('extra.html')//*[@id='external3']"/></xsl:when><xsl:otherwise><div id="marker1">Marker</div><xsl:copy-of select="document('extra.html')//*[@id='external3']"/></xsl:otherwise></xsl:choose>
-        <div id="marker2"><xsl:copy-of select="document('extra.html')//*[@id='external4']"/><xsl:choose><xsl:when test="document('extra.html')//*[@id='external5']"><xsl:copy-of select="document('extra.html')//*[@id='external5']"/></xsl:when><xsl:otherwise>Marker</xsl:otherwise></xsl:choose><xsl:copy-of select="document('extra.html')//*[@id='external6']"/></div><xsl:copy-of select="/html/body/*"/>
+        <xsl:copy-of select="document('extra.html', .)//*[@id='external1']"/><xsl:choose><xsl:when test="document('extra.html', .)//*[@id='external2']"><xsl:copy-of select="document('extra.html', .)//*[@id='external2']"/><xsl:copy-of select="document('extra.html', .)//*[@id='external3']"/></xsl:when><xsl:otherwise><div id="marker1">Marker</div><xsl:copy-of select="document('extra.html', .)//*[@id='external3']"/></xsl:otherwise></xsl:choose>
+        <div id="marker2"><xsl:copy-of select="document('extra.html', .)//*[@id='external4']"/><xsl:choose><xsl:when test="document('extra.html', .)//*[@id='external5']"><xsl:copy-of select="document('extra.html', .)//*[@id='external5']"/></xsl:when><xsl:otherwise>Marker</xsl:otherwise></xsl:choose><xsl:copy-of select="document('extra.html', .)//*[@id='external6']"/></div><xsl:copy-of select="/html/body/*"/>
     </body></html>
     </xsl:template>
     <xsl:template match="style|script|xhtml:style|xhtml:script" priority="5" mode="final-stage">

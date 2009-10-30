@@ -15,8 +15,18 @@ if __name__ == '__main__':
 
 _HERE = os.path.abspath(os.path.dirname(__file__))
 
+class Resolver(etree.Resolver):
+    def __init__(self, directory):
+        self.directory = directory
+        
+    def resolve(self, url, id, context):
+        # libxml2 does not do this correctly on it's own with the HTMLParser
+        # but it does work in Apache
+        url = os.path.join(self.directory, url)
+        return self.resolve_filename(url, context)
+
 class XDV:
-    access_control = etree.XSLTAccessControl(read_file=True)
+    access_control = etree.XSLTAccessControl(read_file=True, read_network=True)
     
     def __init__(self, testdir, debug=False, writefiles=False):
         self.errors = StringIO()
@@ -29,7 +39,7 @@ class XDV:
 
         themedoc = etree.ElementTree(file=themefn, 
                                      parser=etree.HTMLParser())
-        contentdoc = etree.ElementTree(file=contentfn, 
+        contentdoc = etree.parse(source=contentfn, base_url=contentfn,
                                        parser=etree.HTMLParser())
         compilerfn = os.path.join(os.path.dirname(_HERE), "compiler.xsl")
         compilerdoc = etree.ElementTree(file=compilerfn)
@@ -43,7 +53,9 @@ class XDV:
         
         # Serialize / parse the theme - this can catch problems with escaping.
         cts = etree.tostring(ct)
-        ct = etree.fromstring(cts, base_url=contentfn) # XXX why does it take this as the base
+        parser = etree.XMLParser()
+        parser.resolvers.add(Resolver(testdir))
+        ct = etree.fromstring(cts, parser=parser)
 
         # Compare to previous version
         if os.path.exists(xslfn):
