@@ -30,7 +30,7 @@ By default it looks for ``rules.xml`` in the same directory as the
 ``compiler.xsl``.  However, you can pass a parameter in when compiling
 the theme::
 
-  xsltproc --stringparam rulesuri rules.xml compiler.xsl theme.html > compiledtheme.xsl
+  xsltproc --nonet --html --stringparam rulesuri rules.xml compiler.xsl theme.html > compiledtheme.xsl
 
 Running from Python
 -----------------------
