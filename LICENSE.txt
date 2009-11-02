@@ -1,4 +1,4 @@
-Copyright (c) 2008, 2009, 2010 Paul Everitt and Laurence Rowe
+Copyright (c) 2008-2009 Paul Everitt and Laurence Rowe
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
