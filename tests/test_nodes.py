@@ -10,6 +10,8 @@ import pdb
 import difflib
 from StringIO import StringIO
 
+import xdv.compiler
+
 if __name__ == '__main__':
     __file__ = sys.argv[0]
 
@@ -37,25 +39,17 @@ class XDV:
         xslfn = os.path.join(testdir, "compiled.xsl")
         outputfn = os.path.join(testdir, "output.html")
 
-        themedoc = etree.ElementTree(file=themefn, 
-                                     parser=etree.HTMLParser())
         contentdoc = etree.parse(source=contentfn, base_url=contentfn,
                                        parser=etree.HTMLParser())
-        compilerfn = os.path.join(os.path.dirname(_HERE), "compiler.xsl")
-        compilerdoc = etree.ElementTree(file=compilerfn)
-        compiler = etree.XSLT(compilerdoc)
 
         # Make a compiled version
-        params = {
-            'rulesuri': '"%s"' % rulesfn,
-            }
-        ct = compiler(themedoc, **params)
+        ct = xdv.compiler.compile_theme(rules=rulesfn, theme=themefn)
         
         # Serialize / parse the theme - this can catch problems with escaping.
         cts = etree.tostring(ct)
         parser = etree.XMLParser()
         parser.resolvers.add(Resolver(testdir))
-        ct = etree.fromstring(cts, parser=parser)
+        ct2 = etree.fromstring(cts, parser=parser)
 
         # Compare to previous version
         if os.path.exists(xslfn):
@@ -74,11 +68,11 @@ class XDV:
 
         # If there were any messages from <xsl:message> in the
         # compiler step, print them to the console
-        for msg in compiler.error_log:
+        for msg in xdv.compiler.compiler_transform.error_log:
             print >>self.errors, msg
 
         # Apply the compiled version, then test against desired output
-        processor = etree.XSLT(ct, access_control=self.access_control)
+        processor = etree.XSLT(ct2, access_control=self.access_control)
         result = processor(contentdoc)
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.

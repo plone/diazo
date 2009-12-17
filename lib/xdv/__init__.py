@@ -1,2 +1,1 @@
-import logging
-logging.basicConfig()
+# Make this a package

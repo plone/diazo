@@ -32,7 +32,7 @@
         </xsl:copy>
     </xsl:template>
     <xsl:template match="/" mode="apply-theme">
-        <html xmlns="http://www.w3.org/1999/xhtml"><head><xsl:choose><xsl:when test="/html/head/title"><xsl:copy-of select="/html/head/title"/></xsl:when><xsl:otherwise><title id="first">Second Theme Page Title</title></xsl:otherwise></xsl:choose></head><body><xsl:choose><xsl:when test="//div[@id='wrapper']"><xsl:copy-of select="//div[@id='wrapper']"/></xsl:when><xsl:otherwise>
+        <html><head><xsl:choose><xsl:when test="/html/head/title"><xsl:copy-of select="/html/head/title"/></xsl:when><xsl:otherwise><title id="first">Second Theme Page Title</title></xsl:otherwise></xsl:choose></head><body><xsl:choose><xsl:when test="//div[@id='wrapper']"><xsl:copy-of select="//div[@id='wrapper']"/></xsl:when><xsl:otherwise>
         <p>blah</p>
     </xsl:otherwise></xsl:choose></body></html>
     </xsl:template>

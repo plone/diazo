@@ -7,7 +7,7 @@ RULES is a file defining a set of xdv rules in css syntax, e.g:
 <rules xmlns="http://namespaces.plone.org/xdv"
        xmlns:css="http://namespaces.plone.org/xdv+css">
        <copy css:content="#content-wrapper" css:theme="#page-content"/>
-</rules>\
+</rules>
 """
 usage = __doc__
 
@@ -15,34 +15,26 @@ from optparse import OptionParser
 from lxml import etree
 from lxml.cssselect import css_to_xpath
 
-import utils
+xmlns = dict(
+    xdv="http://namespaces.plone.org/xdv",
+    css="http://namespaces.plone.org/xdv+css",
+    old="http://openplans.org/deliverance",
+    )
 
-import logging
-logger = logging.getLogger('xdv')
+def localname(name):
+    return name.rsplit('}', 1)[1]
+
+def fullname(namespace, name):
+    return '{%s}%s' % (namespace, name)
 
 def convert_css_selectors(rules):
-    """Convert css rules to xpath rules element tree in place
-    """
-    #XXX: There is a :root pseudo-class - http://www.w3.org/TR/css3-selectors/#root-pseudo
-    # We may wish to add support to lxml.cssselect for it some day.
-    for element in rules.xpath("//@*[namespace-uri()='%s']/.." % utils.namespaces['css']):
+    """Convert css rules to xpath rules element tree in place"""
+    for element in rules.xpath("//@*[namespace-uri()='%s']/.." % xmlns['css']):
         for name, value in element.attrib.items():
-            if name.startswith('{%s}' % utils.namespaces['css']):
-                localname = utils.localname(name)
-                if not value:
-                    element.attrib[localname] = ""
-                    continue
-                if localname == 'content' and element.tag == '{%s}drop' % utils.namespaces['xdv']:
-                    prefix = '//'
-                else:
-                    prefix = 'descendant-or-self::'                    
-                element.attrib[localname] = css_to_xpath(value, prefix=prefix)
-
-    return rules
+            if name.startswith('{%s}' % xmlns['css']):
+                element.attrib[fullname(element.nsmap[element.prefix], localname(name))] = css_to_xpath(value, prefix='')
 
 def main():
-    """Called from console script
-    """
     parser = OptionParser(usage=usage)
     parser.add_option("-o", "--output", metavar="output.html",
                       help="Output filename (instead of stdout)",

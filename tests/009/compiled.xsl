@@ -32,7 +32,7 @@
         </xsl:copy>
     </xsl:template>
     <xsl:template match="/" mode="apply-theme">
-        <html xmlns="http://www.w3.org/1999/xhtml"><head><title>Theme Title</title><style type="text/css"><xsl:variable name="tag_text">
+        <html><head><title>Theme Title</title><style type="text/css"><xsl:variable name="tag_text">
             /* From the theme */
             body &gt; h1 { color: red; }
         </xsl:variable><xsl:value-of select="$tag_text" disable-output-escaping="yes"/></style><script type="text/javascript"><xsl:variable name="tag_text">

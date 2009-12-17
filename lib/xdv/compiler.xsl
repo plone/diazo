@@ -20,7 +20,7 @@
 
         <!-- Include the rules file, adding @xml:id attributes as it is included -->
         <xsl:variable name="rules-rtf">
-            <xsl:apply-templates select="document($rulesuri)/*" mode="annotate-rules">
+            <xsl:apply-templates select="document($rulesuri, .)/*" mode="annotate-rules">
                 <xsl:with-param name="themehtml" select="$themehtml"/>
             </xsl:apply-templates>
         </xsl:variable>
@@ -80,7 +80,7 @@
             <xsl:when test="name()='dv:insert-extra'">
                 <!-- Put the extra templates in at this spot of the boilerplate -->
                 <xsl:if test="$extraurl">
-                    <xsl:copy-of select="document($extraurl)/xsl:stylesheet/*" />
+                    <xsl:copy-of select="document($extraurl, .)/xsl:stylesheet/*" />
                 </xsl:if>
             </xsl:when>
             <xsl:otherwise>
@@ -169,6 +169,9 @@
             <xsl:attribute name="select">$tag_text</xsl:attribute>
             <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
         </xsl:element>        
+    </xsl:template>
+    <xsl:template match="/html/@xmlns" mode="apply-rules" priority="5">
+        <!-- Filter this out (causes problems when xsl is not serialized) -->
     </xsl:template>
     <!--
         Rule templates
