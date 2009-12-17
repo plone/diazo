@@ -1,3 +1,0 @@
-# 
-# Comments. Check that comments make it through to the output.
-/html/head/comment()

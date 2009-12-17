@@ -1,4 +1,0 @@
-# Check when nothing matches
-
-/html/body/h1[contains(., 'theme')]
-not(/html/body/div)

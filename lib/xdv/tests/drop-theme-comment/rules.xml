@@ -1,3 +1,0 @@
-<rules xmlns="http://namespaces.plone.org/xdv">
-    <drop theme="/html/head/comment()" />
-</rules>

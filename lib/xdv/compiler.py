@@ -13,23 +13,73 @@ usage = __doc__
 
 import os.path
 import sys
+import logging
 from lxml import etree
 from optparse import OptionParser
 
-COMPILER_PATH = os.path.join(os.path.dirname(__file__), 'compiler.xsl')
-compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH))
+from utils import namespaces, localname, fullname
+from cssrules import convert_css_selectors
 
-def compile_theme(rules, theme, extra=None, css=False):
+logger = logging.getLogger('xdv')
+
+HERE = os.path.dirname(__file__)
+
+COMPILER_PATH = os.path.join(HERE, 'compiler.xsl')
+
+UPDATE_PATH = os.path.join(HERE, 'update-namespace.xsl')
+update_transform = etree.XSLT(etree.parse(UPDATE_PATH))
+
+def update_namespace(rules):
+    """Convert old namespace to new namespace in place
+    """
+    old_elements = rules.xpath("//*[namespace-uri()='%s']" % namespaces['old'])
+    if old_elements:
+        logger.warning('The %s namespace is deprecated, use %s instead.' % (namespaces['old'], namespaces['xdv']))
+        for element in old_elements:
+            element.tag = fullname(namespaces['xdv'], localname(element.tag))
+
+
+class CompileResolver(etree.Resolver):
+    def __init__(self, rules, extra=None):
+        self.rules = rules
+        self.extra = extra
+        
+    def resolve(self, url, pubid, context):
+        if url == 'rules':
+            return self.resolve_string(self.rules, context)
+        if url == 'extra' and self.extra is not None:
+            return self.resolve_string(self.extra, context)
+
+
+def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=True, trace=False):
     """Invoke the xdv compiler
     """
+    rules_doc = etree.parse(rules)
+    if xinclude:
+        rules_doc.xinclude()
+    if update:
+        update_namespace(rules_doc)
+    if css:
+        convert_css_selectors(rules_doc)
+    
     parser = etree.HTMLParser()
     theme_doc = etree.parse(theme, parser=parser)
-    params = {}
-    if rules:
-        params['rulesuri'] = "'%s'" % prepare_filename(rules)
+    
+    compiler_parser = etree.XMLParser()
+    compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH, parser=compiler_parser))
+
+    params = dict(rulesuri="'rules'")
     if extra:
-        params['extraurl'] = "'%s'" % prepare_filename(extra)
+        params['extraurl'] = "'extra'"
+        resolver = CompileResolver(etree.tostring(rules_doc), etree.tostring(etree.parse(extra)))
+    else:
+        resolver = CompileResolver(etree.tostring(rules_doc))
+    if trace:
+        params['trace'] = '1'
+    compiler_parser.resolvers.add(resolver)
     compiled = compiler_transform(theme_doc, **params)
+    for msg in compiler_transform.error_log:
+        logger.info(msg)
     return compiled
 
 def prepare_filename(filename):
@@ -42,7 +92,7 @@ def prepare_filename(filename):
     return filename
 
 def main():
-    """Called fromconsole script
+    """Called from console script
     """
     parser = OptionParser(usage=usage)
     parser.add_option("-e", "--extra", metavar="extra.xsl",
@@ -54,13 +104,22 @@ def main():
     parser.add_option("-p", "--pretty-print", action="store_true",
                       help="Pretty print output (can alter rendering on the browser)",
                       dest="pretty_print", default=False)
+    parser.add_option("--trace", action="store_true",
+                      help="Compiler trace logging",
+                      dest="trace", default=False)
+    parser.add_option("--xinclude", action="store_true",
+                      help="Run XInclude on rules.xml",
+                      dest="xinclude", default=False)
     (options, args) = parser.parse_args()
     
     if len(args) !=2:
         parser.error("Wrong number of arguments.")
     rules, theme = args
 
-    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra)
+    if options.trace:
+        logger.setLevel(logging.DEBUG)
+
+    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude)
     output_xslt.write(options.output, pretty_print=options.pretty_print)
 
 if __name__ == '__main__':

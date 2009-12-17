@@ -13,9 +13,9 @@ Usage
 
 1) Edit the ``theme.html``, ``rules.xml``, and ``content.html``.
 
-2) xsltproc compiler.xsl theme.html > compiledtheme.xsl
+2) xsltproc --html compiler.xsl theme.html > compiledtheme.xsl
 
-3) xsltproc compiledtheme.xsl content.html > output.html
+3) xsltproc --html compiledtheme.xsl content.html > output.html
 
 4) open output.html
 

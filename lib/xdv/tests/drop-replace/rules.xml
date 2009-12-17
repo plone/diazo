@@ -1,7 +1,0 @@
-<rules
-    xmlns="http://namespaces.plone.org/xdv"
-    xmlns:css="http://namespaces.plone.org/xdv+css"
-    >
-    <replace theme="/html/body" content="/html/body"/>
-    <drop css:content="div#outer > div#inner"/>
-</rules>

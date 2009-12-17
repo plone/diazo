@@ -1,108 +1,59 @@
 #!/usr/bin/env python
 """\
-Usage: %prog -x TRANSFORM CONTENT
+Usage: %prog TRANSFORM CONTENT
 
   TRANSFORM is the compiled theme transform
   CONTENT is an html file.
   
-Usage: %prog -r RULES [options] CONTENT
+Usage: %prog -t THEME -r RULES [options] CONTENT
 """
 usage = __doc__
 
-import logging
 import sys
-import os.path
-
 from lxml import etree
-
-from xdv.compiler import compile_theme
-from xdv.utils import AC_READ_NET, AC_READ_FILE, _createOptionParser
-
-logger = logging.getLogger('xdv')
-
-class RunResolver(etree.Resolver):
-    def __init__(self, directory):
-        self.directory = directory
-        
-    def resolve(self, url, id, context):
-        # libxml2 does not do this correctly on it's own with the HTMLParser
-        # but it does work in Apache
-        if '://' in url or url.startswith('/'):
-            # It seems we must explicitly resolve the url here
-            return self.resolve_filename(url, context)
-        url = os.path.join(self.directory, url)
-        return self.resolve_filename(url, context)
+from optparse import OptionParser
+from compiler import compile_theme
 
 def main():
     """Called from console script
     """
-    op = _createOptionParser(usage=usage)
-    op.add_option("-x", "--xsl", metavar="transform.xsl",
-                      help="XSL transform", 
-                      dest="xsl", default=None)
-    op.add_option("--path", metavar="PATH",
-                      help="URI path", 
-                      dest="path", default=None)
-    (options, args) = op.parse_args()
-
-    if len(args) > 2:
-        op.error("Wrong number of arguments.")
-    elif len(args) == 2:
-        if options.xsl or options.rules:
-            op.error("Wrong number of arguments.")
-        path, content = args
-        if path.lower().endswith('.xsl'):
-            options.xsl = path
-        else:
-            options.rules = path
+    parser = OptionParser(usage=usage)
+    parser.add_option("-t", "--theme", metavar="theme.html",
+                      help="Theme file",
+                      dest="theme", default=None)
+    parser.add_option("-r", "--rules", metavar="rules.xml",
+                      help="XDV rules file", 
+                      dest="rules", default=None)
+    parser.add_option("-e", "--extra", metavar="extra.xsl",
+                      help="XDV extraurl XSLT file",
+                      dest="extra", default=None)
+    parser.add_option("-o", "--output", metavar="output.html",
+                      help="Output filename (instead of stdout)",
+                      dest="output", default=sys.stdout)
+    parser.add_option("-p", "--pretty-print", action="store_true",
+                      help="Pretty print output (can alter rendering on the browser)",
+                      dest="pretty_print", default=False)
+    (options, args) = parser.parse_args()
+    
+    if len(args) == 2:
+        transform_path, content = args
+        transform = etree.XSLT(etree.parse(transform_path))
     elif len(args) == 1:
-        content, = args
+        if options.theme and options.rules:
+            content, = args
+            output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra)
+            transform = etree.XSLT(output_xslt)
+        else:
+            parser.error("Theme and rules must be supplied.")
     else:
-        op.error("Wrong number of arguments.")
-    if options.rules is None and options.xsl is None:
-        op.error("Must supply either options or rules")
-
-    if options.trace:
-        logger.setLevel(logging.DEBUG)
-
-    parser = etree.HTMLParser()
-    parser.resolvers.add(RunResolver(os.path.dirname(content)))
-
-    if options.xsl is not None:
-        output_xslt = etree.parse(options.xsl)
-    else:
-        output_xslt = compile_theme(
-            rules=options.rules,
-            theme=options.theme,
-            extra=options.extra,
-            parser=parser,
-            read_network=options.read_network,
-            absolute_prefix=options.absolute_prefix,
-            includemode=options.includemode,
-            indent=options.pretty_print,
-            )
+        parser.error("Wrong number of arguments.")
 
     if content == '-':
         content = sys.stdin
 
-    if options.read_network:
-        access_control = AC_READ_NET
-    else:
-        access_control = AC_READ_FILE
+    output_html = transform(etree.parse(content, parser=etree.HTMLParser()))
 
-    transform = etree.XSLT(output_xslt, access_control=access_control)
-    content_doc = etree.parse(content, parser=parser)
-    params = {}
-    if options.path is not None:
-        params['path'] = "'%s'" % options.path
-    output_html = transform(content_doc, **params)
-    if isinstance(options.output, basestring):
-        out = open(options.output, 'wt')
-    else:
-        out = options.output
-    out.write(str(output_html))
-    for msg in transform.error_log:
-        logger.warn(msg)
+    output_html.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
 
 if __name__ == '__main__':
     main()

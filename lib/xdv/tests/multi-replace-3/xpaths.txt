@@ -1,4 +1,0 @@
-# Check the third branches
-
-/html/body/h1[contains(., 'Page title')]
-/html/body/div[contains(., 'content description3')]

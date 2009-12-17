@@ -1,2 +1,0 @@
-# SSI includes are rendered as comments
-/html/body/comment()[contains(., 'include')]

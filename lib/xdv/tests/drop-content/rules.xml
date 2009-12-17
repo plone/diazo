@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rules xmlns="http://namespaces.plone.org/xdv">
-    <copy theme="/html/body/div[@id='pagecontent']" content="/html/body/div[@id='pagecontent']/*"/>
-    <drop content="/html/body/div/div[@id='contentdrop']"/>
-</rules>
