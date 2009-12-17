@@ -9,6 +9,7 @@ import traceback
 import pdb
 import difflib
 from StringIO import StringIO
+import unittest
 
 import xdv.compiler
 
@@ -27,17 +28,20 @@ class Resolver(etree.Resolver):
         url = os.path.join(self.directory, url)
         return self.resolve_filename(url, context)
 
-class XDV:
+class XDVTestCase(unittest.TestCase):
     access_control = etree.XSLTAccessControl(read_file=True, read_network=True)
+    writefiles = False
+
+    testdir = None # override
     
-    def __init__(self, testdir, debug=False, writefiles=False):
+    def testAll(self):
         self.errors = StringIO()
-        themefn = os.path.join(testdir, "theme.html")
-        contentfn = os.path.join(testdir, "content.html")
-        rulesfn = os.path.join(testdir, "rules.xml")
-        xpathsfn = os.path.join(testdir, "xpaths.txt")
-        xslfn = os.path.join(testdir, "compiled.xsl")
-        outputfn = os.path.join(testdir, "output.html")
+        themefn = os.path.join(self.testdir, "theme.html")
+        contentfn = os.path.join(self.testdir, "content.html")
+        rulesfn = os.path.join(self.testdir, "rules.xml")
+        xpathsfn = os.path.join(self.testdir, "xpaths.txt")
+        xslfn = os.path.join(self.testdir, "compiled.xsl")
+        outputfn = os.path.join(self.testdir, "output.html")
 
         contentdoc = etree.parse(source=contentfn, base_url=contentfn,
                                        parser=etree.HTMLParser())
@@ -48,7 +52,7 @@ class XDV:
         # Serialize / parse the theme - this can catch problems with escaping.
         cts = etree.tostring(ct)
         parser = etree.XMLParser()
-        parser.resolvers.add(Resolver(testdir))
+        parser.resolvers.add(Resolver(self.testdir))
         ct2 = etree.fromstring(cts, parser=parser)
 
         # Compare to previous version
@@ -59,17 +63,12 @@ class XDV:
                 print >>self.errors, "WARNING:", "compiled.xsl has CHANGED"
                 for line in difflib.unified_diff(old.split('\n'), new.split('\n'), xslfn, 'now'):
                     print >>self.errors, line
-                if writefiles:
+                if self.writefiles:
                     open(xslfn + '.old', 'w').write(old)
 
         # Write the compiled xsl out to catch unexpected changes
-        if writefiles:
+        if self.writefiles:
             open(xslfn, 'w').write(cts)
-
-        # If there were any messages from <xsl:message> in the
-        # compiler step, print them to the console
-        for msg in xdv.compiler.compiler_transform.error_log:
-            print >>self.errors, msg
 
         # Apply the compiled version, then test against desired output
         processor = etree.XSLT(ct2, access_control=self.access_control)
@@ -102,11 +101,11 @@ class XDV:
                 print >>self.errors, "FAIL:", "output.html has CHANGED"
                 for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
                     print >>self.errors, line
-                if writefiles:
+                if self.writefiles:
                     open(outputfn + '.old', 'w').write(old)
 
         # Write the compiled xsl out to catch unexpected changes
-        if writefiles:
+        if self.writefiles:
             open(outputfn, 'w').write(self.themed_string)
 
 def main(*args, **kwargs):
@@ -136,6 +135,18 @@ def main(*args, **kwargs):
         if errors:
             print
             print xdv.errors.getvalue()
+
+def test_suite():
+    suite = unittest.TestSuite()
+    for name in os.listdir(_HERE):
+        if name.startswith('.'):
+            continue
+        path = os.path.join(_HERE, name)
+        if not os.path.isdir(path):
+            continue
+        cls = type('Test%s'%name, (XDVTestCase,), dict(testdir=path))
+        suite.addTest(unittest.makeSuite(cls))
+    return suite
 
 
 if __name__ == "__main__":

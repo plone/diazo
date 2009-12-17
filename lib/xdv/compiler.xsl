@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:dv="http://openplans.org/deliverance" xmlns:exsl="http://exslt.org/common"
+    xmlns:dv="http://namespaces.plone.org/xdv" xmlns:exsl="http://exslt.org/common"
     xmlns:set="http://exslt.org/sets" xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:dyn="http://exslt.org/dynamic" xmlns:xml="http://www.w3.org/XML/1998/namespace"
     exclude-result-prefixes="dv dyn exsl xml" version="1.0">
@@ -8,7 +8,7 @@
     <xsl:param name="rulesuri">rules.xml</xsl:param>
     <xsl:param name="boilerplateurl">boilerplate.xsl</xsl:param>
     <xsl:param name="extraurl"/>
-    <xsl:param name="debug"/>
+    <xsl:param name="trace"/>
     <!-- Multi-stage theme compiler -->
     <xsl:template match="/">
 
@@ -182,7 +182,7 @@
         <xsl:variable name="rule-name">before</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="debug"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
         <!--
             Always copy all content matching before rules
         -->
@@ -222,7 +222,7 @@
         <xsl:variable name="rule-name">drop</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="debug"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
         <xsl:choose>
             <xsl:when test="$matching-this[not(@if-content)]">
                 <!--
@@ -278,7 +278,7 @@
         <xsl:variable name="rule-name">replace</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="debug"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
         <xsl:choose>
             <xsl:when test="count($matching-this) > 1">
                 <xsl:message terminate="yes">
@@ -347,7 +347,7 @@
         <xsl:variable name="rule-name">prepend-copy-append</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()='prepend' or name()='copy' or name()='append']"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="debug"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
         <xsl:choose>
             <xsl:when test="$matching-this">
                 <xsl:copy>
@@ -477,7 +477,7 @@
         <xsl:variable name="rule-name">after</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="debug"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
         <!--
             Always copy all content matching after rules
         -->
@@ -513,17 +513,17 @@
     <xsl:template name="pass">
         <xsl:param name="rules"/>
         <xsl:variable name="rule-name">pass</xsl:variable>
-        <xsl:call-template name="debug"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
         <xsl:copy>
             <xsl:apply-templates select="node()|@*" mode="apply-rules">
                 <xsl:with-param name="rules" select="$rules"/>
             </xsl:apply-templates>
         </xsl:copy>
     </xsl:template>
-    <xsl:template name="debug">
+    <xsl:template name="trace">
         <xsl:param name="rule-name"/>
-        <xsl:if test="$debug">
-            <xsl:message>DEBUG: <xsl:call-template name="printpath"/> - <xsl:value-of select="$rule-name"/></xsl:message>
+        <xsl:if test="$trace">
+            <xsl:message>TRACE: <xsl:call-template name="printpath"/> - <xsl:value-of select="$rule-name"/></xsl:message>
         </xsl:if>
     </xsl:template>
     <xsl:template name="printpath"

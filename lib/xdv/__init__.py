@@ -1,1 +1,2 @@
-# Make this a package
+import logging
+logging.basicConfig()
