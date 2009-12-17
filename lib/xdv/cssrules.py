@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Usage: %prog RULES
+"""\
+Usage: %prog RULES
 
 RULES is a file defining a set of xdv rules in css syntax, e.g:
 
@@ -10,6 +11,7 @@ RULES is a file defining a set of xdv rules in css syntax, e.g:
 """
 usage = __doc__
 
+from optparse import OptionParser
 from lxml import etree
 from lxml.cssselect import css_to_xpath
 
@@ -25,24 +27,28 @@ def localname(name):
 def fullname(namespace, name):
     return '{%s}%s' % (namespace, name)
 
-def convert(rules):
+def convert_css_selectors(rules):
     """Convert css rules to xpath rules element tree in place"""
-    for element in rules.xpath("//@*[namespace-uri()='http://namespaces.plone.org/xdv+css']/.."):
+    for element in rules.xpath("//@*[namespace-uri()='%s']/.." % xmlns['css']):
         for name, value in element.attrib.items():
             if name.startswith('{%s}' % xmlns['css']):
-                element.attrib[fullname(element.nsmap[element.prefix], localname(name))] = css_to_xpath(value)
+                element.attrib[fullname(element.nsmap[element.prefix], localname(name))] = css_to_xpath(value, prefix='')
 
 def main():
-    from optparse import OptionParser
     parser = OptionParser(usage=usage)
+    parser.add_option("-o", "--output", metavar="output.html",
+                      help="Output filename (instead of stdout)",
+                      dest="output", default=sys.stdout)
+    parser.add_option("-p", "--pretty-print", action="store_true",
+                      help="Pretty print output",
+                      dest="pretty_print", default=False)
     (options, args) = parser.parse_args()
 
     if len(args) != 1:
         parser.error("Invalid number of arguments")
-    else:
-        rules = etree.parse(args[0])
-        convert(rules)
-        print etree.tostring(rules)
+    rules = etree.parse(args[0])
+    convert_css_selectors(rules)
+    rules.write(options.output, pretty_print=options.pretty_print)
 
 if __name__ == '__main__':
     main()
