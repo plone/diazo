@@ -6,7 +6,7 @@ events {
 
 http {
     include ${buildout:directory}/etc/mime.types;
-    gzip on;
+#    gzip on;
 
     server {
         listen ${nginx-conf:port};
@@ -17,6 +17,13 @@ http {
         location /styled {
             alias ${nginx-conf:root};
             xslt_stylesheet ${nginx-conf:root}/theme.xsl;
+            xslt_html_parser on;
+            xslt_types text/html;
+        }
+
+        location /styled/ploneorg {
+            alias ${nginx-conf:root}/ploneorg;
+            xslt_stylesheet ${nginx-conf:root}/ploneorg/plone.xsl;
             xslt_html_parser on;
             xslt_types text/html;
         }
