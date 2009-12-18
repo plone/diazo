@@ -32,12 +32,9 @@ update_transform = etree.XSLT(etree.parse(UPDATE_PATH))
 def update_namespace(rules):
     """Convert old namespace to new namespace in place
     """
-    old_elements = rules.xpath("//*[namespace-uri()='%s']" % namespaces['old'])
-    if old_elements:
+    if rules.xpath("//*[namespace-uri()='%s']" % namespaces['old']):
         logger.warning('The %s namespace is deprecated, use %s instead.' % (namespaces['old'], namespaces['xdv']))
-        for element in old_elements:
-            element.tag = fullname(namespaces['xdv'], localname(element.tag))
-
+        return update_transform(rules)
 
 class CompileResolver(etree.Resolver):
     def __init__(self, rules, extra=None):
@@ -51,21 +48,23 @@ class CompileResolver(etree.Resolver):
             return self.resolve_string(self.extra, context)
 
 
-def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=True, trace=False):
+def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=True, trace=False, parser=None, compiler_parser=None):
     """Invoke the xdv compiler
     """
     rules_doc = etree.parse(rules)
     if xinclude:
         rules_doc.xinclude()
     if update:
-        update_namespace(rules_doc)
+        rules_doc = update_namespace(rules_doc)
     if css:
         convert_css_selectors(rules_doc)
     
-    parser = etree.HTMLParser()
+    if parser is None:
+        parser = etree.HTMLParser()
     theme_doc = etree.parse(theme, parser=parser)
     
-    compiler_parser = etree.XMLParser()
+    if compiler_parser is None:
+        compiler_parser = etree.XMLParser()
     compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH, parser=compiler_parser))
 
     params = dict(rulesuri="'rules'")
