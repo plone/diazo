@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://openplans.org/deliverance">
+	<replace content='/html/head/title' theme='/html/head/title' />
+	<replace content='/html/head/base' theme='/html/head/base' />
+
+	<!-- Add in the Plone-created CSS and JS in addition to the static ones -->
+	<append  content='/html/head/script' theme='/html/head' />
+	<append  content='/html/head/style' theme='/html/head' />
+
+	<!-- Copy over the id/class attributes on the body tag, this is important
+	     for Kupu and per-section styling -->
+	<prepend theme="/html/body" content="/html/body/@class" />
+	<prepend theme="/html/body" content="/html/body/@id" />
+
+	<!-- Copy the main navigation -->
+	<copy content='//*[@id="portal-globalnav"]/li'		theme='//*[@id="main-nav"]' />
+
+	<!-- Get rid of the user icon and copy the user link -->
+	<drop content='//*[@id="user-name"]/img' /> 
+	<replace content='//*[@id="user-name"]' theme='//*[@id="user"]/a' />
+
+	<!-- Copy the edit bar -->
+	<copy content='//*[@id="content-views"]'			theme='//*[@id="edit-menu"]' />
+	<copy content='//*[@id="contentActionMenus"]'		theme='//*[@id="action-menu"]' />
+	<!-- …but get rid of the content type icons. -->
+	<drop content='//*[@id="plone-contentmenu-factories"]/dd/ul/li/a/img' /> 
+
+	<!-- Copy over the contents of the page body -->
+	<replace content='//*[@id="region-content"]'	theme='//*[@id="region-content"]' />
+
+	<!-- Bring the portlet columns over  to the sidebar -->
+	<append content='//*[@id="portal-column-one"]/div'	theme='//*[@id="sidebar"]' />
+	<append content='//*[@id="portal-column-two"]/div'	theme='//*[@id="sidebar"]' />
+
+	<!-- <copy content='/html/body/div/table/tbody/tr/td/div/div/dl/dd/ul/li' theme='//*[@id="sub-nav"]' /> -->
+
+    
+</rules>
+

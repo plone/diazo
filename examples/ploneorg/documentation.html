@@ -1,0 +1,923 @@
+
+
+
+<!DOCTYPE html PUBLIC
+  "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en">
+
+  
+    
+    
+    
+    
+    
+    
+
+  
+
+  <head>
+
+    <meta http-equiv="Content-Type"
+          content="text/html;charset=utf-8" />
+
+    
+      <base href="http://old.plone.org/documentation/" /><!--[if lt IE 7]></base><![endif]-->
+    
+
+    <meta name="generator" content="Plone - http://plone.org" />
+
+    <link rel="kss-base-url" href="http://old.plone.org/documentation" />
+
+  
+  
+    
+    
+    
+      <style type="text/css">@import url(http://old.plone.org/portal_css/Plone%20Default/print-cachekey0883.css);</style>
+    
+    
+    
+  
+
+  
+    
+    
+    
+      <style type="text/css">@import url(http://old.plone.org/portal_css/Plone%20Default/base-cachekey0155.css);</style>
+    
+    
+    
+  
+
+
+  
+  
+    
+    
+      <script type="text/javascript"
+              src="http://old.plone.org/portal_javascripts/Plone%20Default/jquery-cachekey9427.js">
+      </script>
+    
+    
+    
+  
+
+
+  
+  <link rel="kinetic-stylesheet" type="text/css"
+        href="http://old.plone.org/portal_kss/Plone%20Default/resourcetinymce.ksstinymce-cachekey9728.kss" />
+
+  <link rel="kinetic-stylesheet" type="text/css"
+        href="http://old.plone.org/portal_kss/Plone%20Default/at-cachekey8131.kss" />
+
+
+
+<title>Documentation &mdash; Plone CMS: Open Source Content Management</title>
+
+    <meta content="The primary source for Plone documentation."
+          name="description" />
+
+    <!-- Internet Explorer Fixes -->
+    <!--[if IE]>
+        <style type="text/css" media="all">@import url(http://old.plone.org/IEFixes.css);</style>
+        
+        <script type="text/javascript"
+                src="http://old.plone.org/iefixes.js">
+        </script>
+        
+    <![endif]-->
+
+    
+    <link rel="author"
+          href="http://old.plone.org/author/limi"
+          title="Author information" />
+
+
+
+    <link rel="shortcut icon" type="image/x-icon"
+          href="http://old.plone.org/favicon.ico" />
+
+
+
+    <link rel="home" href="http://old.plone.org"
+          title="Front page" />
+
+    <link rel="contents" href="http://old.plone.org/sitemap"
+          title="Site Map" />
+
+
+
+
+
+
+    <link rel="search"
+          href="http://old.plone.org/search_form"
+          title="Search this site" />
+
+
+
+    <!-- Disable IE6 image toolbar -->
+    <meta http-equiv="imagetoolbar" content="no" />
+    
+    
+    
+
+    
+    
+
+    
+    <style type="text/css" media="all">
+.supportlink {
+    font-size: 1.5em;
+    border: none !important;
+}
+ul.quickLinks {
+    margin: 0 0 1em 0;
+    background-color: #dee7ec;
+    border: solid 1px #8cacbb;
+    padding: 1em;
+    text-align: center;
+}
+ul.quickLinks li {
+    display: inline;
+    margin-right: 1em;
+}
+
+dl.topicList {
+    width: 47%;
+    display: block;
+    float: left;
+    margin: 0 0 2em 0;
+/*    min-height: 7em; */
+}
+dl.topicList dt {
+    font-size: 100%;
+    border-bottom: 1px solid #999;
+}
+dl.topicList dt a {
+    color: black;
+    text-decoration: none;
+		border: none !important;
+}
+dl.topicList dd {
+    margin: 0 !important;
+    display: inline;
+}
+#books {
+    display: block;
+    float: left;
+    width: 240px;
+    margin-bottom: 1em;
+}
+#searchform {
+    clear: both;
+    float: left;
+    width: 240px;
+    margin-top: 0;
+}
+#searchform fieldset {
+    margin-top: -0.5em;
+}
+#reading .rc {
+    margin-left: 270px;
+}
+#sidebar {
+    padding: 0 !important;
+}
+
+</style>
+
+    
+    
+
+  </head>
+
+  <body class="section-documentation template-helpcenter_ploneorg"
+        dir="ltr">
+    <div id="visual-portal-wrapper">
+
+      <div id="portal-top">
+        <div id="portal-header">
+<p class="hiddenStructure">
+  <a accesskey="2"
+     href="http://old.plone.org/documentation#documentContent">Skip to content.</a> |
+
+  <a accesskey="6"
+     href="http://old.plone.org/documentation#portlet-navigation-tree">Skip to navigation</a>
+</p>
+
+
+
+<div id="portal-searchbox">
+    <form name="searchform"
+          action="http://old.plone.org/search">
+
+        <label for="searchGadget" class="hiddenStructure">Search Site</label>
+
+        <div class="LSBox">
+        <input name="SearchableText" type="text" size="18"
+               title="Search Site" accesskey="4"
+               id="searchGadget" class="inputLabel" />
+
+        <input class="searchButton" type="submit"
+               value="Search" />
+    
+        <div class="searchSection">
+            <input id="searchbox_currentfolder_only"
+                   class="noborder" type="checkbox"
+                   name="path"
+                   value="/plone.org/documentation" />
+            <label for="searchbox_currentfolder_only"
+                   style="cursor: pointer">
+                only in current section
+            </label>
+        </div>
+
+        <div class="LSResult" id="LSResult" style=""><div class="LSShadow" id="LSShadow"></div></div>
+        </div>
+    </form>
+
+    <div id="portal-advanced-search" class="hiddenStructure">
+        <a href="http://old.plone.org/search_form"
+           accesskey="5">
+            Advanced Search&hellip;
+        </a>
+    </div>
+
+</div>
+
+<a id="portal-logo" accesskey="1"
+   href="http://old.plone.org">
+    <img src="http://old.plone.org/logo.jpg" alt="" title="Plone" height="57" width="252" /></a>
+
+
+    <h5 class="hiddenStructure">Sections</h5>
+
+    <ul id="portal-globalnav">
+        <li id="portaltab-index_html" class="plain"><a
+    href="http://old.plone.org" title="">Home</a></li>
+        <li id="portaltab-products" class="plain"><a
+    href="http://old.plone.org/products"
+    title="Plone releases and available add-on products for Plone. Make sure you have Plone installed before downloading the add-ons — and make sure you are using add-ons that have been certified for use with your particular version.">Downloads</a></li>
+        <li id="portaltab-documentation" class="selected"><a
+    href="http://old.plone.org/documentation"
+    title="The primary source for Plone documentation.">Documentation</a></li>
+        <li id="portaltab-contribute" class="plain"><a
+    href="http://old.plone.org/contribute"
+    title="Contains all developer-related material.">Get Involved</a></li>
+        <li id="portaltab-foundation" class="plain"><a
+    href="http://old.plone.org/foundation"
+    title="The Plone Foundation exists to further the development, marketing, and legal affairs of Plone and the Plone community.">Plone Foundation</a></li>
+        <li id="portaltab-support" class="plain"><a
+    href="http://old.plone.org/support"
+    title="Contact details for the Plone project.">Support</a></li>
+    </ul>
+
+</div>
+
+<div id="portal-personaltools-wrapper">
+
+<h5 class="hiddenStructure">Personal tools</h5>
+
+<ul id="portal-personaltools" class="visualInline">
+   
+
+    
+        <li>
+            <a href="http://old.plone.org/login_form">Log in</a>
+        </li>
+    
+    
+        <li>
+            <a href="http://old.plone.org/join_form">Register</a>
+        </li>
+    
+
+</ul>
+</div>
+
+
+    
+
+
+<div id="portal-breadcrumbs">
+
+    <span id="breadcrumbs-you-are-here">You
+are here:</span>
+    <a href="http://old.plone.org">Home</a>
+    <span class="breadcrumbSeparator">
+        &rarr;
+        
+    </span>
+    <span dir="ltr">
+        
+            
+            
+            <span>Documentation</span>
+         
+    </span>
+
+</div>
+
+      </div>
+
+      <div class="visualClear" id="clear-space-before-wrapper-table"><!-- --></div>
+
+      <table id="portal-columns">
+        <tbody>
+          <tr>
+            
+            <td id="portal-column-one">
+              <div class="visualPadding">
+                
+                  
+<div id="portletwrapper-706c6f6e652e6c656674636f6c756d6e0a636f6e746578740a2f706c6f6e652e6f72672f646f63756d656e746174696f6e0a706f72746c65745f7068635f66696e64646f63"
+     class="portletWrapper kssattr-portlethash-706c6f6e652e6c656674636f6c756d6e0a636f6e746578740a2f706c6f6e652e6f72672f646f63756d656e746174696f6e0a706f72746c65745f7068635f66696e64646f63">
+
+  
+  
+    <div id="finddoc_portlet">
+
+    <dl class="portlet">
+        <dt class="portletHeader">Find documentation by topic</dt>
+        <dd class="portletItem">
+            <h3>For Content Editors and Authors</h3>
+            <ul>
+                <li><a href="/documentation/phc_topic_area?topic=Basic+Use">Basic Use for Content Editors</a></li>
+            </ul>
+
+            <h3>Installation and Setup</h3>
+            <ul>
+                <li><a href="/documentation/phc_topic_area?topic=Installation">Installation</a></li>
+                <li><a href="/documentation/phc_topic_area?topic=Configuration+and+Set-Up">Configuration and Set-Up</a></li>
+                <li><a href="/documentation/phc_topic_area?topic=Upgrading+and+Moving">Upgrading and Moving</a></li>
+            </ul>
+    
+            <h3>Customizing Plone</h3>
+            <ul>
+                <li><a href="/documentation/phc_topic_area?topic=Visual+Design">Visual Design</a></li>
+                <li><a href="/documentation/phc_topic_area?topic=Navigation">Navigation</a></li>
+                <li><a href="/documentation/phc_topic_area?topic=Managing+Content">Managing Content</a></li>
+                <li><a href="/documentation/phc_topic_area?topic=Users%2C+Authentication%2C+and+Permissions">Users, Authentication, and Permissions</a></li>
+                <li><a href="/documentation/phc_topic_area?topic=Internationalization+and+Localization">Internationalization and Localization</a></li>
+            </ul>
+    
+            <h3>Extending Plone</h3>
+            <ul>
+                <li><a href="/documentation/phc_topic_area?topic=Developing+for+Plone">Developing for Plone</a></li>
+            </ul>
+    
+            <h3>Contributing to plone.org</h3>
+            <ul>
+                <li><a href="/documentation/phc_topic_area?topic=Contributing+to+plone.org#adding-a-software-project.">Adding a Software Project to plone.org</a></li>
+                <li><a href="/documentation/phc_topic_area?topic=Contributing+to+plone.org#writing-documentation-for-plone.org">Writing Documentation for plone.org</a></li>
+            </ul>
+        </dd>
+    </dl>
+
+</div>
+  
+
+  
+  
+</div>
+
+<div id="portletwrapper-706c6f6e652e6c656674636f6c756d6e0a636f6e746578740a2f706c6f6e652e6f72672f646f63756d656e746174696f6e0a706f72746c65745f7068635f66696e6468656c70"
+     class="portletWrapper kssattr-portlethash-706c6f6e652e6c656674636f6c756d6e0a636f6e746578740a2f706c6f6e652e6f72672f646f63756d656e746174696f6e0a706f72746c65745f7068635f66696e6468656c70">
+
+  
+  
+    <div>
+
+    <dl class="portlet">
+      <dt class="portletHeader"><a href="/support">Support</a></dt>
+      <dd class="portletItem">
+         <a href="/support" class="supportlink">
+             <img src="http://old.plone.org/speakplone_sm.png" alt="" title="" height="28" width="80" />
+             Get Help
+         </a>
+      </dd>
+      <dd class="portletItem">
+         <p>Visit our 
+           <a href="/support/irc">chat rooms</a> or <a href="http://www.nabble.com/Plone-f6741.html">support forums</a> if you have more specific questions.
+         </p>
+      </dd>
+    </dl>
+
+</div>
+  
+
+  
+  
+</div>
+
+<div id="portletwrapper-706c6f6e652e6c656674636f6c756d6e0a636f6e746578740a2f706c6f6e652e6f72672f646f63756d656e746174696f6e0a706f72746c65745f7068635f747261696e696e67"
+     class="portletWrapper kssattr-portlethash-706c6f6e652e6c656674636f6c756d6e0a636f6e746578740a2f706c6f6e652e6f72672f646f63756d656e746174696f6e0a706f72746c65745f7068635f747261696e696e67">
+
+  
+  
+    <div>
+
+    <dl class="portlet">
+      <dt class="portletHeader">
+        <a href="/events/training">Plone Training</a>
+      </dt>
+      <dd class="portletItem">
+        <p>Learn how to design, build, and deploy a website in Plone 
+        through one of the numerous Plone training sessions around the world.</p>
+        <p><a href="/events/training">Find Plone training&hellip;</a></p>
+      </dd>
+    </dl>
+
+</div>
+  
+
+  
+  
+</div>
+
+
+
+
+                
+                &nbsp;
+              </div>
+            </td>
+            
+
+            
+            <td id="portal-column-content">
+
+              
+                <div class="">
+
+                  
+
+
+                  <div id="region-content" class="documentContent">
+
+                    <span id="contentTopLeft"></span>
+                    <span id="contentTopRight"></span>
+                    
+                    <a name="documentContent"></a>
+
+                    
+
+    <dl class="portalMessage info" id="kssPortalMessage" style="display:none">
+        <dt>Info</dt>
+        <dd></dd>
+    </dl>
+
+
+                    
+                    <div id="viewlet-above-content"></div>
+
+                    
+                    <div id="content">
+                      
+                      <div>
+
+    <dl id="reading" class="portlet" style="margin:0;">
+      <dt class="portletHeader" style="font-size: 16px; margin: 0; color: White; line-height: 2em">Recommended Reading</dt>
+      <dd class="portletItem">
+
+        <div class="rc">
+            <h3>Books</h3>
+            <ul>
+              <li>
+                <a href="http://old.plone.org/documentation/books/plone-user-guide">A User's Guide to Plone - PDF</a>
+              </li>
+              <li>
+                <a href="http://old.plone.org/documentation/books/practical-plone-3-a-beginners-guide">Practical Plone 3: A Beginner's Guide</a>
+              </li>
+              <li>
+                <a href="http://old.plone.org/documentation/books/professional-plone-development">Professional Plone Development</a>
+              </li>
+              <li>
+                <a href="http://old.plone.org/documentation/books/the-definitive-guide-to-plone">The Definitive Guide to Plone (2nd Ed.)</a>
+              </li>
+              <li>
+                <a href="http://old.plone.org/documentation/books/theming-for-plone-3">Theming for Plone 3</a>
+              </li>
+            </ul>
+        </div>
+        
+        <br style="clear:both" />
+        
+        <form name="searchform" id="searchform"
+              action="http://old.plone.org/documentation/phc_search">
+               
+            <fieldset>
+                
+                <legend>Documentation search</legend>
+                
+                <label for="searchGadget"
+                       class="hiddenStructure">
+                    Search Documentation
+                </label>
+                <input name="SearchableText" type="text"
+                       size="20" alt="Search Documentation"
+                       title="Search Documentation"
+                       accesskey="accesskeys-search" />
+        
+                <input class="searchButton" name="Search"
+                       type="submit" value="Search"
+                       accesskey="accesskeys-search" />
+                       
+                
+                <div id="phc_asearch_link" style="margin-top: 6px;">
+                    <a href="http://old.plone.org/documentation/phc_asearch_form">
+                        Search by topic, version, audience&hellip;
+                    </a>
+                </div>
+                
+            </fieldset>
+        </form>
+    
+        <div class="rc">    
+            <h3>Additional Resources</h3>
+            <ul>
+                <li><a href="manual">Manuals</a></li>
+                <li><a href="faq">Frequently Asked Questions</a></li>
+                <li><a href="error">Error Reference</a></li>
+                <li><a href="glossary">Glossary</a></li>
+                <li><a href="http://api.plone.org/">Programmer's API Reference Guides</a></li>
+            </ul>
+        </div>
+
+      </dd>
+    </dl>
+
+    <br style="clear:both" />
+        
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Basic+Use">
+            <span>Basic Use</span>
+            (<span>31</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Basic+Use#beginner-manuals">Beginner Manuals</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Basic+Use#kupu-/-visual-editor">Kupu / Visual Editor</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Basic+Use#permissions,-users,-roles,-and-workflow">Permissions, Users, Roles, and Workflow</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Basic+Use#tips-on-using-collections">Tips on Using Collections</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Basic+Use#managing-content">Managing Content</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Contributing+to+plone.org">
+            <span>Contributing to plone.org</span>
+            (<span>11</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Contributing+to+plone.org#writing-documentation-for-plone.org">Writing Documentation for plone.org</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Contributing+to+plone.org#adding-a-software-project.">Adding a Software Project.</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Installation">
+            <span>Installation</span>
+            (<span>40</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Installation#linux">Linux</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Installation#mac">Mac</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Installation#windows">Windows</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Configuration+and+Set-Up">
+            <span>Configuration and Set-Up</span>
+            (<span>116</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Configuration+and+Set-Up#backup">Backup</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Configuration+and+Set-Up#add-on-products">Add-on Products</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Configuration+and+Set-Up#other">Other</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Configuration+and+Set-Up#performance">Performance</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Configuration+and+Set-Up#plone-with-other-web-servers">Plone With Other Web Servers</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Configuration+and+Set-Up#relational-databases">Relational Databases</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Configuration+and+Set-Up#site-wide-settings">Site-Wide Settings</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Developing+for+Plone">
+            <span>Developing for Plone</span>
+            (<span>147</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#archetypes">Archetypes</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#archetypes:-creating-and-extending-content-types"> Creating and Extending Content Types</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#archetypes:-creating-and-extending-content-types:-code-generation-with-uml"> Code Generation with UML</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#archetypes:-widgets-and-fields"> Widgets and Fields</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#other">Other</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#overview">Overview</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#tools-and-processes">Tools and Processes</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#tools-and-processes:-debugging"> Debugging</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#tools-and-processes:-releasing"> Releasing</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#tools-and-processes:-testing"> Testing</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#writing-installation-scripts">Writing Installation Scripts</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#zope-3-approaches">Zope 3 Approaches</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Developing+for+Plone#zope-3-approaches:-five"> Five</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Managing+Content">
+            <span>Managing Content</span>
+            (<span>79</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Managing+Content#export">Export</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Managing+Content#folders">Folders</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Managing+Content#import">Import</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Managing+Content#integrating-external-content">Integrating External Content</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Managing+Content#links">Links</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Managing+Content#other">Other</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Managing+Content#syndication">Syndication</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Navigation">
+            <span>Navigation</span>
+            (<span>31</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Navigation#other">Other</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Navigation#portlet">Portlet</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Navigation#search-engine-optimization">Search Engine Optimization</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Navigation#site-searching">Site Searching</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Navigation#tree">Tree</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Users%2C+Authentication%2C+and+Permissions">
+            <span>Users, Authentication, and Permissions</span>
+            (<span>94</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Users%2C+Authentication%2C+and+Permissions#active-directory-and-ldap">Active Directory and LDAP</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Users%2C+Authentication%2C+and+Permissions#login-authentication">Login Authentication</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Users%2C+Authentication%2C+and+Permissions#permissions-&amp;-authorization">Permissions &amp; Authorization</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Users%2C+Authentication%2C+and+Permissions#user-management">User Management</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Users%2C+Authentication%2C+and+Permissions#workflow">Workflow</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Visual+Design">
+            <span>Visual Design</span>
+            (<span>77</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#creating-theme-products">Creating Theme Products</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#css-techniques">CSS Techniques</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#internet-explorer-fixes">Internet Explorer Fixes</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#logo">Logo</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#managing-themes">Managing Themes</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#minor-adjustments">Minor Adjustments</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#slots,-portlets,-viewlets">Slots, Portlets, Viewlets</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#tabs">Tabs</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#templates">Templates</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Visual+Design#theming-tools">Theming Tools</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Upgrading+and+Moving">
+            <span>Upgrading and Moving</span>
+            (<span>13</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Upgrading+and+Moving#moving">Moving</a> |
+      </dd>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Upgrading+and+Moving#upgrading">Upgrading</a>
+      </dd>
+      
+    </dl>
+    <dl class="topicList">
+      <dt><a href="http://old.plone.org/documentation/topic/Internationalization+and+Localization">
+            <span>Internationalization and Localization</span>
+            (<span>15</span>)</a></dt>
+      <dd class="discreet">
+          <a href="http://old.plone.org/documentation/topic/Internationalization+and+Localization">General</a>
+      </dd>
+    </dl>
+
+    <div class="visualClear"></div>
+
+    
+
+    <div class="visualClear"></div>
+
+</div>
+                    </div>
+                    
+
+                    
+                    
+                      
+
+
+    
+
+                    
+                    
+
+                    <span id="contentBottomLeft"></span>
+                    <span id="contentBottomRight"></span>
+
+                  </div>
+
+                </div>
+
+              
+            </td>
+            
+
+            
+            
+            
+          </tr>
+        </tbody>
+      </table>
+      
+
+      <div class="visualClear" id="clear-space-before-footer"><!-- --></div>
+      
+      
+
+      
+
+        <div id="portal-footer">
+
+<p>
+    
+    The
+    <a href="http://plone.org">Plone<sup>&reg;</sup> CMS &mdash; Open Source Content Management System</a>
+    is
+    <acronym title="Copyright">&copy;</acronym>
+    2000-2009
+    by the
+    <a href="http://plone.org/foundation">Plone Foundation</a>
+    et al.
+    
+</p>
+
+<p>
+    
+    Plone<sup>&reg;</sup> and the Plone logo are registered trademarks of the
+        <a href="http://plone.org/foundation">Plone Foundation</a>.
+    
+
+    
+    Distributed under the
+        <a href="http://creativecommons.org/licenses/GPL/2.0/">GNU GPL license</a>.
+    
+</p>
+
+</div>
+
+  <div id="portal-colophon">
+      
+
+      
+
+      <div class="colophonWrapper">
+      <ul>
+        <li>
+          <a href="http://plone.org"
+             title="This site was built using Plone CMS, the Open Source Content Management System. Click for more information.">
+            Powered by Plone</a>
+        </li>
+        <li>
+          <a href="http://validator.w3.org/check/referer"
+             title="This site is valid XHTML.">
+            Valid XHTML</a>
+        </li>
+        <li>
+          <a href="http://jigsaw.w3.org/css-validator/check/referer?warning=no&amp;profile=css3&amp;usermedium=all"
+             title="This site was built with valid CSS.">
+            Valid CSS</a>
+        </li>
+        <li>
+          <a href="http://www.section508.gov"
+             title="This site conforms to the US Government Section 508 Accessibility Guidelines.">
+            Section 508</a>
+        </li>
+        <li>
+          <a href="http://www.w3.org/WAI/WCAG1AA-Conformance"
+             title="This site conforms to the W3C-WAI Web Content Accessibility Guidelines.">
+            WCAG</a>
+        </li>
+      </ul>
+      </div>
+
+    </div>
+
+
+
+      
+
+      <div class="visualClear"><!-- --></div>
+    </div>
+<div id="kss-spinner"><img alt=""
+                           src="http://old.plone.org/spinner.gif" /></div>
+</body>
+</html>
