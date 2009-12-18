@@ -44,9 +44,9 @@ class CompileResolver(etree.Resolver):
         self.extra = extra
         
     def resolve(self, url, pubid, context):
-        if url == 'rules':
+        if url == 'xdv:rules':
             return self.resolve_string(self.rules, context)
-        if url == 'extra' and self.extra is not None:
+        if url == 'xdv:extra' and self.extra is not None:
             return self.resolve_string(self.extra, context)
 
 
@@ -69,9 +69,9 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=Tru
         compiler_parser = etree.XMLParser()
     compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH, parser=compiler_parser))
 
-    params = dict(rulesuri="'rules'")
+    params = dict(rulesuri="'xdv:rules'")
     if extra:
-        params['extraurl'] = "'extra'"
+        params['extraurl'] = "'xdv:extra'"
         resolver = CompileResolver(etree.tostring(rules_doc), etree.tostring(etree.parse(extra)))
     else:
         resolver = CompileResolver(etree.tostring(rules_doc))
