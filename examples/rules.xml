@@ -1,0 +1,10 @@
+<rules xmlns="http://namespaces.plone.org/xdv"
+    xmlns:css="http://namespaces.plone.org/xdv+css">
+    <drop css:content="#byline"/>
+    <replace theme="/html/head/title" content="/html/head/title"/>
+    <copy css:theme="#pageheading" content="/html/head/title/text()"/>
+    <copy theme="/html/body/h1" content="/html/head/title/text()"/>
+    <copy css:theme="#pagecontent" content="/html/body/div[@id='content']/*"/>
+    <!-- assume this is an index view -->
+    <append css:theme="#nav" css:content="pre" if-content="not(/html/body/div[@id='content'])"/>
+</rules>
