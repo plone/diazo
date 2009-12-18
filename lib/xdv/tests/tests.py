@@ -12,24 +12,14 @@ from StringIO import StringIO
 import unittest
 
 import xdv.compiler
+import xdv.run
 
 if __name__ == '__main__':
     __file__ = sys.argv[0]
 
-_HERE = os.path.abspath(os.path.dirname(__file__))
-
-class Resolver(etree.Resolver):
-    def __init__(self, directory):
-        self.directory = directory
-        
-    def resolve(self, url, id, context):
-        # libxml2 does not do this correctly on it's own with the HTMLParser
-        # but it does work in Apache
-        url = os.path.join(self.directory, url)
-        return self.resolve_filename(url, context)
+HERE = os.path.abspath(os.path.dirname(__file__))
 
 class XDVTestCase(unittest.TestCase):
-    access_control = etree.XSLTAccessControl(read_file=True, read_network=True)
     writefiles = False
 
     testdir = None # override
@@ -47,12 +37,12 @@ class XDVTestCase(unittest.TestCase):
                                        parser=etree.HTMLParser())
 
         # Make a compiled version
-        ct = xdv.compiler.compile_theme(rules=rulesfn, theme=themefn)
+        theme_parser = etree.HTMLParser()
+        ct = xdv.compiler.compile_theme(rules=rulesfn, theme=themefn, parser=theme_parser)
         
         # Serialize / parse the theme - this can catch problems with escaping.
         cts = etree.tostring(ct)
         parser = etree.XMLParser()
-        parser.resolvers.add(Resolver(self.testdir))
         ct2 = etree.fromstring(cts, parser=parser)
 
         # Compare to previous version
@@ -71,7 +61,8 @@ class XDVTestCase(unittest.TestCase):
             open(xslfn, 'w').write(cts)
 
         # Apply the compiled version, then test against desired output
-        processor = etree.XSLT(ct2, access_control=self.access_control)
+        theme_parser.resolvers.add(xdv.run.RunResolver(self.testdir))
+        processor = etree.XSLT(ct)
         result = processor(contentdoc)
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
@@ -115,7 +106,7 @@ def main(*args, **kwargs):
         test_num = 1
         errors = 0
         while True:
-            directory = os.path.join(_HERE, '%03d' % test_num)
+            directory = os.path.join(HERE, '%03d' % test_num)
             if not os.path.isdir(directory):
                 test_num -= 1
                 break
@@ -138,10 +129,10 @@ def main(*args, **kwargs):
 
 def test_suite():
     suite = unittest.TestSuite()
-    for name in os.listdir(_HERE):
+    for name in os.listdir(HERE):
         if name.startswith('.'):
             continue
-        path = os.path.join(_HERE, name)
+        path = os.path.join(HERE, name)
         if not os.path.isdir(path):
             continue
         cls = type('Test%s'%name, (XDVTestCase,), dict(testdir=path))
