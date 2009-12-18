@@ -121,7 +121,7 @@ def main():
         logger.setLevel(logging.DEBUG)
 
     output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude)
-    output_xslt.write(options.output, pretty_print=options.pretty_print)
+    output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
 
 if __name__ == '__main__':
     main()
