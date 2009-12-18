@@ -35,6 +35,8 @@ def update_namespace(rules):
     if rules.xpath("//*[namespace-uri()='%s']" % namespaces['old']):
         logger.warning('The %s namespace is deprecated, use %s instead.' % (namespaces['old'], namespaces['xdv']))
         return update_transform(rules)
+    else:
+        return rules
 
 class CompileResolver(etree.Resolver):
     def __init__(self, rules, extra=None):
