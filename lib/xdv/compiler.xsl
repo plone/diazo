@@ -9,6 +9,7 @@
     <xsl:param name="boilerplateurl">boilerplate.xsl</xsl:param>
     <xsl:param name="extraurl"/>
     <xsl:param name="trace"/>
+    <xsl:variable name="content" select="/"/>
     <!-- Multi-stage theme compiler -->
     <xsl:template match="/">
 
@@ -20,7 +21,7 @@
 
         <!-- Include the rules file, adding @xml:id attributes as it is included -->
         <xsl:variable name="rules-rtf">
-            <xsl:apply-templates select="document($rulesuri, .)/*" mode="annotate-rules">
+            <xsl:apply-templates select="document($rulesuri, $content)/*" mode="annotate-rules">
                 <xsl:with-param name="themehtml" select="$themehtml"/>
             </xsl:apply-templates>
         </xsl:variable>
@@ -80,7 +81,7 @@
             <xsl:when test="name()='dv:insert-extra'">
                 <!-- Put the extra templates in at this spot of the boilerplate -->
                 <xsl:if test="$extraurl">
-                    <xsl:copy-of select="document($extraurl, .)/xsl:stylesheet/*" />
+                    <xsl:copy-of select="document($extraurl, $content)/xsl:stylesheet/node()" />
                 </xsl:if>
             </xsl:when>
             <xsl:otherwise>
