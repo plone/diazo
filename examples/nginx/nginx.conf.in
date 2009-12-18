@@ -1,0 +1,24 @@
+worker_processes 2;
+
+events {
+#    worker_connections  1024;
+}
+
+http {
+    include ${buildout:directory}/etc/mime.types;
+    gzip on;
+
+    server {
+        listen ${nginx-conf:port};
+        server_name localhost;
+        root ${nginx-conf:root};
+        autoindex on;
+
+        location /styled {
+            alias ${nginx-conf:root};
+            xslt_stylesheet ${nginx-conf:root}/theme.xsl;
+            xslt_html_parser on;
+            xslt_types text/html;
+        }
+    }
+}
