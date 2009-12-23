@@ -74,15 +74,16 @@ class XDVTestCase(unittest.TestCase):
         meta = self.themed_content.xpath("/html/head/meta[@http-equiv='Content-Type']")[0]
         meta.getparent().remove(meta)
 
-        xp = "/html/head/*[position()='1']/@id"
-        for xpath in open(xpathsfn).readlines():
-            # Read the XPaths from the file, skipping blank lines and
-            # comments
-            this_xpath = xpath.strip()
-            if not this_xpath or this_xpath[0] == '#':
-                continue
-            if not self.themed_content.xpath(this_xpath):
-                print >>self.errors, "FAIL:", this_xpath, "is FALSE"
+        if os.path.exists(xpathsfn):
+            # xp = "/html/head/*[position()='1']/@id"
+            for xpath in open(xpathsfn).readlines():
+                # Read the XPaths from the file, skipping blank lines and
+                # comments
+                this_xpath = xpath.strip()
+                if not this_xpath or this_xpath[0] == '#':
+                    continue
+                if not self.themed_content.xpath(this_xpath):
+                    print >>self.errors, "FAIL:", this_xpath, "is FALSE"
 
         # Compare to previous version
         if os.path.exists(outputfn):
