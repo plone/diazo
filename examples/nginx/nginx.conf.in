@@ -1,4 +1,5 @@
-worker_processes 2;
+worker_processes 1;
+error_log ${buildout:directory}/var/log/nginx-error.log debug;
 
 events {
 #    worker_connections  1024;
@@ -14,16 +15,42 @@ http {
         root ${nginx-conf:root};
         autoindex on;
 
+        location = /styled/ {
+            alias ${nginx-conf:root};
+            # don't style the index page, we include it
+        }
+
         location /styled {
             alias ${nginx-conf:root};
-            xslt_stylesheet ${nginx-conf:root}/theme.xsl;
+            xslt_stylesheet ${nginx-conf:theme-xsl};
             xslt_html_parser on;
             xslt_types text/html;
+            ssi on;
         }
 
         location /styled/ploneorg {
             alias ${nginx-conf:root}/ploneorg;
             xslt_stylesheet ${nginx-conf:root}/ploneorg/plone.xsl;
+            xslt_html_parser on;
+            xslt_types text/html;
+        }
+        
+        location = /_include_400 {
+            return 400;
+        }
+        
+        location /_include { 
+            alias ${nginx-conf:root};
+            error_page 400 = /_include_400;
+            if ($arg_content !~ .) {
+                return 400;
+            }
+        
+#        location ~ ^/_include(.+)$ {
+#            echo_location_async $1;
+            xslt_stylesheet ${nginx-conf:filter-xsl}
+                content=$arg_content
+                ;
             xslt_html_parser on;
             xslt_types text/html;
         }

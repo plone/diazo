@@ -5,6 +5,7 @@
     <copy css:theme="#pageheading" content="/html/head/title/text()"/>
     <copy theme="/html/body/h1" content="/html/head/title/text()"/>
     <copy css:theme="#pagecontent" content="/html/body/div[@id='content']/*"/>
+    <append css:theme="#nav" css:content="pre" href="/"/>
     <!-- assume this is an index view -->
     <append css:theme="#nav" css:content="pre" if-content="not(/html/body/div[@id='content'])"/>
 </rules>
