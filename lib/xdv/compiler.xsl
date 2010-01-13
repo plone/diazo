@@ -194,21 +194,17 @@
                         <xsl:attribute name="test">
                             <xsl:value-of select="@if-content"/>
                         </xsl:attribute>
-                        <xsl:element name="xsl:copy-of">
-                            <xsl:attribute name="select">
-                                <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
-                                ><xsl:value-of select="@content"/>
-                            </xsl:attribute>
-                        </xsl:element>
+                        <xsl:call-template name="include">
+                            <xsl:with-param name="href" select="@href"/>
+                            <xsl:with-param name="content" select="@content"/>
+                        </xsl:call-template>
                     </xsl:element>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:element name="xsl:copy-of">
-                        <xsl:attribute name="select">
-                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
-                            ><xsl:value-of select="@content"/>
-                        </xsl:attribute>
-                    </xsl:element>
+                    <xsl:call-template name="include">
+                        <xsl:with-param name="href" select="@href"/>
+                        <xsl:with-param name="content" select="@content"/>
+                    </xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
@@ -289,13 +285,11 @@
             <xsl:when test="$matching-this/@nocontent='drop'">
                 <!-- <replace nocontent="drop" ...
                 Toss out the theme node.  Simply 
-                <xsl:copy-of the @content. -->
-                <xsl:element name="xsl:copy-of">
-                    <xsl:attribute name="select">
-                        <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>', .)</xsl:if
-                        ><xsl:value-of select="$matching-this/@content"/>
-                    </xsl:attribute>
-                </xsl:element>
+                include the @content. -->
+                <xsl:call-template name="include">
+                    <xsl:with-param name="href" select="$matching-this/@href"/>
+                    <xsl:with-param name="content" select="$matching-this/@content"/>
+                </xsl:call-template>
                 <!-- jump to after rules -->
                 <xsl:call-template name="after">
                     <xsl:with-param name="matching-rules" select="$matching-other"/>
@@ -308,18 +302,16 @@
                 <xsl:copy-of the @content. Otherwise keep theme node. -->
                 <xsl:element name="xsl:choose">
                     <xsl:element name="xsl:when">
-                        <xsl:attribute name="test">
+                        <xsl:attribute name="test"> <!-- XXX -->
                             <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>', .)</xsl:if><xsl:choose>
                                 <xsl:when test="$matching-this/@if-condition"><xsl:value-of select="$matching-this/@if-condition"/></xsl:when>
                                 <xsl:otherwise><xsl:value-of select="$matching-this/@content"/></xsl:otherwise>
                             </xsl:choose>
                         </xsl:attribute>
-                        <xsl:element name="xsl:copy-of">
-                            <xsl:attribute name="select">
-                                <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>', .)</xsl:if
-                                ><xsl:value-of select="$matching-this/@content"/>
-                            </xsl:attribute>
-                        </xsl:element>
+                        <xsl:call-template name="include">
+                            <xsl:with-param name="href" select="$matching-this/@href"/>
+                            <xsl:with-param name="content" select="$matching-this/@content"/>
+                        </xsl:call-template>
                         <!-- jump to after rules -->
                         <xsl:call-template name="after">
                             <xsl:with-param name="matching-rules" select="$matching-other"/>
@@ -362,21 +354,17 @@
                                     <xsl:attribute name="test">
                                         <xsl:value-of select="@if-content"/>
                                     </xsl:attribute>
-                                    <xsl:element name="xsl:copy-of">
-                                        <xsl:attribute name="select">
-                                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
-                                            ><xsl:value-of select="@content"/>
-                                        </xsl:attribute>
-                                    </xsl:element>
+                                    <xsl:call-template name="include">
+                                        <xsl:with-param name="href" select="@href"/>
+                                        <xsl:with-param name="content" select="@content"/>
+                                    </xsl:call-template>
                                 </xsl:element>
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:element name="xsl:copy-of">
-                                    <xsl:attribute name="select">
-                                        <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
-                                        ><xsl:value-of select="@content"/>
-                                    </xsl:attribute>
-                                </xsl:element>
+                                <xsl:call-template name="include">
+                                    <xsl:with-param name="href" select="@href"/>
+                                    <xsl:with-param name="content" select="@content"/>
+                                </xsl:call-template>
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:for-each>
@@ -391,14 +379,11 @@
                             <xsl:choose>
                                 <xsl:when test="$this/@nocontent='empty'">
                                     <!-- Copy the node and its attributes, but clear 
-                                        the children and content.  Just have an 
-                                        <xsl:copy-of> for the @content -->
-                                    <xsl:element name="xsl:copy-of">
-                                        <xsl:attribute name="select">
-                                            <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>', .)</xsl:if
-                                            ><xsl:value-of select="$this/@content"/>
-                                        </xsl:attribute>
-                                    </xsl:element>
+                                    the children and content.  Just invclude the @content -->
+                                    <xsl:call-template name="include">
+                                        <xsl:with-param name="href" select="$this/@href"/>
+                                        <xsl:with-param name="content" select="$this/@content"/>
+                                    </xsl:call-template>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <!-- When the rule matches, copy the node and its attributes,
@@ -406,18 +391,16 @@
                                     for the @content. Otherwise keep theme node. -->
                                     <xsl:element name="xsl:choose">
                                         <xsl:element name="xsl:when">
-                                            <xsl:attribute name="test">
+                                            <xsl:attribute name="test"> <!-- XXX -->
                                                 <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>', .)</xsl:if><xsl:choose>
                                                     <xsl:when test="$this/@if-condition"><xsl:value-of select="$this/@if-condition"/></xsl:when>
                                                     <xsl:otherwise><xsl:value-of select="$this/@content"/></xsl:otherwise>
                                                 </xsl:choose>
                                             </xsl:attribute>
-                                            <xsl:element name="xsl:copy-of">
-                                                <xsl:attribute name="select">
-                                                    <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>', .)</xsl:if
-                                                    ><xsl:value-of select="$this/@content"/>
-                                                </xsl:attribute>
-                                            </xsl:element>
+                                            <xsl:call-template name="include">
+                                                <xsl:with-param name="href" select="$this/@href"/>
+                                                <xsl:with-param name="content" select="$this/@content"/>
+                                            </xsl:call-template>
                                         </xsl:element>
                                         <xsl:element name="xsl:otherwise">
                                             <xsl:apply-templates select="node()" mode="apply-rules">
@@ -441,21 +424,17 @@
                                     <xsl:attribute name="test">
                                         <xsl:value-of select="@if-content"/>
                                     </xsl:attribute>
-                                    <xsl:element name="xsl:copy-of">
-                                        <xsl:attribute name="select">
-                                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
-                                            ><xsl:value-of select="@content"/>
-                                        </xsl:attribute>
-                                    </xsl:element>
+                                    <xsl:call-template name="include">
+                                        <xsl:with-param name="href" select="@href"/>
+                                        <xsl:with-param name="content" select="@content"/>
+                                    </xsl:call-template>
                                 </xsl:element>
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:element name="xsl:copy-of">
-                                    <xsl:attribute name="select">
-                                        <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
-                                        ><xsl:value-of select="@content"/>
-                                    </xsl:attribute>
-                                </xsl:element>
+                                <xsl:call-template name="include">
+                                    <xsl:with-param name="href" select="@href"/>
+                                    <xsl:with-param name="content" select="@content"/>
+                                </xsl:call-template>
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:for-each>
@@ -489,21 +468,17 @@
                         <xsl:attribute name="test">
                             <xsl:value-of select="@if-content"/>
                         </xsl:attribute>
-                        <xsl:element name="xsl:copy-of">
-                            <xsl:attribute name="select">
-                                <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
-                                ><xsl:value-of select="@content"/>
-                            </xsl:attribute>
-                        </xsl:element>
+                        <xsl:call-template name="include">
+                            <xsl:with-param name="href" select="@href"/>
+                            <xsl:with-param name="content" select="@content"/>
+                        </xsl:call-template>
                     </xsl:element>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:element name="xsl:copy-of">
-                        <xsl:attribute name="select">
-                            <xsl:if test="@href">document('<xsl:value-of select="@href"/>', .)</xsl:if
-                            ><xsl:value-of select="@content"/>
-                        </xsl:attribute>
-                    </xsl:element>
+                    <xsl:call-template name="include">
+                        <xsl:with-param name="href" select="@href"/>
+                        <xsl:with-param name="content" select="@content"/>
+                    </xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
@@ -520,6 +495,16 @@
                 <xsl:with-param name="rules" select="$rules"/>
             </xsl:apply-templates>
         </xsl:copy>
+    </xsl:template>
+    <xsl:template name="include">
+        <xsl:param name="href"/>
+        <xsl:param name="content"/>
+        <xsl:element name="xsl:copy-of">
+            <xsl:attribute name="select">
+                <xsl:if test="$href">document('<xsl:value-of select="$href"/>', .)</xsl:if
+                ><xsl:value-of select="$content"/>
+            </xsl:attribute>
+        </xsl:element>
     </xsl:template>
     <xsl:template name="trace">
         <xsl:param name="rule-name"/>
