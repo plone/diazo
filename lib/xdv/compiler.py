@@ -50,7 +50,7 @@ class CompileResolver(etree.Resolver):
             return self.resolve_string(self.extra, context)
 
 
-def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=True, trace=False, parser=None, compiler_parser=None):
+def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=True, trace=False, includemode=None, parser=None, compiler_parser=None):
     """Invoke the xdv compiler
     """
     rules_doc = etree.parse(rules)
@@ -77,6 +77,9 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=Tru
         resolver = CompileResolver(etree.tostring(rules_doc))
     if trace:
         params['trace'] = '1'
+    if includemode:
+        params['includemode'] = "'%s'" % includemode
+
     compiler_parser.resolvers.add(resolver)
     compiled = compiler_transform(theme_doc, **params)
     for msg in compiler_transform.error_log:
@@ -111,6 +114,9 @@ def main():
     parser.add_option("--xinclude", action="store_true",
                       help="Run XInclude on rules.xml",
                       dest="xinclude", default=False)
+    parser.add_option("-i", "--includemode", metavar="INC",
+                      help="include mode (document or ssi)",
+                      dest="includemode", default='document')
     (options, args) = parser.parse_args()
     
     if len(args) !=2:
@@ -120,7 +126,7 @@ def main():
     if options.trace:
         logger.setLevel(logging.DEBUG)
 
-    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude)
+    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, includemode=options.includemode)
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
 
 if __name__ == '__main__':
