@@ -9,6 +9,8 @@
     <xsl:param name="boilerplateurl">boilerplate.xsl</xsl:param>
     <xsl:param name="extraurl"/>
     <xsl:param name="trace"/>
+    <xsl:param name="includemode">document</xsl:param>
+    <xsl:param name="ssiprefix">/_include</xsl:param>
     <xsl:variable name="theme" select="/"/>
     <!-- Multi-stage theme compiler -->
     <xsl:template match="/">
@@ -499,12 +501,34 @@
     <xsl:template name="include">
         <xsl:param name="href"/>
         <xsl:param name="content"/>
-        <xsl:element name="xsl:copy-of">
-            <xsl:attribute name="select">
-                <xsl:if test="$href">document('<xsl:value-of select="$href"/>', .)</xsl:if
-                ><xsl:value-of select="$content"/>
-            </xsl:attribute>
-        </xsl:element>
+        <xsl:choose>
+            <xsl:when test="not($href)">
+                <xsl:element name="xsl:copy-of">
+                    <xsl:attribute name="select">
+                        <xsl:value-of select="$content"/>
+                    </xsl:attribute>
+                </xsl:element>
+            </xsl:when>
+            <xsl:when test="$includemode = 'document'">
+                <xsl:element name="xsl:copy-of">
+                    <xsl:attribute name="select">
+                        document('<xsl:value-of select="$href"/>', .)<xsl:value-of select="$content"/>
+                    </xsl:attribute>
+                </xsl:element>
+            </xsl:when>
+            <xsl:when test="$includemode = 'ssi'">
+                <!-- Assumptions:
+                    * $href is an absolute local path (e.g.  /foo/bar)
+                -->
+                <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"
+                    /><xsl:value-of select="$href"/>?content=<xsl:value-of select="$content"/>" </xsl:element>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:message terminate="yes">
+                    ERROR: Unknown includemode.
+                </xsl:message>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     <xsl:template name="trace">
         <xsl:param name="rule-name"/>
