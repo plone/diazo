@@ -10,7 +10,8 @@
     <xsl:param name="extraurl"/>
     <xsl:param name="trace"/>
     <xsl:param name="includemode">document</xsl:param>
-    <xsl:param name="ssiprefix">/_include</xsl:param>
+    <xsl:param name="ssiprefix"></xsl:param>
+    <xsl:param name="ssisuffix">;filter_xpath=</xsl:param>
     <xsl:variable name="theme" select="/"/>
     <!-- Multi-stage theme compiler -->
     <xsl:template match="/">
@@ -521,7 +522,8 @@
                     * $href is an absolute local path (e.g.  /foo/bar)
                 -->
                 <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"
-                    /><xsl:value-of select="$href"/>?content=<xsl:value-of select="$content"/>" </xsl:element>
+                    /><xsl:value-of select="$href"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
+                    ><xsl:value-of select="$ssisuffix"/><xsl:value-of select="$content"/>" </xsl:element>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:message terminate="yes">
