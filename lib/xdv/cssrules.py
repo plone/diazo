@@ -17,13 +17,19 @@ from lxml.cssselect import css_to_xpath
 
 import utils
 
+import logging
+logger = logging.getLogger('xdv')
+
 def convert_css_selectors(rules, prefix='//'):
     """Convert css rules to xpath rules element tree in place
     """
     for element in rules.xpath("//@*[namespace-uri()='%s']/.." % utils.namespaces['css']):
         for name, value in element.attrib.items():
-            if name.startswith('{%s}' % utils.namespaces['css']):
-                element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = css_to_xpath(value, prefix=prefix)
+            if value: 
+                if name.startswith('{%s}' % utils.namespaces['css']):
+                    element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = css_to_xpath(value, prefix=prefix)
+            else:
+                logger.error("Missing value for attribute %s" %name)
 
 def main():
     """Called from console script
