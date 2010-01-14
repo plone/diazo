@@ -116,7 +116,7 @@ def main():
                       dest="xinclude", default=False)
     parser.add_option("-i", "--includemode", metavar="INC",
                       help="include mode (document or ssi)",
-                      dest="includemode", default='document')
+                      dest="includemode", default=None)
     (options, args) = parser.parse_args()
     
     if len(args) !=2:
