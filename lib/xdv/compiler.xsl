@@ -186,7 +186,7 @@
         <xsl:variable name="rule-name">before</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
         <!--
             Always copy all content matching before rules
         -->
@@ -222,7 +222,7 @@
         <xsl:variable name="rule-name">drop</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
         <xsl:choose>
             <xsl:when test="$matching-this[not(@if-content)]">
                 <!--
@@ -278,7 +278,7 @@
         <xsl:variable name="rule-name">replace</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
         <xsl:choose>
             <xsl:when test="count($matching-this) > 1">
                 <xsl:message terminate="yes">
@@ -343,7 +343,7 @@
         <xsl:variable name="rule-name">prepend-copy-append</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()='prepend' or name()='copy' or name()='append']"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
         <xsl:choose>
             <xsl:when test="$matching-this">
                 <xsl:copy>
@@ -460,7 +460,7 @@
         <xsl:variable name="rule-name">after</xsl:variable>
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
-        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/></xsl:call-template>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
         <!--
             Always copy all content matching after rules
         -->
@@ -534,8 +534,13 @@
     </xsl:template>
     <xsl:template name="trace">
         <xsl:param name="rule-name"/>
+        <xsl:param name="matching" select="/.."/>
         <xsl:if test="$trace">
             <xsl:message>TRACE: <xsl:call-template name="printpath"/> - <xsl:value-of select="$rule-name"/></xsl:message>
+            <xsl:for-each select="$matching">
+                <xsl:message>RULE: &lt;<xsl:value-of select="name()"/><xsl:for-each select="@*">
+                    <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:message>
+            </xsl:for-each>
         </xsl:if>
     </xsl:template>
     <xsl:template name="printpath"
