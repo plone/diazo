@@ -30,6 +30,7 @@ http {
             internal;
             error_page 404 = @include404;
             
+            # Proxy
             rewrite    ^/_include(.*)$    $1    break;
             proxy_pass http://127.0.0.1:${nginx-conf:port};
             
@@ -46,22 +47,24 @@ http {
                 ;
             xslt_html_parser on;
             xslt_types text/html;
-        }    
+        }
         
-        
+        # Our styled location.
         location /styled {
             alias ${nginx-conf:root};
             xslt_stylesheet ${nginx-conf:theme-xsl};
             xslt_html_parser on;
             xslt_types text/html;
+            # Switch on ssi here to enable external includes.
             ssi on;
         }
 
+        # Another styled location.
         location /styled/ploneorg {
             alias ${nginx-conf:root}/ploneorg;
             xslt_stylesheet ${nginx-conf:root}/ploneorg/plone.xsl;
             xslt_html_parser on;
             xslt_types text/html;
-        }    
+        }
     }
 }
