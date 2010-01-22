@@ -55,6 +55,3 @@ Not Supported
 
 2) Link rewriting
 
-3) CSS Selector syntax
-
-
