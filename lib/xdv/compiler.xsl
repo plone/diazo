@@ -523,7 +523,7 @@
                 -->
                 <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"
                     /><xsl:value-of select="$href"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
-                    ><xsl:value-of select="$ssisuffix"/><xsl:value-of select="$content"/>" </xsl:element>
+                    ><xsl:value-of select="$ssisuffix"/><xsl:value-of select="$content"/>" wait="yes" </xsl:element>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:message terminate="yes">
