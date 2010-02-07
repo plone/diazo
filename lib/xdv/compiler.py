@@ -91,8 +91,8 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_p
     * ``trace`` can be set to True to enable compiler trace information
     * ``includemode`` can be set to 'document' or 'ssi' to change the way in
       which includes are processed
-    * ``parser`` can be set to an lxml parser class; the default is HTMLParser
-    * ``compiler_parser``` can be set to an lxml parser class; the default is
+    * ``parser`` can be set to an lxml parser instance; the default is an HTMLParser
+    * ``compiler_parser``` can be set to an lxml parser instance; the default is a
       XMLParser
     """
     rules_doc = etree.parse(rules)
