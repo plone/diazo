@@ -11,7 +11,7 @@ check it into Subversion, and not touch xdv during deployment.
 Usage
 ----------------
 
-1) Edit the ``theme.html``, ``rules.xml``, and ``content.html``.
+1) Create the files ``theme.html``, ``rules.xml``, and ``content.html``.
 
 2) xsltproc --html compiler.xsl theme.html > compiledtheme.xsl
 
