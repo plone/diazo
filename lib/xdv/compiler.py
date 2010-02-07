@@ -11,18 +11,21 @@ Usage: %prog [options] RULES THEME
 """
 usage = __doc__
 
+import re
 import os.path
 import sys
 import logging
 from lxml import etree
 from optparse import OptionParser
 
-from utils import namespaces, localname, fullname
+from utils import namespaces
 from cssrules import convert_css_selectors
 
 logger = logging.getLogger('xdv')
 
 HERE = os.path.dirname(__file__)
+
+IMPORT_STYLESHEET_PATTERN = '@import url\\([\'"](.+)[\'"]\\);'
 
 COMPILER_PATH = os.path.join(HERE, 'compiler.xsl')
 
@@ -49,9 +52,48 @@ class CompileResolver(etree.Resolver):
         if url == 'xdv:extra' and self.extra is not None:
             return self.resolve_string(self.extra, context)
 
+def to_absolute(src, prefix):
+    """Turn a url 
+    """
+    if src.startswith('/') or '://' in src:
+        return src
+        
+    if src.startswith('./'):
+        return "%s/%s" % (prefix, src[2:])
+    else:
+        return "%s/%s" % (prefix, src)
 
-def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=True, trace=False, includemode=None, parser=None, compiler_parser=None):
-    """Invoke the xdv compiler
+def apply_absolute_prefix(theme_doc, absolute_prefix):
+    for node in theme_doc.xpath('*//style | *//script | *//img | *//link'):
+        if node.tag == 'img' or node.tag == 'script':
+            src = node.get('src')
+            if src:
+                node.set('src', to_absolute(src, absolute_prefix))
+        elif node.tag == 'link':
+            href = node.get('href')
+            if href:
+                node.set('href', to_absolute(href, absolute_prefix))
+        elif node.tag == 'style':
+            node.text = re.sub(IMPORT_STYLESHEET_PATTERN, r'@import url("%s/\1");' % absolute_prefix, node.text, re.I)
+
+def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None):
+    """Invoke the xdv compiler.
+    
+    * ``rules`` is the rules file
+    * ``theme`` is the theme file
+    * ``extra`` is an optional XSLT file with XDV extensions
+    * ``css``   can be set to False to disable CSS syntax support (providing a
+      moderate speed gain)
+    * ``xinclude`` can be set to True to enable XInclude support (at a
+      moderate speed cost)
+    * ``update`` can be set to False to disable the automatic update support for
+      the old Deliverance 0.2 namespace (for a moderate speed gain)
+    * ``trace`` can be set to True to enable compiler trace information
+    * ``includemode`` can be set to 'document' or 'ssi' to change the way in
+      which includes are processed
+    * ``parser`` can be set to an lxml parser class; the default is HTMLParser
+    * ``compiler_parser``` can be set to an lxml parser class; the default is
+      XMLParser
     """
     rules_doc = etree.parse(rules)
     if xinclude:
@@ -64,6 +106,9 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, update=Tru
     if parser is None:
         parser = etree.HTMLParser()
     theme_doc = etree.parse(theme, parser=parser)
+    
+    if absolute_prefix:
+        apply_absolute_prefix(theme_doc, absolute_prefix)
     
     if compiler_parser is None:
         compiler_parser = etree.XMLParser()
