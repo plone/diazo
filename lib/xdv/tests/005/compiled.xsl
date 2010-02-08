@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dv="http://openplans.org/deliverance" xmlns:exsl="http://exslt.org/common" xmlns:xhtml="http://www.w3.org/1999/xhtml" version="1.0" exclude-result-prefixes="exsl dv xhtml">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dv="http://namespaces.plone.org/xdv" xmlns:exsl="http://exslt.org/common" xmlns:xhtml="http://www.w3.org/1999/xhtml" version="1.0" exclude-result-prefixes="exsl dv xhtml">
   <xsl:output method="xml" indent="no" omit-xml-declaration="yes" media-type="text/html" encoding="utf-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
     <xsl:template match="/">
@@ -33,7 +33,7 @@
     </xsl:template>
     <xsl:template match="/" mode="apply-theme">
         <html><head><title>Second Theme Page Title</title></head><body>
-        <div id="pagecontent"><xsl:choose><xsl:when test="/html/body/div[@id='pagecontent']/*"><xsl:copy-of select="/html/body/div[@id='pagecontent']/*"/></xsl:when><xsl:otherwise>Some stuff</xsl:otherwise></xsl:choose></div>
+        <div id="pagecontent"><xsl:copy-of select="/html/body/div[@id='pagecontent']/*"/></div>
     </body></html>
     </xsl:template>
     <xsl:template match="style|script|xhtml:style|xhtml:script" priority="5" mode="final-stage">

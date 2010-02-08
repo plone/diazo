@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rules xmlns="http://openplans.org/deliverance">
+<rules xmlns="http://namespaces.plone.org/xdv">
     <replace theme="/html/head/title" content="/html/head/title"/>
 </rules>

@@ -32,7 +32,18 @@
         </xsl:copy>
     </xsl:template>
     <xsl:template match="/" mode="apply-theme">
-        <html><head><title id="first">Second Theme Page Title</title><script id="second" src="second.js" type="text/javascript"/><link id="third" rel="stylesheet" href="third.css"/><xsl:copy-of select="/html/head/link"/></head><body/></html>
+        <html><head><xsl:copy-of select="/html/head/title"/></head><body>
+        <div><xsl:copy-of select="//body/descendant::*[name() = 'div' and (position() = last())]"/></div>
+        <div>
+            <span>Third Marker</span>
+            <ul><li>first</li>
+                <li>second</li>
+                <li><xsl:copy-of select="//body/descendant::*[name() = 'div' and (position() = 2)]/h2/following-sibling::span[@class = 'replace']"/></li>
+                <li>fourth</li>
+            </ul></div>
+        <div>Third Marker</div>
+        <div>Fourth marker</div>
+    </body></html>
     </xsl:template>
     <xsl:template match="style|script|xhtml:style|xhtml:script" priority="5" mode="final-stage">
         <xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">
