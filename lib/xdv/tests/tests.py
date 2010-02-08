@@ -20,7 +20,8 @@ if __name__ == '__main__':
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 class XDVTestCase(unittest.TestCase):
-    writefiles = False
+    
+    writefiles = os.environ.get('XDVTESTS_WRITE_FILES', False)
 
     testdir = None # override
     
@@ -32,13 +33,6 @@ class XDVTestCase(unittest.TestCase):
         xpathsfn = os.path.join(self.testdir, "xpaths.txt")
         xslfn = os.path.join(self.testdir, "compiled.xsl")
         outputfn = os.path.join(self.testdir, "output.html")
-        
-        if (not os.path.exists(themefn) or
-            not os.path.exists(contentfn) or
-            not os.path.exists(rulesfn) or
-            not os.path.exists(outputfn)
-        ):
-            return
         
         contentdoc = etree.parse(source=contentfn, base_url=contentfn,
                                        parser=etree.HTMLParser())
@@ -57,11 +51,11 @@ class XDVTestCase(unittest.TestCase):
             old = open(xslfn).read()
             new = cts
             if old != new:
-                print >>self.errors, "WARNING:", "compiled.xsl has CHANGED"
-                for line in difflib.unified_diff(old.split('\n'), new.split('\n'), xslfn, 'now'):
-                    print >>self.errors, line
                 if self.writefiles:
                     open(xslfn + '.old', 'w').write(old)
+                print "WARNING:", "compiled.xsl has CHANGED"
+                for line in difflib.unified_diff(old.split('\n'), new.split('\n'), xslfn, 'now'):
+                    print line
 
         # Write the compiled xsl out to catch unexpected changes
         if self.writefiles:
@@ -73,37 +67,38 @@ class XDVTestCase(unittest.TestCase):
         result = processor(contentdoc)
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = etree.tostring(result)
+        self.themed_string = etree.tostring(result, pretty_print=True)
         self.themed_content = etree.ElementTree(file=StringIO(self.themed_string), 
                                                 parser=etree.HTMLParser())
 
         # remove the extra meta content type
+
         meta = self.themed_content.xpath("/html/head/meta[@http-equiv='Content-Type']")[0]
         meta.getparent().remove(meta)
 
         if os.path.exists(xpathsfn):
-            # xp = "/html/head/*[position()='1']/@id"
             for xpath in open(xpathsfn).readlines():
                 # Read the XPaths from the file, skipping blank lines and
                 # comments
                 this_xpath = xpath.strip()
                 if not this_xpath or this_xpath[0] == '#':
                     continue
-                if not self.themed_content.xpath(this_xpath):
-                    print >>self.errors, "FAIL:", this_xpath, "is FALSE"
+                assert self.themed_content.xpath(this_xpath), "%s: %s" % (xpathsfn, this_xpath)
 
         # Compare to previous version
         if os.path.exists(outputfn):
             old = open(outputfn).read()
             new = self.themed_string
             if old != new:
-                print >>self.errors, "FAIL:", "output.html has CHANGED"
-                for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
-                    print >>self.errors, line
+                import pdb; pdb.set_trace()
                 if self.writefiles:
                     open(outputfn + '.old', 'w').write(old)
+                print "ERROR:", "output.html has CHANGED"
+                for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
+                    print  line
+                self.assertEquals(old, new)
 
-        # Write the compiled xsl out to catch unexpected changes
+        # Write out the result to catch unexpected changes
         if self.writefiles:
             open(outputfn, 'w').write(self.themed_string)
     
@@ -200,35 +195,7 @@ class TestAbsolutePrefix(unittest.TestCase):
             '/foo.jpg',
             'http://site.com/foo.jpg'
         ], [x.get('src') for x in imgTags])
-        
-    
-def main(*args, **kwargs):
-    try:
-        test_num = sys.argv[1]
-    except IndexError:
-        test_num = 1
-        errors = 0
-        while True:
-            directory = os.path.join(HERE, '%03d' % test_num)
-            if not os.path.isdir(directory):
-                test_num -= 1
-                break
-            xdv = XDV(directory, *args, **kwargs)
-            result = xdv.errors.getvalue()
-            if result:
-                print 'Error running test %s...' % directory 
-                print result
-                errors += 1
-            test_num += 1
-        print "Ran %s tests with %s errors." % (test_num, errors)
-    else:
-        test_dir = os.path.abspath(test_num)
-        xdv = XDV(test_dir, *args, **kwargs)
-        print xdv.themed_string
-        errors = xdv.errors.getvalue()
-        if errors:
-            print
-            print xdv.errors.getvalue()
+
 
 def test_suite():
     suite = unittest.TestSuite()
@@ -242,18 +209,3 @@ def test_suite():
         suite.addTest(unittest.makeSuite(cls))
     suite.addTest(unittest.makeSuite(TestAbsolutePrefix))
     return suite
-
-if __name__ == "__main__":
-    debug = '--debug' in sys.argv
-    if debug:
-        sys.argv.remove('--debug')
-    writefiles = '--writefiles' in sys.argv
-    if writefiles:
-        sys.argv.remove('--writefiles')
-    try:
-        main(debug=debug, writefiles=writefiles)
-    except:
-        type, value, tb = sys.exc_info()
-        traceback.print_exc()
-        if debug:
-            pdb.post_mortem(tb)

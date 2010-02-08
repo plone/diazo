@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dv="http://openplans.org/deliverance" xmlns:exsl="http://exslt.org/common" xmlns:xhtml="http://www.w3.org/1999/xhtml" version="1.0" exclude-result-prefixes="exsl dv xhtml">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dv="http://namespaces.plone.org/xdv" xmlns:exsl="http://exslt.org/common" xmlns:xhtml="http://www.w3.org/1999/xhtml" version="1.0" exclude-result-prefixes="exsl dv xhtml">
   <xsl:output method="xml" indent="no" omit-xml-declaration="yes" media-type="text/html" encoding="utf-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
     <xsl:template match="/">
@@ -39,7 +39,7 @@
             var x = '&lt;div&gt;';
         </xsl:variable><xsl:value-of select="$tag_text" disable-output-escaping="yes"/></script><xsl:copy-of select="/html/head/style"/></head><body>
         <h1>Title</h1>
-        <div id="content"><xsl:choose><xsl:when test="//*[@id='content']/*"><xsl:copy-of select="//*[@id='content']/*"/></xsl:when><xsl:otherwise/></xsl:choose></div>
+        <div id="content"><xsl:copy-of select="//*[@id='content']/*"/></div>
         <script type="text/javascript"><xsl:variable name="tag_text">
             var y = '&lt;span&gt;';
         </xsl:variable><xsl:value-of select="$tag_text" disable-output-escaping="yes"/></script></body></html>
