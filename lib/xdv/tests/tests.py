@@ -156,10 +156,8 @@ class TestAbsolutePrefix(unittest.TestCase):
         ], [x.get('src') for x in imgTags])
     
     def testDisabled(self):
-        testdir = os.path.join(HERE, 'absolute')
-        
-        themefn = os.path.join(testdir, "theme.html")
-        rulesfn = os.path.join(testdir, "rules.xml")
+        themefn = os.path.join(HERE, "absolute_theme.html")
+        rulesfn = os.path.join(HERE, "absolute_rules.xml")
         
         compiled = xdv.compiler.compile_theme(rules=rulesfn, theme=themefn)
         
