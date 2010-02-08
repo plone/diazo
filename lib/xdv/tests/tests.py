@@ -73,8 +73,10 @@ class XDVTestCase(unittest.TestCase):
 
         # remove the extra meta content type
 
-        meta = self.themed_content.xpath("/html/head/meta[@http-equiv='Content-Type']")[0]
-        meta.getparent().remove(meta)
+        metas = self.themed_content.xpath("/html/head/meta[@http-equiv='Content-Type']")
+        if metas:
+            meta = metas[0]
+            meta.getparent().remove(meta)
 
         if os.path.exists(xpathsfn):
             for xpath in open(xpathsfn).readlines():
