@@ -110,23 +110,23 @@ class XDVTestCase(unittest.TestCase):
 class TestAbsolutePrefix(unittest.TestCase):
     
     def testEnabled(self):
-        testdir = os.path.join(HERE, 'absolute')
-        
-        themefn = os.path.join(testdir, "theme.html")
-        rulesfn = os.path.join(testdir, "rules.xml")
+        themefn = os.path.join(HERE, "absolute_theme.html")
+        rulesfn = os.path.join(HERE, "absolute_rules.xml")
         
         compiled = xdv.compiler.compile_theme(rules=rulesfn, theme=themefn, absolute_prefix="/abs")
         
         styleTag = compiled.xpath('//style')[0]
         styleLines = [x.strip() for x in styleTag.getchildren()[0].text.split('\n') if x.strip()]
-        
-        self.assertEquals([
+        expectedLines = [
+            '@import "/abs/foo.css";',
             '@import url("/abs/foo.css");',
-            '@import url("/abs/./foo.css");',
-            "@import url('../foo.css');",
+            "@import url('/abs/foo.css');",
+            "@import url('/abs/../foo.css');",
             "@import url('/foo.css');",
             "@import url('http://site.com/foo.css');"
-        ], styleLines)
+            ]
+        for line, expected in zip(styleLines, expectedLines):
+            self.assertEquals(line, expected)
         
         linkTags = compiled.xpath('//link')
         self.assertEquals([
@@ -165,14 +165,16 @@ class TestAbsolutePrefix(unittest.TestCase):
         
         styleTag = compiled.xpath('//style')[0]
         styleLines = [x.strip() for x in styleTag.getchildren()[0].text.split('\n') if x.strip()]
-        
-        self.assertEquals([
-            "@import url('foo.css');",
+        expectedLines = [
+            '@import "foo.css";',
+            '@import url("foo.css");',
             "@import url('./foo.css');",
             "@import url('../foo.css');",
             "@import url('/foo.css');",
             "@import url('http://site.com/foo.css');"
-        ], styleLines)
+            ]
+        for line, expected in zip(styleLines, expectedLines):
+            self.assertEquals(line, expected)
         
         linkTags = compiled.xpath('//link')
         self.assertEquals([
