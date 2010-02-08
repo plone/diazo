@@ -464,9 +464,7 @@
             </xsl:when>
             <xsl:when test="$includemode = 'document'">
                 <xsl:element name="xsl:copy-of">
-                    <xsl:attribute name="select">
-                        document('<xsl:value-of select="$href"/>', .)<xsl:value-of select="$content"/>
-                    </xsl:attribute>
+                    <xsl:attribute name="select">document('<xsl:value-of select="$href"/>', .)<xsl:value-of select="$content"/></xsl:attribute>
                 </xsl:element>
             </xsl:when>
             <xsl:when test="$includemode = 'ssi'">
