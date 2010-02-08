@@ -1,0 +1,7 @@
+# In this test we check that rule files using the old namespace
+# get behaviour equivalent to nocontent="theme"
+
+/html/body/h1[contains(., 'theme')]
+/html/body/div/div[@class="content"]
+/html/body/h2[contains(., 'theme')]
+/html/body/div/div/div[@class="content"]

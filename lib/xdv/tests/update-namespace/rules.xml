@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://openplans.org/deliverance">
+    <replace theme="/html/body/h1" content="//*[@class='missing']"/>
+    <replace theme="//*[@id='main']" content="//*[@class='missing']"/>
+    <replace theme="//*[@id='core']" content="//*[@id='core']"/>
+    <copy theme="/html/body/h2" content="//*[@class='missing']"/>
+    <copy theme="//*[@id='portlets']" content="//*[@class='missing']"/>
+    <copy theme="//*[@id='portlet-wrapper']" content="//*[@id='portlet']"/>    
+</rules>
