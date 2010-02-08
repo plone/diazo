@@ -122,9 +122,11 @@
             </xsl:for-each>
         </xsl:copy>
     </xsl:template>
+
     <xsl:template match="comment()" mode="annotate-html">
-    <xsl:element name="xsl:comment"><xsl:value-of select="."/></xsl:element>
+        <xsl:element name="xsl:comment"><xsl:value-of select="."/></xsl:element>
     </xsl:template>
+
     <xsl:template match="node()|@*" mode="annotate-html">
         <xsl:copy>
             <xsl:attribute name="xml:id">
@@ -159,9 +161,11 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <xsl:template match="@xml:id" mode="apply-rules" priority="5">
         <!-- Filter this out -->
     </xsl:template>
+
     <xsl:template mode="apply-rules" priority="5"
         match="text()[parent::style|parent::script|parent::xhtml:style|parent::xhtml:script]">
         <!-- Emit xsl that avoids escaping -->
@@ -174,6 +178,7 @@
             <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
         </xsl:element>        
     </xsl:template>
+
     <xsl:template match="/html/@xmlns" mode="apply-rules" priority="5">
         <!-- Filter this out (causes problems when xsl is not serialized) -->
     </xsl:template>
@@ -187,35 +192,15 @@
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
-        <!--
-            Always copy all content matching before rules
-        -->
-        <xsl:for-each select="$matching-this">
-            <xsl:choose>
-                <xsl:when test="@if-content">
-                    <xsl:element name="xsl:if">
-                        <xsl:attribute name="test">
-                            <xsl:value-of select="@if-content"/>
-                        </xsl:attribute>
-                        <xsl:call-template name="include">
-                            <xsl:with-param name="href" select="@href"/>
-                            <xsl:with-param name="content" select="@content"/>
-                        </xsl:call-template>
-                    </xsl:element>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:call-template name="include">
-                        <xsl:with-param name="href" select="@href"/>
-                        <xsl:with-param name="content" select="@content"/>
-                    </xsl:call-template>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:for-each>
+
+        <xsl:apply-templates select="$matching-this" mode="conditional-include"/>
+
         <xsl:call-template name="drop">
             <xsl:with-param name="matching-rules" select="$matching-other"/>
             <xsl:with-param name="rules" select="$rules"/>
         </xsl:call-template>
     </xsl:template>
+
     <xsl:template name="drop">
         <xsl:param name="matching-rules"/>
         <xsl:param name="rules"/>
@@ -272,6 +257,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <xsl:template name="replace">
         <xsl:param name="matching-rules"/>
         <xsl:param name="rules"/>
@@ -279,12 +265,14 @@
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
+
+        <xsl:if test="count($matching-this) > 1">
+            <xsl:message terminate="yes">
+                ERROR: Multiple replace rules may not match a single theme node.
+            </xsl:message>
+        </xsl:if>
+
         <xsl:choose>
-            <xsl:when test="count($matching-this) > 1">
-                <xsl:message terminate="yes">
-                    ERROR: Multiple replace rules may not match a single theme node.
-                </xsl:message>
-            </xsl:when>
             <xsl:when test="$matching-this/@if-content">
                 <!-- conditional <replace ...
                 When the rule matches, toss out the theme node and
@@ -333,6 +321,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <xsl:template name="prepend-copy-append">
         <xsl:param name="matching-rules"/>
         <xsl:param name="rules"/>
@@ -343,36 +332,21 @@
         <xsl:choose>
             <xsl:when test="$matching-this">
                 <xsl:copy>
+                    <!-- Theme attributes -->
                     <xsl:apply-templates select="@*" mode="apply-rules">
                         <xsl:with-param name="rules" select="$rules"/>
                     </xsl:apply-templates>
-                    <xsl:for-each select="$matching-this[name()='prepend']">
-                        <xsl:choose>
-                            <xsl:when test="@if-content">
-                                <xsl:element name="xsl:if">
-                                    <xsl:attribute name="test">
-                                        <xsl:value-of select="@if-content"/>
-                                    </xsl:attribute>
-                                    <xsl:call-template name="include">
-                                        <xsl:with-param name="href" select="@href"/>
-                                        <xsl:with-param name="content" select="@content"/>
-                                    </xsl:call-template>
-                                </xsl:element>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:call-template name="include">
-                                    <xsl:with-param name="href" select="@href"/>
-                                    <xsl:with-param name="content" select="@content"/>
-                                </xsl:call-template>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:for-each>
+
+                    <!-- Prepend -->
+                    <xsl:apply-templates select="$matching-this[name()='prepend']" mode="conditional-include"/>
+
+                    <!-- Copy -->
+                    <xsl:if test="count($matching-this[name()='copy']) > 1">
+                        <xsl:message terminate="yes">
+                            ERROR: Multiple copy rules may not match a single theme node.
+                        </xsl:message>
+                    </xsl:if>
                     <xsl:choose>
-                        <xsl:when test="count($matching-this[name()='copy']) > 1">
-                            <xsl:message terminate="yes">
-                                ERROR: Multiple copy rules may not match a single theme node.
-                            </xsl:message>
-                        </xsl:when>
                         <xsl:when test="$matching-this[name()='copy']">
                             <xsl:variable name="this" select="$matching-this[name()='copy']"/>
                             <xsl:choose>
@@ -413,27 +387,10 @@
                             </xsl:apply-templates>
                         </xsl:otherwise>
                     </xsl:choose>
-                    <xsl:for-each select="$matching-rules[name()='append']">
-                        <xsl:choose>
-                            <xsl:when test="@if-content">
-                                <xsl:element name="xsl:if">
-                                    <xsl:attribute name="test">
-                                        <xsl:value-of select="@if-content"/>
-                                    </xsl:attribute>
-                                    <xsl:call-template name="include">
-                                        <xsl:with-param name="href" select="@href"/>
-                                        <xsl:with-param name="content" select="@content"/>
-                                    </xsl:call-template>
-                                </xsl:element>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:call-template name="include">
-                                    <xsl:with-param name="href" select="@href"/>
-                                    <xsl:with-param name="content" select="@content"/>
-                                </xsl:call-template>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:for-each>
+
+                    <!-- Append -->
+                    <xsl:apply-templates select="$matching-rules[name()='append']" mode="conditional-include"/>
+
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
@@ -447,6 +404,7 @@
             <xsl:with-param name="rules" select="$rules"/>
         </xsl:call-template>
     </xsl:template>
+
     <xsl:template name="after">
         <xsl:param name="matching-rules"/>
         <xsl:param name="rules"/>
@@ -454,34 +412,12 @@
         <xsl:variable name="matching-this" select="$matching-rules[name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
-        <!--
-            Always copy all content matching after rules
-        -->
-        <xsl:for-each select="$matching-this">
-            <xsl:choose>
-                <xsl:when test="@if-content">
-                    <xsl:element name="xsl:if">
-                        <xsl:attribute name="test">
-                            <xsl:value-of select="@if-content"/>
-                        </xsl:attribute>
-                        <xsl:call-template name="include">
-                            <xsl:with-param name="href" select="@href"/>
-                            <xsl:with-param name="content" select="@content"/>
-                        </xsl:call-template>
-                    </xsl:element>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:call-template name="include">
-                        <xsl:with-param name="href" select="@href"/>
-                        <xsl:with-param name="content" select="@content"/>
-                    </xsl:call-template>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:for-each>
-        <!--
-            Last rule template
-        -->
+
+        <xsl:apply-templates select="$matching-this" mode="conditional-include"/>
+        
+        <!-- Last rule template -->
     </xsl:template>
+
     <xsl:template name="pass">
         <xsl:param name="rules"/>
         <xsl:variable name="rule-name">pass</xsl:variable>
@@ -492,6 +428,29 @@
             </xsl:apply-templates>
         </xsl:copy>
     </xsl:template>
+
+    <xsl:template match="@*|node()" mode="conditional-include">
+        <xsl:choose>
+            <xsl:when test="@if-content">
+                <xsl:element name="xsl:if">
+                    <xsl:attribute name="test">
+                        <xsl:value-of select="@if-content"/>
+                    </xsl:attribute>
+                    <xsl:call-template name="include">
+                        <xsl:with-param name="href" select="@href"/>
+                        <xsl:with-param name="content" select="@content"/>
+                    </xsl:call-template>
+                </xsl:element>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="include">
+                    <xsl:with-param name="href" select="@href"/>
+                    <xsl:with-param name="content" select="@content"/>
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <xsl:template name="include">
         <xsl:param name="href"/>
         <xsl:param name="content"/>
@@ -525,6 +484,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <xsl:template name="trace">
         <xsl:param name="rule-name"/>
         <xsl:param name="matching" select="/.."/>
@@ -536,7 +496,9 @@
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
+
     <xsl:template name="printpath"
         ><xsl:for-each select="ancestor::*">/<xsl:value-of select="name()"/>[<xsl:number/>]</xsl:for-each
         >/<xsl:value-of select="name()"/>[<xsl:number/>]</xsl:template>
+
 </xsl:stylesheet>
