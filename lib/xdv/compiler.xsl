@@ -285,31 +285,14 @@
                     ERROR: Multiple replace rules may not match a single theme node.
                 </xsl:message>
             </xsl:when>
-            <xsl:when test="$matching-this/@nocontent='drop'">
-                <!-- <replace nocontent="drop" ...
-                Toss out the theme node.  Simply 
-                include the @content. -->
-                <xsl:call-template name="include">
-                    <xsl:with-param name="href" select="$matching-this/@href"/>
-                    <xsl:with-param name="content" select="$matching-this/@content"/>
-                </xsl:call-template>
-                <!-- jump to after rules -->
-                <xsl:call-template name="after">
-                    <xsl:with-param name="matching-rules" select="$matching-other"/>
-                    <xsl:with-param name="rules" select="$rules"/>
-                </xsl:call-template>
-            </xsl:when>
-            <xsl:when test="$matching-this">
-                <!-- <replace nocontent="theme" ...
+            <xsl:when test="$matching-this/@if-content">
+                <!-- conditional <replace ...
                 When the rule matches, toss out the theme node and
-                <xsl:copy-of the @content. Otherwise keep theme node. -->
+                include the @content. Otherwise keep theme node. -->
                 <xsl:element name="xsl:choose">
                     <xsl:element name="xsl:when">
-                        <xsl:attribute name="test"> <!-- XXX -->
-                            <xsl:if test="$matching-this/@href">document('<xsl:value-of select="$matching-this/@href"/>', .)</xsl:if><xsl:choose>
-                                <xsl:when test="$matching-this/@if-condition"><xsl:value-of select="$matching-this/@if-condition"/></xsl:when>
-                                <xsl:otherwise><xsl:value-of select="$matching-this/@content"/></xsl:otherwise>
-                            </xsl:choose>
+                        <xsl:attribute name="test">
+                            <xsl:value-of select="$matching-this/@if-content"/>
                         </xsl:attribute>
                         <xsl:call-template name="include">
                             <xsl:with-param name="href" select="$matching-this/@href"/>
@@ -328,6 +311,19 @@
                         </xsl:call-template>
                     </xsl:element>
                 </xsl:element>
+            </xsl:when>
+            <xsl:when test="$matching-this">
+                <!-- unconditional <replace.
+                Toss out the theme node.  Simply include the @content. -->
+                <xsl:call-template name="include">
+                    <xsl:with-param name="href" select="$matching-this/@href"/>
+                    <xsl:with-param name="content" select="$matching-this/@content"/>
+                </xsl:call-template>
+                <!-- jump to after rules -->
+                <xsl:call-template name="after">
+                    <xsl:with-param name="matching-rules" select="$matching-other"/>
+                    <xsl:with-param name="rules" select="$rules"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:call-template name="prepend-copy-append">
@@ -380,25 +376,14 @@
                         <xsl:when test="$matching-this[name()='copy']">
                             <xsl:variable name="this" select="$matching-this[name()='copy']"/>
                             <xsl:choose>
-                                <xsl:when test="$this/@nocontent='empty'">
-                                    <!-- Copy the node and its attributes, but clear 
-                                    the children and content.  Just invclude the @content -->
-                                    <xsl:call-template name="include">
-                                        <xsl:with-param name="href" select="$this/@href"/>
-                                        <xsl:with-param name="content" select="$this/@content"/>
-                                    </xsl:call-template>
-                                </xsl:when>
-                                <xsl:otherwise>
+                                <xsl:when test="$this/@if-content">
                                     <!-- When the rule matches, copy the node and its attributes,
-                                    but clear the children and text, just have an <xsl:copy-of> 
-                                    for the @content. Otherwise keep theme node. -->
+                                    but clear the children and text, just include the @content.
+                                    Otherwise keep theme node. -->
                                     <xsl:element name="xsl:choose">
                                         <xsl:element name="xsl:when">
-                                            <xsl:attribute name="test"> <!-- XXX -->
-                                                <xsl:if test="$this/@href">document('<xsl:value-of select="$this/@href"/>', .)</xsl:if><xsl:choose>
-                                                    <xsl:when test="$this/@if-condition"><xsl:value-of select="$this/@if-condition"/></xsl:when>
-                                                    <xsl:otherwise><xsl:value-of select="$this/@content"/></xsl:otherwise>
-                                                </xsl:choose>
+                                            <xsl:attribute name="test">
+                                                <xsl:value-of select="$this/@if-content"/>
                                             </xsl:attribute>
                                             <xsl:call-template name="include">
                                                 <xsl:with-param name="href" select="$this/@href"/>
@@ -411,6 +396,14 @@
                                             </xsl:apply-templates>
                                         </xsl:element>
                                     </xsl:element>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <!-- Copy the node and its attributes, but clear 
+                                    the children and content.  Just include the @content -->
+                                    <xsl:call-template name="include">
+                                        <xsl:with-param name="href" select="$this/@href"/>
+                                        <xsl:with-param name="content" select="$this/@content"/>
+                                    </xsl:call-template>
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:when>
