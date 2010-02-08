@@ -25,7 +25,7 @@ logger = logging.getLogger('xdv')
 
 HERE = os.path.dirname(__file__)
 
-IMPORT_STYLESHEET_PATTERN = '@import url\\([\'"](.+)[\'"]\\);'
+IMPORT_STYLESHEET = re.compile(r'''(@import\s+(?:url\(['"]?|['"]))(.+)(['"]?\)|['"])''', re.IGNORECASE)
 
 COMPILER_PATH = os.path.join(HERE, 'compiler.xsl')
 
@@ -57,14 +57,15 @@ def to_absolute(src, prefix):
     """
     if src.startswith('/') or '://' in src:
         return src
-        
     if src.startswith('./'):
         return "%s/%s" % (prefix, src[2:])
     else:
         return "%s/%s" % (prefix, src)
 
 def apply_absolute_prefix(theme_doc, absolute_prefix):
-    for node in theme_doc.xpath('*//style | *//script | *//img | *//link'):
+    if absolute_prefix.endswith('/'):
+        absolute_prefix = absolute_prefix[:-1]
+    for node in theme_doc.xpath('*//style | *//script | *//img | *//link | *//comment()'):
         if node.tag == 'img' or node.tag == 'script':
             src = node.get('src')
             if src:
@@ -73,8 +74,8 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
             href = node.get('href')
             if href:
                 node.set('href', to_absolute(href, absolute_prefix))
-        elif node.tag == 'style':
-            node.text = re.sub(IMPORT_STYLESHEET_PATTERN, r'@import url("%s/\1");' % absolute_prefix, node.text, re.I)
+        elif node.tag == 'style' or node.tag == etree.Comment and node.text.startswith("[if IE"):
+            node.text = IMPORT_STYLESHEET.sub(lambda match: match.group(1) + to_absolute(match.group(2), absolute_prefix) + match.group(3), node.text)
 
 def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None):
     """Invoke the xdv compiler.
@@ -95,7 +96,8 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_p
     * ``compiler_parser``` can be set to an lxml parser instance; the default is a
       XMLParser
     """
-    rules_doc = etree.parse(rules)
+    rules_parser = etree.XMLParser(recover=False)
+    rules_doc = etree.parse(rules, parser=rules_parser)
     if xinclude:
         rules_doc.xinclude()
     if update:
@@ -145,13 +147,13 @@ def main():
     """
     parser = OptionParser(usage=usage)
     parser.add_option("-e", "--extra", metavar="extra.xsl",
-                      help="XDV extraurl XSLT file",
+                      help="Extra XSL to be included in the transform",
                       dest="extra", default=None)
     parser.add_option("-o", "--output", metavar="output.xsl",
                       help="Output filename (instead of stdout)",
                       dest="output", default=sys.stdout)
     parser.add_option("-p", "--pretty-print", action="store_true",
-                      help="Pretty print output (can alter rendering on the browser)",
+                      help="Pretty print output (may alter rendering in browser)",
                       dest="pretty_print", default=False)
     parser.add_option("--trace", action="store_true",
                       help="Compiler trace logging",
@@ -159,6 +161,9 @@ def main():
     parser.add_option("--xinclude", action="store_true",
                       help="Run XInclude on rules.xml",
                       dest="xinclude", default=False)
+    parser.add_option("-a", "--absolute-prefix", metavar="/",
+                      help="relative urls in the theme file will be made into absolute links with this prefix.",
+                      dest="absolute_prefix", default=None)
     parser.add_option("-i", "--includemode", metavar="INC",
                       help="include mode (document or ssi)",
                       dest="includemode", default=None)
@@ -171,7 +176,7 @@ def main():
     if options.trace:
         logger.setLevel(logging.DEBUG)
 
-    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, includemode=options.includemode)
+    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, absolute_prefix=options.absolute_prefix, includemode=options.includemode)
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
 
 if __name__ == '__main__':
