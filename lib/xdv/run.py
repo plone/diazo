@@ -69,7 +69,6 @@ def main():
     parser.resolvers.add(RunResolver(os.path.dirname(content)))
     transform = etree.XSLT(output_xslt)
     content_doc = etree.parse(content, parser=etree.HTMLParser())
-    import pdb; pdb.set_trace()
     output_html = transform(content_doc)
     output_html.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
     for msg in transform.error_log:
