@@ -116,6 +116,9 @@
                             <xsl:copy-of select="@if-content"/>
                         </xsl:otherwise>
                     </xsl:choose>
+                    <xsl:if test="node()">
+                        <dv:synthetic><xsl:copy-of select="node()"/></dv:synthetic>
+                    </xsl:if>
                     <dv:matches>
                         <xsl:variable name="themexpath" select="@theme"/>
                         <xsl:for-each select="$themehtml">
@@ -294,8 +297,7 @@
                                 <xsl:value-of select="@if-content"/>
                             </xsl:attribute>
                             <xsl:call-template name="include">
-                                <xsl:with-param name="href" select="@href"/>
-                                <xsl:with-param name="content" select="@content"/>
+                                <xsl:with-param name="rule" select="."/>
                             </xsl:call-template>
                             <!-- jump to after rules -->
                             <xsl:call-template name="after">
@@ -310,8 +312,7 @@
                                 <!-- unconditional <replace.
                                 Toss out the theme node.  Simply include the @content. -->
                                 <xsl:call-template name="include">
-                                    <xsl:with-param name="href" select="$unconditional/@href"/>
-                                    <xsl:with-param name="content" select="$unconditional/@content"/>
+                                    <xsl:with-param name="rule" select="$unconditional"/>
                                 </xsl:call-template>
                                 <!-- jump to after rules -->
                                 <xsl:call-template name="after">
@@ -335,8 +336,7 @@
                 <!-- unconditional <replace.
                 Toss out the theme node.  Simply include the @content. -->
                 <xsl:call-template name="include">
-                    <xsl:with-param name="href" select="$unconditional/@href"/>
-                    <xsl:with-param name="content" select="$unconditional/@content"/>
+                    <xsl:with-param name="rule" select="$unconditional"/>
                 </xsl:call-template>
                 <!-- jump to after rules -->
                 <xsl:call-template name="after">
@@ -393,8 +393,7 @@
                                             <xsl:value-of select="@if-content"/>
                                         </xsl:attribute>
                                         <xsl:call-template name="include">
-                                            <xsl:with-param name="href" select="@href"/>
-                                            <xsl:with-param name="content" select="@content"/>
+                                            <xsl:with-param name="rule" select="."/>
                                         </xsl:call-template>
                                     </xsl:element>
                                 </xsl:for-each>
@@ -403,8 +402,7 @@
                                         <xsl:element name="xsl:otherwise">
                                             <!-- unconditional <copy. Simply include the @content. -->
                                             <xsl:call-template name="include">
-                                                <xsl:with-param name="href" select="$unconditional/@href"/>
-                                                <xsl:with-param name="content" select="$unconditional/@content"/>
+                                                <xsl:with-param name="rule" select="$unconditional"/>
                                             </xsl:call-template>
                                         </xsl:element>
                                     </xsl:when>
@@ -421,8 +419,7 @@
                         <xsl:when test="$unconditional">
                             <!-- unconditional <copy. Simply include the @content. -->
                             <xsl:call-template name="include">
-                                <xsl:with-param name="href" select="$unconditional/@href"/>
-                                <xsl:with-param name="content" select="$unconditional/@content"/>
+                                <xsl:with-param name="rule" select="$unconditional"/>
                             </xsl:call-template>
                         </xsl:when>
                         <xsl:otherwise>
@@ -481,24 +478,31 @@
                         <xsl:value-of select="@if-content"/>
                     </xsl:attribute>
                     <xsl:call-template name="include">
-                        <xsl:with-param name="href" select="@href"/>
-                        <xsl:with-param name="content" select="@content"/>
+                        <xsl:with-param name="rule" select="."/>
                     </xsl:call-template>
                 </xsl:element>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:call-template name="include">
-                    <xsl:with-param name="href" select="@href"/>
-                    <xsl:with-param name="content" select="@content"/>
+                    <xsl:with-param name="rule" select="."/>
                 </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
     <xsl:template name="include">
-        <xsl:param name="href"/>
-        <xsl:param name="content"/>
+        <xsl:param name="rule"/>
+        <xsl:variable name="href" select="$rule/@href"/>
+        <xsl:variable name="content" select="$rule/@content"/>
         <xsl:choose>
+            <xsl:when test="$rule/dv:synthetic">
+                <xsl:if test="$content">
+                    <xsl:message terminate="yes">
+                        ERROR: @content and synthetic
+                    </xsl:message>
+                </xsl:if>
+                <xsl:copy-of select="$rule/dv:synthetic/node()"/>
+            </xsl:when>
             <xsl:when test="not($href)">
                 <xsl:element name="xsl:copy-of">
                     <xsl:attribute name="select">

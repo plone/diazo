@@ -1,0 +1,4 @@
+# This div is added in the rules file
+/html/body/div[@id="from-rules"]
+/html/body/dl/dt
+/html/body/dl/dd
