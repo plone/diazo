@@ -10,7 +10,7 @@
     
     <xdv:replace css:theme="#details">
         <dl id="details">
-            <xsl:for-each select='//table[@id="details"]/tr'>
+            <xsl:for-each css:select="table#details > tr">
                 <dt><xsl:copy-of select="td[1]/text()"/></dt>
                 <dd><xsl:copy-of select="td[2]/node()"/></dd>
             </xsl:for-each>
