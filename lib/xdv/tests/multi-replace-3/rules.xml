@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/xdv">
+    <!-- This theme node has multiple replace rules matching it, they become if.. elif.. -->
+    <replace theme="/html/body/h1" content="/html/body/h1" if-content="/html/body/h1"/>
+    <replace theme="/html/body/h1" content="//h1[@id='first-heading']" if-content="//h1[@id='first-heading']"/>
+    <!-- As there is no unconditional replace, it can end up in this copy -->
+    <copy theme="/html/body/h1" content="/html/head/title/text()" if-content="/html/head/title"/>
+    
+    <!-- This theme node has multiple replace rules matching it, they become if.. elif.. else... -->
+    <replace theme="/html/body/div[@id='description']" content="/html/body/div[@id='description']" if-content="/html/body/div[@id='description']"/>
+    <replace theme="/html/body/div[@id='description']" content="//div[@id='description2']" if-content="//div[@id='description2']"/>
+    <replace theme="/html/body/div[@id='description']" content="//div[@id='description3']"/>
+</rules>
