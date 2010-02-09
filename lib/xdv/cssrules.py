@@ -29,7 +29,7 @@ def convert_css_selectors(rules, prefix='//'):
                 if name.startswith('{%s}' % utils.namespaces['css']):
                     element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = css_to_xpath(value, prefix=prefix)
             else:
-                logger.error("Missing value for attribute %s" %name)
+                element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = ""
 
 def main():
     """Called from console script

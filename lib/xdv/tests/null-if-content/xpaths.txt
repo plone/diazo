@@ -1,0 +1,4 @@
+# Check that content="xpath " if-content="" works the same as content="xpath " if-content="xpath"
+
+//div[@id = "marker1"]/p
+//div[@id = "marker2"]/p

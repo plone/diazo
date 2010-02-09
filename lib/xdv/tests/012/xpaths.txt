@@ -1,5 +1,5 @@
 # 
-# Conditional <drop>. The entire portlet-wrapper should be dropped when the
+# unconditional <replace>. The entire portlet-wrapper should be dropped when the
 # content is empty. This time there are no portlets.
 #
 /html/body/h2

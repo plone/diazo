@@ -2,6 +2,6 @@
 <rules xmlns="http://namespaces.plone.org/xdv">
     <replace theme="//h1" content="//h2"/>
     <after theme="//h1" content="/html/body/p"/>
-    <replace theme="//*[@id='marker']" content="//*[@id='missing']" nocontent="drop"/>
+    <replace theme="//*[@id='marker']" content="//*[@id='missing']"/>
     <after theme="//*[@id='marker']" content="//*[@id='footer']"/>
 </rules>
