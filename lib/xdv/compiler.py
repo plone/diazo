@@ -65,8 +65,8 @@ def to_absolute(src, prefix):
 def apply_absolute_prefix(theme_doc, absolute_prefix):
     if absolute_prefix.endswith('/'):
         absolute_prefix = absolute_prefix[:-1]
-    for node in theme_doc.xpath('*//style | *//script | *//img | *//link | *//comment()'):
-        if node.tag == 'img' or node.tag == 'script':
+    for node in theme_doc.xpath('*//style | *//script | *//img | *//link | *//input | *//comment() '):
+        if node.tag in ('img', 'script', 'input',):
             src = node.get('src')
             if src:
                 node.set('src', to_absolute(src, absolute_prefix))

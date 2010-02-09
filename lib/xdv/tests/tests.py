@@ -6,7 +6,6 @@ from lxml import etree
 import os
 import sys
 import traceback
-import pdb
 import difflib
 from StringIO import StringIO
 import unittest
@@ -92,7 +91,6 @@ class XDVTestCase(unittest.TestCase):
             old = open(outputfn).read()
             new = self.themed_string
             if old != new:
-                import pdb; pdb.set_trace()
                 if self.writefiles:
                     open(outputfn + '.old', 'w').write(old)
                 print "ERROR:", "output.html has CHANGED"
@@ -151,6 +149,15 @@ class TestAbsolutePrefix(unittest.TestCase):
             '/foo.jpg',
             'http://site.com/foo.jpg'
         ], [x.get('src') for x in imgTags])
+        
+        inputTags = compiled.xpath('//input')
+        self.assertEquals([
+            '/abs/foo.jpg',
+            '/abs/foo.jpg',
+            '/abs/../foo.jpg',
+            '/foo.jpg',
+            'http://site.com/foo.jpg'
+        ], [x.get('src') for x in inputTags])
     
     def testDisabled(self):
         themefn = os.path.join(HERE, "absolute_theme.html")
@@ -197,6 +204,15 @@ class TestAbsolutePrefix(unittest.TestCase):
             '/foo.jpg',
             'http://site.com/foo.jpg'
         ], [x.get('src') for x in imgTags])
+        
+        inputTags = compiled.xpath('//input')
+        self.assertEquals([
+            'foo.jpg',
+            './foo.jpg',
+            '../foo.jpg',
+            '/foo.jpg',
+            'http://site.com/foo.jpg'
+        ], [x.get('src') for x in inputTags])
 
 
 def test_suite():
