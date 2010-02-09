@@ -6,7 +6,18 @@
 
     <xdv:before theme="/html/body/h1">
         <div id="from-rules">From the rules</div>
+        <!-- A comment from the rules -->
+        <p xmlns="http://www.w3.org/1999/xhtml">
+            Check that a stray xmlns does not end up in the output
+        </p>
     </xdv:before>
+    
+    <xdv:append theme="/html/head">
+        <style type="text/css">
+            /* From the rules */
+            body > h1 { color: red; }
+        </style>
+    </xdv:append>
     
     <xdv:replace css:theme="#details">
         <dl id="details">
@@ -16,5 +27,11 @@
             </xsl:for-each>
         </dl>
     </xdv:replace>
-
+    <!--
+        Note that css expressions are converted to `placeless` xpath expressions,
+        so css:select="table#details > tr" converts to select="//table[@id='details]/tr".
+        
+        This means it would not be possible to use css:select="td:first-child > *" as
+        you want a relative selector here.
+    -->
 </xdv:rules>

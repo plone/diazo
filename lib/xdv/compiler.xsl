@@ -501,7 +501,7 @@
                         ERROR: @content and synthetic
                     </xsl:message>
                 </xsl:if>
-                <xsl:copy-of select="$rule/dv:synthetic/node()"/>
+                <xsl:apply-templates mode="include-synthetic" select="$rule/dv:synthetic/node()"/>
             </xsl:when>
             <xsl:when test="not($href)">
                 <xsl:element name="xsl:copy-of">
@@ -529,6 +529,29 @@
                 </xsl:message>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="comment()" mode="include-synthetic">
+        <xsl:element name="xsl:comment"><xsl:value-of select="."/></xsl:element>
+    </xsl:template>
+
+    <xsl:template mode="include-synthetic"
+        match="text()[parent::style|parent::script|parent::xhtml:style|parent::xhtml:script]">
+        <!-- Emit xsl that avoids escaping -->
+        <xsl:element name="xsl:variable">
+            <xsl:attribute name="name">tag_text</xsl:attribute>
+            <xsl:value-of select="."/>
+        </xsl:element>
+        <xsl:element name="xsl:value-of">
+            <xsl:attribute name="select">$tag_text</xsl:attribute>
+            <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
+        </xsl:element>        
+    </xsl:template>
+
+    <xsl:template match="@*|node()" mode="include-synthetic">
+        <xsl:copy>
+          <xsl:apply-templates select="@*|node()" mode="include-synthetic"/>
+        </xsl:copy>
     </xsl:template>
 
     <xsl:template name="trace">
