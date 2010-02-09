@@ -107,7 +107,15 @@
             <xsl:for-each select="*">
                 <xsl:copy>
                     <xsl:attribute name="xml:id">r<xsl:value-of select="position()"/></xsl:attribute>
-                    <xsl:copy-of select="@*"/>
+                    <xsl:copy-of select="@*[local-name() != 'if-content']"/>
+                    <xsl:choose>
+                        <xsl:when test="@if-content = ''">
+                            <xsl:attribute name="if-content"><xsl:value-of select="@content"/></xsl:attribute>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:copy-of select="@if-content"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <dv:matches>
                         <xsl:variable name="themexpath" select="@theme"/>
                         <xsl:for-each select="$themehtml">
