@@ -27,7 +27,7 @@ def convert_css_selectors(rules, prefix='//'):
         for name, value in element.attrib.items():
             if value: 
                 if name.startswith('{%s}' % utils.namespaces['css']):
-                    element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = css_to_xpath(value, prefix=prefix)
+                    element.attrib[utils.localname(name)] = css_to_xpath(value, prefix=prefix)
             else:
                 element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = ""
 
