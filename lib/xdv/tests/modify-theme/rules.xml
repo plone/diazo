@@ -1,0 +1,20 @@
+<xdv:rules
+    xmlns:xdv="http://namespaces.plone.org/xdv"
+    xmlns:css="http://namespaces.plone.org/xdv+css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+
+    <xdv:before theme="/html/body/h1">
+        <div id="from-rules">From the rules</div>
+    </xdv:before>
+    
+    <xdv:replace css:theme="#details">
+        <dl id="details">
+            <xsl:for-each select='//table[@id="details"]/tr'>
+                <dt><xsl:copy-of select="td[1]/text()"/></dt>
+                <dd><xsl:copy-of select="td[2]/node()"/></dd>
+            </xsl:for-each>
+        </dl>
+    </xdv:replace>
+
+</xdv:rules>
