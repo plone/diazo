@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:dv="http://namespaces.plone.org/xdv" xmlns:exsl="http://exslt.org/common"
-    xmlns:set="http://exslt.org/sets" xmlns:xhtml="http://www.w3.org/1999/xhtml"
-    xmlns:dyn="http://exslt.org/dynamic" xmlns:xml="http://www.w3.org/XML/1998/namespace"
-    exclude-result-prefixes="dv dyn exsl xml" version="1.0">
+<xsl:stylesheet version="1.0"
+    xmlns:dv="http://namespaces.plone.org/xdv"
+    xmlns:dyn="http://exslt.org/dynamic"
+    xmlns:esi="http://www.edge-delivery.org/esi/1.0"
+    xmlns:exsl="http://exslt.org/common"
+    xmlns:set="http://exslt.org/sets"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    exclude-result-prefixes="dv dyn exsl xml">
     <xsl:output indent="yes" media-type="text/xml"/>
+
     <xsl:param name="rulesuri">rules.xml</xsl:param>
     <xsl:param name="boilerplateurl">boilerplate.xsl</xsl:param>
     <xsl:param name="extraurl"/>
@@ -12,8 +18,14 @@
     <xsl:param name="includemode">document</xsl:param>
     <xsl:param name="ssiprefix"></xsl:param>
     <xsl:param name="ssisuffix">;filter_xpath=</xsl:param>
+    <xsl:param name="esiprefix"></xsl:param>
+    <xsl:param name="esisuffix">;filter_xpath=</xsl:param>
     <xsl:variable name="theme" select="/"/>
-    <!-- Multi-stage theme compiler -->
+
+    <!--
+        Multi-stage theme compiler
+    -->
+
     <xsl:template match="/">
 
         <!-- Put unique xml:id values on all the theme html -->
@@ -53,11 +65,11 @@
         <xsl:copy-of select="$stage2"/>
 
     </xsl:template>
-    <!-- 
-        
-        All the utility rules
 
+    <!--
+        Boilerplate
     -->
+
     <xsl:template match="node()|@*" mode="include-boilerplate">
         <xsl:param name="stage1"/>
         <xsl:param name="rules"/>
@@ -98,9 +110,29 @@
         </xsl:choose>
 
     </xsl:template>
-    <!-- 
+
+    <xsl:template match="/xsl:stylesheet/@exclude-result-prefixes" mode="include-boilerplate">
+        <xsl:param name="stage1"/>
+        <xsl:param name="rules"/>
+        <xsl:choose>
+            <xsl:when test="not($rules//*/@method='esi' or $includemode='esi')">
+                <xsl:attribute name="exclude-result-prefixes"><xsl:value-of select="."/> esi</xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy>
+                    <xsl:apply-templates select="node()|@*" mode="include-boilerplate">
+                        <xsl:with-param name="stage1" select="$stage1"/>
+                        <xsl:with-param name="rules" select="$rules"/>
+                    </xsl:apply-templates>
+                </xsl:copy>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!--
         Annotate the rules for stage1
     -->
+
     <xsl:template match="dv:rules" mode="annotate-rules">
         <xsl:param name="themehtml"/>
         <xsl:copy>
@@ -117,7 +149,7 @@
                         </xsl:otherwise>
                     </xsl:choose>
                     <xsl:if test="node()">
-                        <dv:synthetic><xsl:copy-of select="node()"/></dv:synthetic>
+                        <dv:synthetic><xsl:apply-templates select="node()" mode="filter-synthetic"/></dv:synthetic>
                     </xsl:if>
                     <dv:matches>
                         <xsl:variable name="themexpath" select="@theme"/>
@@ -134,6 +166,23 @@
         </xsl:copy>
     </xsl:template>
 
+    <xsl:template match="node()|@*" mode="filter-synthetic">
+        <xsl:copy>
+            <xsl:apply-templates select="node()|@*" mode="filter-synthetic"/>
+        </xsl:copy>
+    </xsl:template>
+
+    <xsl:template match='//*[namespace-uri() = "http://www.w3.org/1999/xhtml"]' mode="filter-synthetic">
+        <xsl:element name="{local-name()}">
+            <xsl:apply-templates select="@*|node()" mode="filter-synthetic"/>
+        </xsl:element>
+    </xsl:template>
+
+
+    <!--
+        Annotate the theme html
+    -->
+
     <xsl:template match="comment()" mode="annotate-html">
         <xsl:element name="xsl:comment"><xsl:value-of select="."/></xsl:element>
     </xsl:template>
@@ -146,9 +195,22 @@
             <xsl:apply-templates select="node()|@*" mode="annotate-html"/>
         </xsl:copy>
     </xsl:template>
+
+    <xsl:template match="/html/@xmlns" mode="annotate-html" priority="5">
+        <!-- setting the namespace to xhtml mucks up the included namespaces, so cheat -->
+        <xsl:if test="document($rulesuri, $theme)//*/@method='esi' or $includemode='esi'">
+            <!-- when we have another namespace defined, libxml2/xmlsave.c will not magically add the xhtml ns for us -->
+            <xsl:element name="xsl:attribute">
+                <xsl:attribute name="name">xmlns</xsl:attribute>
+                <xsl:value-of select="."/>
+            </xsl:element>
+        </xsl:if>
+    </xsl:template>
+
     <!--
         Apply the rules
     -->
+
     <xsl:template match="node()|@*" mode="apply-rules">
         <xsl:param name="rules"/>
         <xsl:variable name="thisxmlid" select="@xml:id"/>
@@ -187,15 +249,13 @@
         <xsl:element name="xsl:value-of">
             <xsl:attribute name="select">$tag_text</xsl:attribute>
             <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
-        </xsl:element>        
+        </xsl:element>
     </xsl:template>
 
-    <xsl:template match="/html/@xmlns" mode="apply-rules" priority="5">
-        <!-- Filter this out (causes problems when xsl is not serialized) -->
-    </xsl:template>
     <!--
         Rule templates
     -->
+
     <xsl:template name="before">
         <xsl:param name="matching-rules"/>
         <xsl:param name="rules"/>
@@ -470,6 +530,10 @@
         </xsl:copy>
     </xsl:template>
 
+    <!--
+        Content inclusion
+    -->
+
     <xsl:template match="@*|node()" mode="conditional-include">
         <xsl:choose>
             <xsl:when test="@if-content">
@@ -494,11 +558,17 @@
         <xsl:param name="rule"/>
         <xsl:variable name="href" select="$rule/@href"/>
         <xsl:variable name="content" select="$rule/@content"/>
+        <xsl:variable name="method" select="$rule/@method"/>
         <xsl:choose>
             <xsl:when test="$rule/dv:synthetic">
                 <xsl:if test="$content">
                     <xsl:message terminate="yes">
-                        ERROR: @content and synthetic
+                        ERROR: @content and synthetic not allowed in same rule
+                    </xsl:message>
+                </xsl:if>
+                <xsl:if test="$href">
+                    <xsl:message terminate="yes">
+                        ERROR: @href and synthetic not allowed in same rule
                     </xsl:message>
                 </xsl:if>
                 <xsl:apply-templates mode="include-synthetic" select="$rule/dv:synthetic/node()"/>
@@ -510,23 +580,31 @@
                     </xsl:attribute>
                 </xsl:element>
             </xsl:when>
-            <xsl:when test="$includemode = 'document'">
-                <xsl:element name="xsl:copy-of">
-                    <xsl:attribute name="select">document('<xsl:value-of select="$href"/>', .)<xsl:value-of select="$content"/></xsl:attribute>
-                </xsl:element>
-            </xsl:when>
-            <xsl:when test="$includemode = 'ssi'">
+            <xsl:when test="$method = 'ssi'">
                 <!-- Assumptions:
-                    * $href is an absolute local path (e.g.  /foo/bar)
+                    * When using ssiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
                 <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"
                     /><xsl:value-of select="$href"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
                     ><xsl:value-of select="$ssisuffix"/><xsl:value-of select="$content"/>" wait="yes" </xsl:element>
             </xsl:when>
+            <xsl:when test="$method = 'esi'">
+                <!-- Assumptions:
+                    * When using esiprefix, $href should be an absolute local path (i.e.  /foo/bar)
+                -->
+                <esi:include><xsl:attribute name="src"><xsl:value-of select="$esiprefix"
+                    /><xsl:value-of select="$href"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
+                    ><xsl:value-of select="$esisuffix"/><xsl:value-of select="$content"/></xsl:attribute></esi:include>
+            </xsl:when>
             <xsl:otherwise>
-                <xsl:message terminate="yes">
-                    ERROR: Unknown includemode.
-                </xsl:message>
+                <xsl:if test="$method and $method != 'document' or $includemode != 'document'">
+                    <xsl:message terminate="yes">
+                        ERROR: Unknown includemode.
+                    </xsl:message>
+                </xsl:if>
+                <xsl:element name="xsl:copy-of">
+                    <xsl:attribute name="select">document('<xsl:value-of select="$href"/>', .)<xsl:value-of select="$content"/></xsl:attribute>
+                </xsl:element>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -553,6 +631,10 @@
           <xsl:apply-templates select="@*|node()" mode="include-synthetic"/>
         </xsl:copy>
     </xsl:template>
+
+    <!--
+        Debugging support
+    -->
 
     <xsl:template name="trace">
         <xsl:param name="rule-name"/>

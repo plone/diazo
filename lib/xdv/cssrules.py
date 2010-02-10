@@ -23,6 +23,8 @@ logger = logging.getLogger('xdv')
 def convert_css_selectors(rules, prefix='//'):
     """Convert css rules to xpath rules element tree in place
     """
+    #XXX: There is a :root pseudo-class - http://www.w3.org/TR/css3-selectors/#root-pseudo
+    # We may wish to add support to lxml.cssselect for it some day.
     for element in rules.xpath("//@*[namespace-uri()='%s']/.." % utils.namespaces['css']):
         for name, value in element.attrib.items():
             if value: 
