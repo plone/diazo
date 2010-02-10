@@ -21,6 +21,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 class XDVTestCase(unittest.TestCase):
     
     writefiles = os.environ.get('XDVTESTS_WRITE_FILES', False)
+    warnings = os.environ.get('XDVTESTS_WARN', "1").lower() not in ('0', 'false', 'off') 
 
     testdir = None # override
     
@@ -52,9 +53,10 @@ class XDVTestCase(unittest.TestCase):
             if old != new:
                 if self.writefiles:
                     open(xslfn + '.old', 'w').write(old)
-                print "WARNING:", "compiled.xsl has CHANGED"
-                for line in difflib.unified_diff(old.split('\n'), new.split('\n'), xslfn, 'now'):
-                    print line
+                if self.warnings:
+                    print "WARNING:", "compiled.xsl has CHANGED"
+                    for line in difflib.unified_diff(old.split('\n'), new.split('\n'), xslfn, 'now'):
+                        print line
 
         # Write the compiled xsl out to catch unexpected changes
         if self.writefiles:
@@ -91,8 +93,8 @@ class XDVTestCase(unittest.TestCase):
             old = open(outputfn).read()
             new = self.themed_string
             if old != new:
-                if self.writefiles:
-                    open(outputfn + '.old', 'w').write(old)
+                #if self.writefiles:
+                #    open(outputfn + '.old', 'w').write(old)
                 print "ERROR:", "output.html has CHANGED"
                 for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
                     print  line
