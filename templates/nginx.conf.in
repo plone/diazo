@@ -9,9 +9,9 @@ http {
     include ${buildout:directory}/etc/mime.types;
 #    gzip on;
     server {
-        listen ${nginx-conf:port};
+        listen ${port};
         server_name localhost;
-        root ${nginx-conf:root};
+        root ${root};
         autoindex on;
 
         # Decide if we need to filter
@@ -30,9 +30,12 @@ http {
             internal;
             error_page 404 = @include404;
             
+            # Cache in Varnish for 1h
+            expires 1h;
+            
             # Proxy
             rewrite    ^/_include(.*)$    $1    break;
-            proxy_pass http://127.0.0.1:${nginx-conf:port};
+            proxy_pass http://127.0.0.1:${port};
             
             # Our safety belt.
             proxy_set_header X-Loop 1$http_X_Loop; # unary count
@@ -42,7 +45,7 @@ http {
             }
             
             # Filter by xpath
-            xslt_stylesheet ${nginx-conf:filter-xsl}
+            xslt_stylesheet ${filter-xsl}
                 xpath=$filter_xpath
                 ;
             xslt_html_parser on;
@@ -51,8 +54,8 @@ http {
         
         # Our styled location.
         location /styled {
-            alias ${nginx-conf:root};
-            xslt_stylesheet ${nginx-conf:theme-xsl};
+            alias ${root};
+            xslt_stylesheet ${example.xsl};
             xslt_html_parser on;
             xslt_types text/html;
             # Switch on ssi here to enable external includes.
@@ -61,8 +64,8 @@ http {
 
         # Another styled location.
         location /styled/ploneorg {
-            alias ${nginx-conf:root}/ploneorg;
-            xslt_stylesheet ${nginx-conf:root}/ploneorg/plone.xsl;
+            alias ${root}/ploneorg;
+            xslt_stylesheet ${ploneorg.xsl};
             xslt_html_parser on;
             xslt_types text/html;
         }
