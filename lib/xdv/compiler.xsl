@@ -148,6 +148,9 @@
                             <xsl:copy-of select="@if-content"/>
                         </xsl:otherwise>
                     </xsl:choose>
+                    <xsl:if test="@href and not(@method)">
+                        <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>
+                    </xsl:if>
                     <xsl:if test="node()">
                         <dv:synthetic><xsl:apply-templates select="node()" mode="filter-synthetic"/></dv:synthetic>
                     </xsl:if>
@@ -580,6 +583,11 @@
                     </xsl:attribute>
                 </xsl:element>
             </xsl:when>
+            <xsl:when test="$method = 'document'">
+                <xsl:element name="xsl:copy-of">
+                    <xsl:attribute name="select">document('<xsl:value-of select="$href"/>', .)<xsl:value-of select="$content"/></xsl:attribute>
+                </xsl:element>
+            </xsl:when>
             <xsl:when test="$method = 'ssi'">
                 <!-- Assumptions:
                     * When using ssiprefix, $href should be an absolute local path (i.e.  /foo/bar)
@@ -597,14 +605,9 @@
                     ><xsl:value-of select="$esisuffix"/><xsl:value-of select="$content"/></xsl:attribute></esi:include>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:if test="$method and $method != 'document' or $includemode != 'document'">
-                    <xsl:message terminate="yes">
-                        ERROR: Unknown includemode.
-                    </xsl:message>
-                </xsl:if>
-                <xsl:element name="xsl:copy-of">
-                    <xsl:attribute name="select">document('<xsl:value-of select="$href"/>', .)<xsl:value-of select="$content"/></xsl:attribute>
-                </xsl:element>
+                <xsl:message terminate="yes">
+                    ERROR: Unknown includemode.
+                </xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
