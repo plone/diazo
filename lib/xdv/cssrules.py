@@ -27,11 +27,11 @@ def convert_css_selectors(rules, prefix='//'):
     # We may wish to add support to lxml.cssselect for it some day.
     for element in rules.xpath("//@*[namespace-uri()='%s']/.." % utils.namespaces['css']):
         for name, value in element.attrib.items():
-            if value: 
-                if name.startswith('{%s}' % utils.namespaces['css']):
+            if name.startswith('{%s}' % utils.namespaces['css']):
+                if value:
                     element.attrib[utils.localname(name)] = css_to_xpath(value, prefix=prefix)
-            else:
-                element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = ""
+                else:
+                    element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = ""
 
 def main():
     """Called from console script
