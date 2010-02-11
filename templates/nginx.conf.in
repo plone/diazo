@@ -39,14 +39,13 @@ http {
             
             # Our safety belt.
             proxy_set_header X-Loop 1$http_X_Loop; # unary count
-            proxy_set_header Accept-Encoding "";
             error_page 500 = @include500;
             if ($http_X_Loop ~ "11111") {
                 return 500;
             }
             
             # Filter by xpath
-            xslt_stylesheet ${filter.xsl}
+            xslt_stylesheet ${filter-xsl}
                 xpath=$filter_xpath
                 ;
             xslt_html_parser on;
@@ -56,9 +55,7 @@ http {
         # Our styled location.
         location /styled {
             alias ${root};
-            xslt_stylesheet ${example.xsl}
-                path='$uri'
-                ;
+            xslt_stylesheet ${example.xsl};
             xslt_html_parser on;
             xslt_types text/html;
             # Switch on ssi here to enable external includes.
@@ -68,9 +65,7 @@ http {
         # Another styled location.
         location /styled/ploneorg {
             alias ${root}/ploneorg;
-            xslt_stylesheet ${ploneorg.xsl}
-                path='$uri'
-                ;
+            xslt_stylesheet ${ploneorg.xsl};
             xslt_html_parser on;
             xslt_types text/html;
         }

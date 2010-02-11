@@ -3,9 +3,7 @@
     <drop css:content="#byline"/>
     <replace theme="/html/head/title" content="/html/head/title"/>
     <copy css:theme="#pageheading" content="/html/head/title/text()"/>
-    <copy theme="/html/body/h1" content="/html/head/title/text()"/>
-    <copy css:theme="#pagecontent" content="/html/body/div[@id='content']/*"/>
-    <append css:theme="#nav" css:content="pre" href="/"/>
-    <!-- assume this is an index view -->
-    <append css:theme="#nav" css:content="pre" if-content="not(/html/body/div[@id='content'])"/>
+    <copy css:theme="#pagecontent" css:content="body > pre" if-content=""/>
+    <copy css:theme="#pagecontent" css:content="#content > *"/>
+    <append css:theme="#left-column" css:content="#portlet" href="/extra.html"/>
 </rules>
