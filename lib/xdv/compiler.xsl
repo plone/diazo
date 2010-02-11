@@ -5,6 +5,7 @@
     xmlns:esi="http://www.edge-delivery.org/esi/1.0"
     xmlns:exsl="http://exslt.org/common"
     xmlns:set="http://exslt.org/sets"
+    xmlns:str="http://exslt.org/strings"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -115,7 +116,7 @@
         <xsl:param name="stage1"/>
         <xsl:param name="rules"/>
         <xsl:choose>
-            <xsl:when test="not($rules//*/@method='esi' or $includemode='esi')">
+            <xsl:when test="not($rules//*[@method='esi'] or ($includemode='esi' and $rules//*[not(@method)]))">
                 <xsl:attribute name="exclude-result-prefixes"><xsl:value-of select="."/> esi</xsl:attribute>
             </xsl:when>
             <xsl:otherwise>
@@ -566,12 +567,12 @@
             <xsl:when test="$rule/dv:synthetic">
                 <xsl:if test="$content">
                     <xsl:message terminate="yes">
-                        ERROR: @content and synthetic not allowed in same rule
+                        ERROR: @content attribute and inline content not allowed in same rule
                     </xsl:message>
                 </xsl:if>
                 <xsl:if test="$href">
                     <xsl:message terminate="yes">
-                        ERROR: @href and synthetic not allowed in same rule
+                        ERROR: @href attribute and inline content not allowed in same rule
                     </xsl:message>
                 </xsl:if>
                 <xsl:apply-templates mode="include-synthetic" select="$rule/dv:synthetic/node()"/>
@@ -600,13 +601,13 @@
                 <!-- Assumptions:
                     * When using esiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
-                <esi:include><xsl:attribute name="src"><xsl:value-of select="$esiprefix"
-                    /><xsl:value-of select="$href"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
-                    ><xsl:value-of select="$esisuffix"/><xsl:value-of select="$content"/></xsl:attribute></esi:include>
+                <esi:include><xsl:attribute name="src"><xsl:value-of select="str:encode-uri($esiprefix, false())"
+                    /><xsl:value-of select="str:encode-uri($href, false())"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
+                    ><xsl:value-of select="str:encode-uri($esisuffix, false())"/><xsl:value-of select="str:encode-uri($content, false())"/></xsl:attribute></esi:include>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:message terminate="yes">
-                    ERROR: Unknown includemode.
+                    ERROR: Unknown includemode or @method attribute
                 </xsl:message>
             </xsl:otherwise>
         </xsl:choose>
