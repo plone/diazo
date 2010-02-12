@@ -594,8 +594,8 @@
                     * When using ssiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
                 <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"
-                    /><xsl:value-of select="$href"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
-                    ><xsl:value-of select="$ssisuffix"/><xsl:value-of select="$content"/>" wait="yes" </xsl:element>
+                    /><xsl:value-of select="str:encode-uri($href, false())"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
+                    ><xsl:value-of select="str:encode-uri($ssisuffix, false())"/><xsl:value-of select="str:encode-uri($content, false())"/>" wait="yes" </xsl:element>
             </xsl:when>
             <xsl:when test="$method = 'esi'">
                 <!-- Assumptions:
