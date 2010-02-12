@@ -116,16 +116,16 @@
         <xsl:param name="stage1"/>
         <xsl:param name="rules"/>
         <xsl:choose>
-            <xsl:when test="not($rules//*[@method='esi'] or ($includemode='esi' and $rules//*[not(@method)]))">
-                <xsl:attribute name="exclude-result-prefixes"><xsl:value-of select="."/> esi</xsl:attribute>
-            </xsl:when>
-            <xsl:otherwise>
+            <xsl:when test="$includemode='esi' or $rules//*[@method='esi']">
                 <xsl:copy>
                     <xsl:apply-templates select="node()|@*" mode="include-boilerplate">
                         <xsl:with-param name="stage1" select="$stage1"/>
                         <xsl:with-param name="rules" select="$rules"/>
                     </xsl:apply-templates>
                 </xsl:copy>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:attribute name="exclude-result-prefixes"><xsl:value-of select="."/> esi</xsl:attribute>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
