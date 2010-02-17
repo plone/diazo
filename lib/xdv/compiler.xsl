@@ -18,9 +18,9 @@
     <xsl:param name="trace"/>
     <xsl:param name="includemode">document</xsl:param>
     <xsl:param name="ssiprefix"></xsl:param>
-    <xsl:param name="ssisuffix">;filter_xpath=</xsl:param>
+    <xsl:param name="ssisuffix">++filter_xpath++</xsl:param>
     <xsl:param name="esiprefix"></xsl:param>
-    <xsl:param name="esisuffix">;filter_xpath=</xsl:param>
+    <xsl:param name="esisuffix">++filter_xpath++</xsl:param>
     <xsl:variable name="theme" select="/"/>
 
     <!--
@@ -593,17 +593,19 @@
                 <!-- Assumptions:
                     * When using ssiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
-                <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"
-                    /><xsl:value-of select="str:encode-uri($href, false())"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
-                    ><xsl:value-of select="str:encode-uri($ssisuffix, false())"/><xsl:value-of select="str:encode-uri($content, false())"/>" wait="yes" </xsl:element>
+                <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"/><xsl:choose>
+                    <xsl:when test="contains($href, '?')"><xsl:value-of select="str:encode-uri(str:replace($href, '?', concat($ssisuffix, $content, '?')), false())"/></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="str:encode-uri(concat($href, $ssisuffix, $content), false())"/></xsl:otherwise>
+                    </xsl:choose>" wait="yes" </xsl:element>
             </xsl:when>
             <xsl:when test="$method = 'esi'">
                 <!-- Assumptions:
                     * When using esiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
-                <esi:include><xsl:attribute name="src"><xsl:value-of select="str:encode-uri($esiprefix, false())"
-                    /><xsl:value-of select="str:encode-uri($href, false())"/><xsl:if test="not(contains($href, '?'))">?</xsl:if
-                    ><xsl:value-of select="str:encode-uri($esisuffix, false())"/><xsl:value-of select="str:encode-uri($content, false())"/></xsl:attribute></esi:include>
+                <esi:include><xsl:attribute name="src"><xsl:choose>
+                    <xsl:when test="contains($href, '?')"><xsl:value-of select="str:encode-uri(str:replace($href, '?', concat($ssisuffix, $content, '?')), false())"/></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="str:encode-uri(concat($href, $ssisuffix, $content), false())"/></xsl:otherwise>
+                    </xsl:choose></xsl:attribute></esi:include>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:message terminate="yes">
