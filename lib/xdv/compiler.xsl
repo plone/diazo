@@ -18,9 +18,11 @@
     <xsl:param name="trace"/>
     <xsl:param name="includemode">document</xsl:param>
     <xsl:param name="ssiprefix"></xsl:param>
-    <xsl:param name="ssisuffix">++filter_xpath++</xsl:param>
+    <xsl:param name="ssisuffix"></xsl:param>
+    <xsl:param name="ssiquerysuffix">;filter_xpath=</xsl:param>
     <xsl:param name="esiprefix"></xsl:param>
-    <xsl:param name="esisuffix">++filter_xpath++</xsl:param>
+    <xsl:param name="esisuffix"></xsl:param>
+    <xsl:param name="esiquerysuffix">;filter_xpath=</xsl:param>
     <xsl:variable name="theme" select="/"/>
 
     <!--
@@ -562,6 +564,7 @@
         <xsl:param name="rule"/>
         <xsl:variable name="href" select="$rule/@href"/>
         <xsl:variable name="content" select="$rule/@content"/>
+        <xsl:variable name="content_quoted" select="str:encode-uri($content, false())"/>
         <xsl:variable name="method" select="$rule/@method"/>
         <xsl:choose>
             <xsl:when test="$rule/dv:synthetic">
@@ -594,8 +597,8 @@
                     * When using ssiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
                 <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"/><xsl:choose>
-                    <xsl:when test="contains($href, '?')"><xsl:value-of select="str:encode-uri(str:replace($href, '?', concat($ssisuffix, $content, '?')), false())"/></xsl:when>
-                    <xsl:otherwise><xsl:value-of select="str:encode-uri(concat($href, $ssisuffix, $content), false())"/></xsl:otherwise>
+                    <xsl:when test="contains($href, '?')"><xsl:value-of select="concat(str:replace($href, '?', concat($ssisuffix, '?')), $ssiquerysuffix, $content_quoted)"/></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="concat($href, $ssisuffix, '?', $ssiquerysuffix, $content_quoted)"/></xsl:otherwise>
                     </xsl:choose>" wait="yes" </xsl:element>
             </xsl:when>
             <xsl:when test="$method = 'esi'">
@@ -603,8 +606,8 @@
                     * When using esiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
                 <esi:include><xsl:attribute name="src"><xsl:choose>
-                    <xsl:when test="contains($href, '?')"><xsl:value-of select="str:encode-uri(str:replace($href, '?', concat($ssisuffix, $content, '?')), false())"/></xsl:when>
-                    <xsl:otherwise><xsl:value-of select="str:encode-uri(concat($href, $ssisuffix, $content), false())"/></xsl:otherwise>
+                    <xsl:when test="contains($href, '?')"><xsl:value-of select="concat(str:replace($href, '?', concat($esisuffix, '?')), $esiquerysuffix, $content_quoted)"/></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="concat($href, $esisuffix, '?', $esiquerysuffix, $content_quoted)"/></xsl:otherwise>
                     </xsl:choose></xsl:attribute></esi:include>
             </xsl:when>
             <xsl:otherwise>

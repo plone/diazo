@@ -13,26 +13,29 @@ http {
         server_name localhost;
         root ${root};
         autoindex on;
+
+        # Decide if we need to filter
+        if ($args ~ "^(.*);filter_xpath=(.*)$") {
+            set $newargs $1;
+            set $filter_xpath $2;
+            # rewrite args to avoid looping
+            rewrite    ^(.*)$    /_include$1?$newargs?;
+        }
         
         location @include500 { return 500; }
         location @include404 { return 404; }
         
-        location ~ "^(.*)\+\+filter_xpath\+\+(.*)$" {
-            set $path $1; 
-            set $filter_xpath $2;
-            
+        location ^~ /_include {
+            # Restrict to subrequests
+            internal;
             error_page 404 = @include404;
             
             # Cache in Varnish for 1h
             expires 1h;
             
-            # Proxy back to ourself
-            rewrite    ^    $path    break;
+            # Proxy
+            rewrite    ^/_include(.*)$    $1    break;
             proxy_pass http://127.0.0.1:${port};
-            
-            # normalizing to an anonymous user
-            proxy_set_header        Cookie           "";
-            proxy_set_header        Authorization    "";
             
             # Our safety belt.
             proxy_set_header X-Loop 1$http_X_Loop; # unary count
