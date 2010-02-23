@@ -45,7 +45,7 @@ http {
             }
             
             # Filter by xpath
-            xslt_stylesheet ${filter-xsl}
+            xslt_stylesheet ${filter.xsl}
                 xpath=$filter_xpath
                 ;
             xslt_html_parser on;
