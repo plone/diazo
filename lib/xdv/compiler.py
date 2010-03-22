@@ -77,7 +77,7 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         elif node.tag == 'style' or node.tag == etree.Comment and node.text.startswith("[if IE"):
             node.text = IMPORT_STYLESHEET.sub(lambda match: match.group(1) + to_absolute(match.group(2), absolute_prefix) + match.group(3), node.text)
 
-def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None):
+def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None):
     """Invoke the xdv compiler.
     
     * ``rules`` is the rules file
@@ -95,9 +95,14 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_p
     * ``parser`` can be set to an lxml parser instance; the default is an HTMLParser
     * ``compiler_parser``` can be set to an lxml parser instance; the default is a
       XMLParser
+    * ``rules_parser`` can be set to an lxml parser instance; the default is a
+      XMLParse.
     """
-    rules_parser = etree.XMLParser(recover=False)
+    
+    if rules_parser is None:
+        rules_parser = etree.XMLParser(recover=False)
     rules_doc = etree.parse(rules, parser=rules_parser)
+    
     if xinclude:
         rules_doc.xinclude()
     if update:
