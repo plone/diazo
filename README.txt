@@ -59,6 +59,52 @@ Bear in mind that:
 
 We will illustrate how to set up XDV for deployment below.
 
+Installation
+============
+
+To install XDV, you should install the ``xdv`` egg. You can do that using
+``easy_install``, ``pip`` or ``zc.buildout``. For example, using
+``easy_install`` (ideally in a ``virtualenv``)::
+    
+    $ easy_install -U xdv
+
+If using ``zc.buildout``, you can use the following ``buildout.cfg`` as a
+starting point. This will ensure that the console scripts are installed,
+which is important if you need to execute the XDV compiler manually::
+
+    [buildout]
+    parts =
+        xdv
+
+    [xdv]
+    recipe = zc.recipe.egg
+    eggs = xdv
+
+Note that ``lxml`` is a dependency of ``xdv``. On some operating systems,
+notably Mac OS X, installing a "good" ``lxml`` egg can be problematic, due to
+a mismatch in the operating system versions of the ``libxml2`` and ``libxslt``
+libraries that ``lxml`` uses. To get around that, you can compile a static
+``lxml`` egg using the following buildout recipe::
+
+    [buildout]
+    # lxml should be first in the parts list
+    parts =
+        lxml
+        xdv
+    
+    [lxml]
+    recipe = z3c.recipe.staticlxml
+    egg = lxml
+    libxml2-url = http://xmlsoft.org/sources/libxml2-2.7.6.tar.gz
+    libxslt-url = http://xmlsoft.org/sources/libxslt-1.1.26.tar.gz
+    
+    [xdv]
+    recipe = zc.recipe.egg
+    eggs = xdv
+
+Once installed, you should find ``xdvcompiler`` and ``xdvrun`` in your
+``bin`` directory.
+
 Rules file syntax
 =================
 
@@ -173,41 +219,39 @@ Would drop the ``<base />`` tag from the head of the theme.
 Order of rule execution
 -----------------------
 
-XXX: Laurence needs to check this
-
 In most cases, you should not care too much about the inner workings of the
 XDV compiler. However, it can sometimes be useful to understand the order
 in which rules are applied.
 
-1. ``<drop />`` rules referring to the *content* are applied first. Thus,
-   anything that is dropped from the content will never be matched by any
-   other rule.
-2. ``<before />`` rules execute next, followed by ``<after />`` rules.
-3. ``<replace />`` rules execute next.
-4. ``<prepend />``, ``<copy />`` and ``<append />`` rules are then executed.
-5. Finally, ``<drop />`` rules referring to the *theme* are applied, meaning
-   they can also match elements that have landed in the theme as a result of
-   one of the above rules.
+1. ``<before />`` rules are always executed first.
+2. ``<drop />`` rules are executed next.
+3. ``<replace />`` rules are executed next, provided no ``<drop />`` rule was
+   applied to the same theme node.
+4. ``<prepend />``, ``<copy />`` and ``<append />`` rules execute next,
+   provided no ``<replace />`` rule was applied to the same theme node.
+5. ``<after />`` rules are executed last.
 
 Behaviour if theme or content is not matched
 --------------------------------------------
 
-XXX: Laurence needs to check this - is it correct? Does the same rule apply
-to all rules, or only to <copy /> and <replace />?
-
 If a rule does not match the theme (whether or not it matches the content),
 it is silently ignored.
 
-If a rule matches the theme, but not the content, the matched element will
-be dropped in the theme::
+If a ``<replace />`` rule matches the theme, but not the content, the matched
+element will be dropped in the theme::
 
     <replace css:theme="#header" content="#header-element" />
 
-If the element with id ``header-element`` is not found in the content, the
-placeholder with id ``header`` in the theme is removed.
+Here, if the element with id ``header-element`` is not found in the content,
+the placeholder with id ``header`` in the theme is removed.
 
-If you want the placeholder to stay put, you can make this a conditional
-rule::
+Similarly, the contents of a theme node matched with a ``<copy />`` rule will
+be dropped if there is no matching content. Another way to think of this is
+that if no content node is matched, XDV uses an empty node when copying or
+replacing.
+
+If you want the placeholder to stay put in the case of a missing content node,
+you can make this a conditional rule::
 
     <replace css:theme="#header" content="#header-element" if-content="" />
 
@@ -222,8 +266,6 @@ a few more advanced tools at your disposal, should you need them.
 Conditional rules
 ~~~~~~~~~~~~~~~~~
 
-XXX: Laurence needs to check this
-
 Sometimes, it is useful to apply a rule only if a given element appears or
 does not appear in the markup. The ``if-content`` attribute can be used with
 any rule to make it conditional.
@@ -236,9 +278,8 @@ in the content, the rule will be applied::
     <drop css:theme="#portlet-wrapper" if-content="not(//*[@class='portlet'])"/>
 
 This will copy all elements with class ``portlet`` into the ``portlets``
-element. If there are no matching elements in the content, the ``portlets``
-element will be dropped as normal. However, we also drop the
-``portlet-wrapper`` element in this case, as it is presumably superfluous.
+element. If there are no matching elements in the content we drop the
+``portlet-wrapper`` element, which is presumably superfluous.
 
 Here is another example using CSS selectors::
 
@@ -256,10 +297,24 @@ condition". Hence the following two rules are equivalent::
     <copy css:theme="#header" css:content="#header-box > *" css:if-content="#header-box > *"/>
     <copy css:theme="#header" css:content="#header-box > *" css:if-content=""/>
 
+If there are multiple rules of the same type with the same ``them``
+expression and different ``if-content`` expressions, they will be as an
+if..else if...else block::
+
+    <copy theme="/html/body/h1" content="/html/body/h1/text()" if-content="/html/body/h1"/>
+    <copy theme="/html/body/h1" content="//h1[@id='first-heading']/text()" if-content="//h1[@id='first-heading']"/>
+    <copy theme="/html/body/h1" content="/html/head/title/text()" />
+
+These rules all attempt to fill the text in the ``<h1 />`` inside the body.
+The first rule looks for a similar ``<h1 />`` tag and uses its text. If that
+doesn't match, the second rule looks for any ``<h1 />`` with id
+``first-heading``, and uses its text. If that doesn't match either, the
+final rule will be used as a fallback (since it has no ``if-content``),
+taking the contents of the ``<title />`` tag in the head of the content
+document.
+
 Including external content
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-XXX: Laurence needs to check/complete this
 
 Normally, the ``content`` attribute of any rule selects nodes from the
 response being returned by the underlying dynamic web server. However, it is
@@ -318,13 +373,82 @@ The inclusion can happen in one of three ways:
 Modifying the theme on the fly
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-XXX: Laurence needs to check/complete this
+Sometimes, the theme is almost perfect, but cannot be modified, for example
+because it is being served from a remote location that you do not have access
+to, or because it is shared with other applications.
+
+XDV allows you to modify the theme using "inline" markup in the rules file.
+You can think of this as a rule where the matched ``content`` is explicitly
+stated in the rules file, rather than pulled from the response being styled.
+
+For example::
+
+    <xdv:rules
+        xmlns:xdv="http://namespaces.plone.org/xdv"
+        xmlns:css="http://namespaces.plone.org/xdv+css"
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+        >
+
+        <xdv:append theme="/html/head">
+            <style type="text/css">
+                /* From the rules */
+                body > h1 { color: red; }
+            </style>
+        </xdv:append>
+
+    </xdv:rules>
+
+Notice how we have placed the rules in an explicit ``xdv`` namespace, so that
+we can write the "inline" HTML without a namespace.
+
+In the example above, the ``<append />`` rule will copy the ``<style />``
+attribute and its contents into the ``<head />`` of the theme. Similar rules
+can be constructed for ``<copy />``, ``<replace />``, ``<prepend />``, 
+``<before />`` or ``<after />``.
+
+It is even possible to insert XSLT instructions into the compiled theme in
+this manner. Having declared the ``xsl`` namespace as shown above, we can do
+something like this::
+
+    <xdv:replace css:theme="#details">
+        <dl id="details">
+            <xsl:for-each css:select="table#details > tr">
+                <dt><xsl:copy-of select="td[1]/text()"/></dt>
+                <dd><xsl:copy-of select="td[2]/node()"/></dd>
+            </xsl:for-each>
+        </dl>
+    </xdv:replace>
+
+Note that css expressions are converted to "placeless" XPath expressions,
+so ``css:select="table#details > tr"`` converts to
+``select="//table[@id='details]/tr"``. This means it would not be possible to
+use ``css:select="td:first-child > *"`` as you want a relative selector here.
+You can, of course, just use a manual XPath in a ``select`` attribute instead.
+
+XInclude
+~~~~~~~~
+
+You may wish to re-use elements of your rules file across multiple themes.
+This is particularly useful if you have multiple variations on the same theme
+used to style different pages on a particular website.
+
+Rules files can be included using the XInclude protocol. By default, XInclude
+processing is disabled (since it is a slight performance hit at compile
+time), but it can be enabled in the XDV compiler using a command line option.
+
+Inclusions use standard XInclude syntax. For example::
+
+    <rules
+        xmlns="http://namespaces.plone.org/xdv"
+        xmlns:css="http://namespaces.plone.org/xdv+css"
+        xmlns:xi="http://www.w3.org/2001/XInclude">
+        
+        <xi:include href="standard-rules.xml" />
+    
+    </rules>
 
 Compilation
 ===========
-
-XXX: Laurence needs to check/complete this - do we need a CSS pre-processing
- step?
 
 Once you have written your rules file, you need to compile it to an XSLT for
 deployment. In some cases, you may have an application server that does this
@@ -332,58 +456,86 @@ on the fly, e.g. if you are using the ``collective.xdv`` package with Plone.
 For deployment to a web server like Apache or nginx, however, you will need
 to perform this step manually.
 
-Compilation uses the XSLT file ``compiler.xsl``. The easiest way to run this
-is with the ``xsltproc`` command, which should come installed with
-``libxslt``. You will need to install ``libxslt`` if you don't have it already.
+The easiest way to invoke the XDV compiler is via the ``xdvcompiler`` command
+line script which is installed with the ``xdv`` egg. To see its help output,
+do::
 
-To execute the compiler::
+    $ bin/xdvcompiler --help
 
-    $ xsltproc --nonet --html compiler.xsl theme.html > compiledtheme.xsl
+To run the compiler with ``rules.xml`` operating on ``theme.html``::
 
-This will look for a rules file called ``rules.xml`` in the current directory.
-If you need to specify an alternative file, you can do::
+    $ bin/xdvcompiler rules.xml theme.html
 
-    $ xsltproc --nonet --html --stringparam rulesuri rules.xml compiler.xsl theme.html > compiledtheme.xsl
+This will print the compiled XSLT file to the standard output. You can save
+it to a file instead using::
 
-There are various other parameters which can be specified using the
-``--stringparam`` syntax:
+    $ bin/xdvcompiler -o theme.xsl rules.xml theme.html
 
-* ``rulesuri``, which gives a URI or filename to the rules file.
-* ``boilerplateurl``, which gives a URL to the ``boilerplate.xsl`` file.
-  You probably don't need to override this.
-* ``extraurl``, which gives a URL to an XSLT file which will be inserted into
-  the compiled theme. Use this to include arbitrary XSLT instructions in the
-  compiled theme.
-* ``trace``, which can be set to 1 to enable debug tracing during the
-  compilation step.
-* ``includemode``, which can be set to one of ``document``, ``ssi`` or
-  ``esi`` to specify the default inclusion method for external content when
-  using the ``href`` attribute.
-* ``ssiprefix``, ``ssisuffix``, which can be used to add a prefix or suffix to
-  a URI generated for SSI inclusion.
-* ``ssiquerysuffix``, which can be used to change the ``;filter_xpath=``
-  request variable name in a URL generated for SSI inclusion.
-* ``esiprefix``, ``esisuffix`` and ``esiquerysuffix``, which serve the same
-  function for ESI inclusions.
+The following command line options are available:
+
+* Use ``-p`` to pretty-print the output for improved readability. There is a
+  risk that this could alter rendering in the browser, though, as browsers
+  are sensitive to some kinds of whitespace.
+* Use ``-a`` to set an absolute prefix - see below.
+* Use ``-i`` to set the default external file inclusion mode to one of
+  ``document``, ``ssi`` or ``esi``.
+* Use ``-e`` to specify an "extras" XSLT file to be included in the compiled
+  theme. This allows you to include arbitrary XSLT instructions beyond what
+  XDV creates for you.
+* Use ``--trace`` to output trace logging during the compilation step. This
+  can be helpful in debugging rules.
+* Use ``--xinclude`` to process XInclude instructions in the rules file.
+
+Check the output of the ``--help`` option for more details.
+
+Absolute prefix
+---------------
+
+The compiler can be passed an "absolute prefix". This is a string that will be
+prefixed to any *relative* URL referenced an image, link or stylesheet in the
+theme HTML file, before the theme is passed to the compiler. This allows a
+theme to be written so that it can be opened and views standalone on the
+filesystem, even if at runtime its static resources are going to be served
+from some other location.
+
+For example, say the theme is written with relative URLs for images and
+external resources, such as ``<img src="images/foo.jpg" />``. When the
+compiled theme is applied to a live site, this is unlikely to work for
+any URL other than a sibling of the ``images`` folder.
+
+Let's say the theme's static resources are served from a simple web server
+and made available under the directory ``/static``. In this case, we can
+set an absolute prefix of ``/static``. This will modify the ``<img />`` tag
+in the compiled theme so that it becomes an absolute path that will work for
+any URL: ``<img src="/static/images/foo.jpg"`` />
 
 Testing the compiled theme
 --------------------------
 
 To test the compiled theme, you can apply it to a static file representing
-the content, e.g. with::
+the content. The easiest way to do this is via the ``xdvrun`` script::
 
-    $ xsltproc --nonet --html compiledtheme.xsl content.html > output.html
+    $ bin/xdvrun theme.xsl content.html
 
-Open ``output.html`` to see the transformed theme.
+This will print the output to the standard output. You can save it to a file
+instead with::
+
+    $ bin/xdvrun -o output.html theme.xsl content.html
+
+For testing, you can also compile and run the theme in one go, by using the
+``-r`` (rules) and ``-t`` (theme) arguments to ``xdvrun``::
+
+    $ bin/xdvrun -o output.html -r rules.xml -t theme.html content.html
+
+To see the built-in help for this command, run::
+    
+    $ bin/xdvrun --help
 
 Compiling the theme in Python code
 ----------------------------------
 
-XXX: Laurence needs to check this
-
-XDV can be used without Python, but it is primarily distributed as part of
-the ``xdv`` Python package. This provides a test suite and certain utilities.
-One of those utilities is a method to compile an XDV XSLT file::
+You can run the XDV compiler from Python code using the following helper
+function::
 
     >>> from xdv.compiler import compile_theme
 
@@ -399,15 +551,8 @@ This method takes the following arguments:
 * ``xinclude`` can be set to ``True`` to enable XInclude support (at a
   moderate speed cost). If enabled, XInclude syntax can be used to split the
   rules file into multiple, re-usable fragments.
-* ``absolute_prefix`` can be set to a string that will be prefixed to any
-  *relative* URL referenced in an image, link or stylesheet in the theme
-  HTML file before the theme is passed to the compiler. This allows a
-  theme to be written so that it can be opened and views standalone on the
-  filesystem, even if at runtime its static resources are going to be
-  served from some other location. For example, an
-  ``<img src="images/foo.jpg" />`` can be turned into 
-  ``<img src="/static/images/foo.jpg" />`` with an ``absolute_prefix`` of
-  "/static".
+* ``absolute_prefix`` can be set an string to be used as the "absolute prefix"
+  for relative URLs - see above.
 * ``update`` can be set to ``False`` to disable the automatic update support
   for the old Deliverance 0.2 namespace (for a moderate speed gain)
 * ``trace`` can be set to True to enable compiler trace information
@@ -428,6 +573,7 @@ details.
 format. To set up a transform representing the theme and rules, you can do::
 
     from lxml import etree
+    from xdv.compiler import compile_theme
     
     extraurl = None
     absolute_prefix = "/static"
