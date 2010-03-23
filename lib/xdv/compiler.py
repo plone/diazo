@@ -179,7 +179,7 @@ def main():
                       help="relative urls in the theme file will be made into absolute links with this prefix.",
                       dest="absolute_prefix", default=None)
     parser.add_option("-i", "--includemode", metavar="INC",
-                      help="include mode (document or ssi)",
+                      help="include mode (document, ssi or esi)",
                       dest="includemode", default=None)
     (options, args) = parser.parse_args()
     
