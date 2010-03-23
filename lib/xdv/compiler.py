@@ -87,11 +87,20 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_p
       moderate speed gain)
     * ``xinclude`` can be set to True to enable XInclude support (at a
       moderate speed cost)
+    * ``absolute_prefix`` can be set to a string that will be prefixed to any
+      *relative* URL referenced in an image, link or stylesheet in the theme
+      HTML file before the theme is passed to the compiler. This allows a
+      theme to be written so that it can be opened and views standalone on the
+      filesystem, even if at runtime its static resources are going to be
+      served from some other location. For example, an
+      ``<img src="images/foo.jpg" />`` can be turned into 
+      ``<img src="/static/images/foo.jpg" />`` with an ``absolute_prefix`` of
+      "/static".
     * ``update`` can be set to False to disable the automatic update support for
       the old Deliverance 0.2 namespace (for a moderate speed gain)
     * ``trace`` can be set to True to enable compiler trace information
-    * ``includemode`` can be set to 'document' or 'ssi' to change the way in
-      which includes are processed
+    * ``includemode`` can be set to 'document', 'esi' or 'ssi' to change the
+      way in which includes are processed
     * ``parser`` can be set to an lxml parser instance; the default is an HTMLParser
     * ``compiler_parser``` can be set to an lxml parser instance; the default is a
       XMLParser
