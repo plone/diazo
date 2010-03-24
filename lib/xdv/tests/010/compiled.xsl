@@ -37,7 +37,7 @@
             <div id="portlets"><xsl:choose><xsl:when test="//*[@id='aaa']"><xsl:copy-of select="//*[@class='portlet']"/></xsl:when><xsl:otherwise>
                 <div class="portlet" id="portlet1">Portlet</div>
             </xsl:otherwise></xsl:choose></div>
-        <xsl:if test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='manage-portlets-link']"/></xsl:if></div><xsl:if test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='bbb']"/></xsl:if></xsl:otherwise></xsl:choose>
+        <xsl:if test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='manage-portlets-link']"/></xsl:if></div></xsl:otherwise></xsl:choose><xsl:if test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='bbb']"/></xsl:if>
         <xsl:choose><xsl:when test="//*[@class='portlet']"><xsl:copy-of select="//*[@id='footer']"/></xsl:when><xsl:otherwise><div id="footer">Footer</div></xsl:otherwise></xsl:choose>
     </body></html>
     </xsl:template>
