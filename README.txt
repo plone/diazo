@@ -607,29 +607,79 @@ Please see the ``lxml`` documentation for more details.
 Deployment
 ==========
 
+Before it can be used, the deployed theme needs to be deployed to a proxying
+web server which can apply the XSLT to the response coming back from another
+web application.
+
+In theory, any XSLT processor will do. In practice, however, most websites
+do not produce 100% well-formed XML (i.e. they do not conform to the XHTML
+"strict" doctype). For this reason, it is normally necessary to use an XSLT
+processor that will parse the content using a more lenient parser with some
+knowledge of HTML. libxml2, the most popular XML processing library on Linux
+and similar operating systems, contains such a parser.
+
 Plone
 -----
 
-See the `collective.xdv <http://plone.org/products/collective.xdv>`_
-documentation for details.
+If you are working with Plone, the easiest way to use XDV is via the
+`collective.xdv <http://pypi.python.org/pypi/collective.xdv>`_ add-on. This
+provides a control panel for configuring the XDV rules file, theme and
+other options, and hooks into a transformation chain that executes after
+Plone has rendered the final page to apply the XDV transform.
 
-Nginx
+Even if you intend to deploy the compiled theme to another web server,
+``collective.xdv`` is a useful development tool: so long as Zope is in
+"development mode", it will re-compile the theme on the fly, allowing you
+to make changes to theme and rules on the fly. It also provides some tools
+for packaging up your theme and deploying it to different sites.
+
+nginx
 -----
 
-XDV currently requires a version of Nginx with xslt html parsing support
-patched in. The latest patched version may be downloaded from the `html-xslt
-project page <http://code.google.com/p/html-xslt/>`_.
+To deploy an XDV theme to the `nginx <http://nginx.org>`_ web server, you
+will need to compile nginx with a special version of the XSLT module that
+can (optionally) use the HTML parser from libxml2.
 
-When building Nginx, make sure to enable the xslt module::
+In the future, the necessary patches to enable HTML mode parsing will
+hopefully be part of the standard nginx distribution. In the meantime,
+they are maintained in the `html-xslt <http://code.google.com/p/html-xslt/>`_
+project.
+
+Using a properly patched nginx, you can configure it with XSLT support like
+so::
 
     $ ./configure --with-http_xslt_module
 
-If libxml2 or libxslt are installed in a non-standard location you may need to
-supply the ``--with-libxml2=/opt`` and ``--with-libxslt=/opt`` options. This requires that you
-set an appropriate ``LD_LIBRARY_PATH`` (Linux / BSD) or ``DYLD_LIBRARY_PATH`` (Mac OS
-X) environment variable when running Nginx.
+If you are using zc.buildout and would like to build nginx, you can start
+with the following example::
 
-For theming a static site, enable the xsl transform as follows::
+    [buildout]
+    parts =
+        ...
+        nginx
+    
+    ...
+        
+    [nginx]
+    recipe = zc.recipe.cmmi
+    url = http://html-xslt.googlecode.com/files/nginx-0.7.65-html-xslt-2.tar.gz
+    extra_options =
+        --conf-path=${buildout:directory}/etc/nginx.conf
+        --sbin-path=${buildout:directory}/bin
+        --error-log-path=${buildout:directory}/var/log/nginx-error.log
+        --http-log-path=${buildout:directory}/var/log/nginx-access.log
+        --pid-path=${buildout:directory}/var/nginx.pid
+        --lock-path=${buildout:directory}/var/nginx.lock
+        --with-http_stub_status_module
+        --with-http_xslt_module
+
+If libxml2 or libxslt are installed in a non-standard location you may need to
+supply the ``--with-libxml2=<path>`` and ``--with-libxslt=<path>`` options.
+This requires that you set an appropriate ``LD_LIBRARY_PATH`` (Linux / BSD) or
+``DYLD_LIBRARY_PATH`` (Mac OS X) environment variable when running nginx.
+
+For theming a static site, enable the XSLT transform in the nginx
+configuration as follows::
 
     location / {
         xslt_stylesheet /path/to/compiled-theme.xsl;
@@ -637,7 +687,7 @@ For theming a static site, enable the xsl transform as follows::
         xslt_types text/html;
     }
 
-Nginx may also be configured as a transforming proxy server::
+nginx may also be configured as a transforming proxy server::
 
     location / {
         xslt_stylesheet /path/to/compiled-theme.xsl;
@@ -653,19 +703,22 @@ Nginx may also be configured as a transforming proxy server::
 
 Removing the Accept-Encoding header is sometimes necessary to prevent the
 backend server compressing the response (and preventing transformation). The
-response may be compressed in Nginx by setting ``gzip on;`` - see the `gzip
+response may be compressed in nginx by setting ``gzip on;`` - see the `gzip
 module documentation <http://wiki.nginx.org/NginxHttpGzipModule>`_ for
-details. In this example an X-XDV header was set so the backend server may
-choose to serve different different CSS resources.
+details.
+
+In this example an X-XDV header was set so the backend server may choose to
+serve different different CSS resources.
 
 Including external content
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As an event based server, it is not practical to add ``document()`` support to
-the Nginx XSLT module for in-transform inclusion. Instead, external content is
-included through SSI in a subrequest.
-
-Example nginx.conf::
+the nginx XSLT module for in-transform inclusion. Instead, external content is
+included through SSI in a sub-request. The SSI sub-request includes a query
+string parameter to indicate which parts of the resultant document to include,
+called ``;filter_xpath`` - see above for a full example. The configuration
+below uses this parameter to apply a filter::
 
     worker_processes  1;
     events {
@@ -723,11 +776,11 @@ Example nginx.conf::
         }
     }
 
-In this example the subrequest is set to loop back on itself, so the include
+In this example the sub-request is set to loop back on itself, so the include
 is taken from a themed page. ``filter.xsl`` (in the lib/xdv directory) and
 ``theme.xsl`` should both be placed in the same directory as ``nginx.conf``.
 
-An example buildout is available in ``nginx.cfg``.
+An example buildout is available in ``nginx.cfg`` in this package.
 
 Varnish
 -------
@@ -760,7 +813,7 @@ Install mod_depends then mod_transform using the standard procedure::
     $ make
     $ sudo make install
 
-Example virtual host configuration (e.g. /etc/apache2/sites-available/default)::
+An example virtual host configuration is shown below::
 
     NameVirtualHost *
     LoadModule depends_module /usr/lib/apache2/modules/mod_depends.so
