@@ -780,7 +780,7 @@ Example virtual host configuration (e.g. /etc/apache2/sites-available/default)::
         
     </VirtualHost>
 
-The +ApacheFS directive enables content XSLT ``document()`` inclusion.
+The +ApacheFS directive enables XSLT ``document()`` inclusion.
 
 Unfortunately it is not possible to theme error responses (such as a 404 Not
 Found page) with Apache as these do not pass through the filter chain.
