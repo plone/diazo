@@ -12,7 +12,7 @@ development, check it into Subversion, and not touch XDV during deployment.''',
     package_dir = {'':'lib'},
     include_package_data=True,
     zip_safe=False
-    author='Paul Everitt, Laurence Rowe and Martin Aspeli.'
+    author='Paul Everitt, Laurence Rowe and Martin Aspeli.',
     maintainer='Laurence Rowe',
     maintainer_email='laurence@lrowe.co.uk',
     license='New BSD',
