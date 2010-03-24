@@ -633,6 +633,19 @@ Even if you intend to deploy the compiled theme to another web server,
 to make changes to theme and rules on the fly. It also provides some tools
 for packaging up your theme and deploying it to different sites.
 
+WSGI
+----
+
+If you are using a WSGI stack, you can use the `dv.xdvserver
+<http://pypi.python.org/pypi/dv.xdvserver>`_ middleware to apply an XDV
+theme. This supports all the core XDV options, and can be configured to
+either re-compile the theme on the fly (useful for development), or compile
+it only once (useful for deployment.)
+
+It is also possible to use this with the Paste ``proxy`` middleware to
+create a standalone XDV proxy for any site. See the `dv.xdvserver`_
+documentation for details.
+
 nginx
 -----
 
