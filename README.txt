@@ -34,7 +34,7 @@ Using XDV, you could apply this theme to your dynamic website as follows:
 
 The rules file is written using a simple XML syntax. Elements in the theme
 and "content" (the dynamic website) can be identified using CSS3 or XPath
-syntax.
+selectors.
 
 Once you have a theme HTML file and a rules XML file, you compile these using
 the XDV compiler into a single XSLT file. You can then deploy this XSLT file
@@ -80,11 +80,16 @@ which is important if you need to execute the XDV compiler manually::
     recipe = zc.recipe.egg
     eggs = xdv
 
-Note that ``lxml`` is a dependency of ``xdv``. On some operating systems,
-notably Mac OS X, installing a "good" ``lxml`` egg can be problematic, due to
-a mismatch in the operating system versions of the ``libxml2`` and ``libxslt``
-libraries that ``lxml`` uses. To get around that, you can compile a static
-``lxml`` egg using the following buildout recipe::
+Note that ``lxml`` is a dependency of ``xdv``, so you may need to install the
+libxml2 and libxslt development packages in order for it to build. On
+Debian/Ubuntu you can run::
+
+    $ sudo apt-get install libxslt1-dev
+
+On some operating systems, notably Mac OS X, installing a "good" ``lxml`` egg
+can be problematic, due to a mismatch in the operating system versions of the
+``libxml2`` and ``libxslt`` libraries that ``lxml`` uses. To get around that,
+you can compile a static ``lxml`` egg using the following buildout recipe::
 
     [buildout]
     # lxml should be first in the parts list
@@ -122,8 +127,8 @@ called ``<rules />``::
 Here we have defined two namespaces: the default namespace is used for rules
 and XPath selectors. The ``css`` namespace is used for CSS3 selectors. These
 are functionally equivalent. In fact, CSS selectors are replaced by the
-equivalent XPath selector the pre-processing step of the compiler. Thus, they
-have no performance impact.
+equivalent XPath selector during the pre-processing step of the compiler.
+Thus, they have no performance impact.
 
 XDV supports complex CSS3 and XPath selectors, including things like the
 ``nth-child`` pseudo-selector. You are advised to consult a good reference
@@ -196,7 +201,7 @@ immediately before the element with id ``content`` in the theme. If we
 wanted the box below the content instead, we could do::
 
     <after css:theme="#content" css:content="#info-box" />
-    
+
 ``<drop />``
 ------------
 
@@ -247,7 +252,7 @@ the placeholder with id ``header`` in the theme is removed.
 
 Similarly, the contents of a theme node matched with a ``<copy />`` rule will
 be dropped if there is no matching content. Another way to think of this is
-that if no content node is matched, XDV uses an empty node when copying or
+that if no content node is matched, XDV uses an empty nodeset when copying or
 replacing.
 
 If you want the placeholder to stay put in the case of a missing content node,
@@ -297,8 +302,8 @@ condition". Hence the following two rules are equivalent::
     <copy css:theme="#header" css:content="#header-box > *" css:if-content="#header-box > *"/>
     <copy css:theme="#header" css:content="#header-box > *" css:if-content=""/>
 
-If there are multiple rules of the same type with the same ``them``
-expression and different ``if-content`` expressions, they will be as an
+If multiple rules of the same type match the same theme node but have
+different ``if-content`` expressions, they will be combined as an
 if..else if...else block::
 
     <copy theme="/html/body/h1" content="/html/body/h1/text()" if-content="/html/body/h1"/>
@@ -399,7 +404,7 @@ For example::
     </xdv:rules>
 
 Notice how we have placed the rules in an explicit ``xdv`` namespace, so that
-we can write the "inline" HTML without a namespace.
+we can write the "inline" HTML without a namespace prefix.
 
 In the example above, the ``<append />`` rule will copy the ``<style />``
 attribute and its contents into the ``<head />`` of the theme. Similar rules
@@ -443,9 +448,11 @@ Inclusions use standard XInclude syntax. For example::
         xmlns:css="http://namespaces.plone.org/xdv+css"
         xmlns:xi="http://www.w3.org/2001/XInclude">
         
-        <xi:include href="standard-rules.xml" />
+        <xi:include href="standard-rules.xml#xpointer(/*/node())" />
     
     </rules>
+
+An xpointer is used so as not to pull in the outer <rules> element.
 
 Compilation
 ===========
@@ -603,18 +610,177 @@ Deployment
 Plone
 -----
 
-nginx
+See the `collective.xdv <http://plone.org/products/collective.xdv>`_
+documentation for details.
+
+Nginx
 -----
 
-XXX: Laurence needs to check this
+XDV currently requires a version of Nginx with xslt html parsing support
+patched in. The latest patched version may be downloaded from the `html-xslt
+project page <http://code.google.com/p/html-xslt/>`_.
+
+When building Nginx, make sure to enable the xslt module::
+
+    $ ./configure --with-http_xslt_module
+
+If libxml2 or libxslt are installed in a non-standard location you may need to
+supply the ``--with-libxml2=/opt`` and ``--with-libxslt=/opt`` options. This requires that you
+set an appropriate ``LD_LIBRARY_PATH`` (Linux / BSD) or ``DYLD_LIBRARY_PATH`` (Mac OS
+X) environment variable when running Nginx.
+
+For theming a static site, enable the xsl transform as follows::
+
+    location / {
+        xslt_stylesheet /path/to/compiled-theme.xsl;
+        xslt_html_parser on;
+        xslt_types text/html;
+    }
+
+Nginx may also be configured as a transforming proxy server::
+
+    location / {
+        xslt_stylesheet /path/to/compiled-theme.xsl;
+        xslt_html_parser on;
+        xslt_types text/html;
+        rewrite ^(.*)$ /VirtualHostBase/http/localhost/Plone/VirtualHostRoot$1 break;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-XDV "true";
+        proxy_set_header Accept-Encoding "";
+    }
+
+Removing the Accept-Encoding header is sometimes necessary to prevent the
+backend server compressing the response (and preventing transformation). The
+response may be compressed in Nginx by setting ``gzip on;`` - see the `gzip
+module documentation <http://wiki.nginx.org/NginxHttpGzipModule>`_ for
+details. In this example an X-XDV header was set so the backend server may
+choose to serve different different CSS resources.
+
+Including external content
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As an event based server, it is not practical to add ``document()`` support to
+the Nginx XSLT module for in-transform inclusion. Instead, external content is
+included through SSI in a subrequest.
+
+Example nginx.conf::
+
+    worker_processes  1;
+    events {
+        worker_connections  1024;
+    }
+    http {
+        include mime.types;
+        gzip on;
+        server {
+            listen 80;
+            server_name localhost;
+            root html;
+
+            # Decide if we need to filter
+            if ($args ~ "^(.*);filter_xpath=(.*)$") {
+                set $newargs $1;
+                set $filter_xpath $2;
+                # rewrite args to avoid looping
+                rewrite    ^(.*)$    /_include$1?$newargs?;
+            }
+
+            location @include500 { return 500; }
+            location @include404 { return 404; }
+
+            location ^~ /_include {
+                # Restrict _include (but not ?;filter_xpath=) to subrequests
+                internal;
+                error_page 404 = @include404;
+                # Cache page fragments in Varnish for 1h when using ESI mode
+                expires 1h;
+                # Proxy
+                rewrite    ^/_include(.*)$    $1    break;
+                proxy_pass http://127.0.0.1:80;
+                # Protect against infinite loops
+                proxy_set_header X-Loop 1$http_X_Loop; # unary count
+                proxy_set_header Accept-Encoding "";
+                error_page 500 = @include500;
+                if ($http_X_Loop ~ "11111") {
+                    return 500;
+                }
+                # Filter by xpath
+                xslt_stylesheet filter.xsl
+                    xpath=$filter_xpath
+                    ;
+                xslt_html_parser on;
+                xslt_types text/html;
+            }
+
+            location / {
+                xslt_stylesheet theme.xsl;
+                xslt_html_parser on;
+                xslt_types text/html;
+                ssi on; # Not required in ESI mode
+            }
+        }
+    }
+
+In this example the subrequest is set to loop back on itself, so the include
+is taken from a themed page. ``filter.xsl`` (in the lib/xdv directory) and
+``theme.xsl`` should both be placed in the same directory as ``nginx.conf``.
+
+An example buildout is available in ``nginx.cfg``.
 
 Varnish
 -------
 
-XXX: Laurence needs to check this
+To enable ESI in Varnish simply add the following to your VCL file::
+
+    sub vcl_fetch {
+        if (obj.http.Content-Type ~ "text/html") {
+            esi;
+        }
+    }
+
+An example buildout is available in ``varnish.cfg``.
 
 Apache
 ------
 
-XXX: Laurence needs to check this
+XDV currently requires a version of mod_transform with html parsing support
+and a disabled mod_depends. The latest patched versions may be downloaded from
+the `html-xslt project page <http://code.google.com/p/html-xslt/>`_.
 
+As well as the libxml2 and libxslt development packages, you will require
+libapreq2 and the Apache development pacakges::
+
+    $ sudo apt-get install libxslt1-dev libapache2-mod-apreq2 libapreq2-dev apache2-threaded-dev
+
+Install mod_depends then mod_transform using the standard procedure::
+
+    $ ./configure
+    $ make
+    $ sudo make install
+
+Example virtual host configuration (e.g. /etc/apache2/sites-available/default)::
+
+    NameVirtualHost *
+    LoadModule depends_module /usr/lib/apache2/modules/mod_depends.so
+    LoadModule transform_module /usr/lib/apache2/modules/mod_transform.so
+    <VirtualHost *>
+
+        FilterDeclare THEME
+        FilterProvider THEME XSLT resp=Content-Type $text/html
+
+        TransformOptions +ApacheFS +HTML
+        TransformSet /theme.xsl
+        TransformCache /theme.xsl /etc/apache2/theme.xsl
+
+        <LocationMatch "/">
+            FilterChain THEME
+        </LocationMatch>
+        
+    </VirtualHost>
+
+The +ApacheFS directive enables content XSLT ``document()`` inclusion.
+
+Unfortunately it is not possible to theme error responses (such as a 404 Not
+Found page) with Apache as these do not pass through the filter chain.
