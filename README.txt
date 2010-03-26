@@ -7,10 +7,12 @@ XDV - XSLT Deliverance Engine
 Introduction
 ============
 
-XDV is an implementation of the Deliverance concept using pure XSLT. In short,
-it is a way to apply a style/theme to a dynamic website.
+XDV is an implementation of the `Deliverance`_ concept using pure XSLT. In
+short, it is a way to apply a style/theme contained in a static HTML web page
+(usually with related CSS, JavaScript and image resources) to a dynamic
+website created using any server-side technology.
 
-Consider a scenario where you have some dynamic website, to which you want to
+Consider a scenario where you have a dynamic website, to which you want to
 apply a theme built by a web designer. The web designer is not familiar with
 the technology behind the dynamic website, and so has supplied a "static HTML"
 version of the site. This consists of an HTML file with more-or-less semantic
@@ -850,3 +852,5 @@ The +ApacheFS directive enables XSLT ``document()`` inclusion.
 
 Unfortunately it is not possible to theme error responses (such as a 404 Not
 Found page) with Apache as these do not pass through the filter chain.
+
+.. _Deliverance: http://deliverance.openplans.org/
