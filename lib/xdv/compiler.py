@@ -52,15 +52,15 @@ class CompileResolver(etree.Resolver):
         if url == 'xdv:extra' and self.extra is not None:
             return self.resolve_string(self.extra, context)
 
-def to_absolute(src, prefix):
-    """Turn a url 
+def to_absolute(path, prefix):
+    """Make a url/path into an absolute URL by applying the given prefix
     """
-    if src.startswith('/') or '://' in src:
-        return src
-    if src.startswith('./'):
-        return "%s/%s" % (prefix, src[2:])
-    else:
-        return "%s/%s" % (prefix, src)
+    # Absolute path or full url
+    if path.startswith('/') or '://' in path:
+        return path
+    
+    absolute = "%s/%s" % (prefix, path)
+    return os.path.normpath(absolute)
 
 def apply_absolute_prefix(theme_doc, absolute_prefix):
     if absolute_prefix.endswith('/'):

@@ -118,7 +118,7 @@ class TestAbsolutePrefix(unittest.TestCase):
             '@import "/abs/foo.css";',
             '@import url("/abs/foo.css");',
             "@import url('/abs/foo.css');",
-            "@import url('/abs/../foo.css');",
+            "@import url('/foo.css');",
             "@import url('/foo.css');",
             "@import url('http://site.com/foo.css');"
             ]
@@ -129,7 +129,7 @@ class TestAbsolutePrefix(unittest.TestCase):
         self.assertEquals([
             '/abs/foo.css',
             '/abs/foo.css',
-            '/abs/../foo.css',
+            '/foo.css',
             '/foo.css',
             'http://site.com/foo.css'
         ], [x.get('href') for x in linkTags])
@@ -138,7 +138,7 @@ class TestAbsolutePrefix(unittest.TestCase):
         self.assertEquals([
             '/abs/foo.js',
             '/abs/foo.js',
-            '/abs/../foo.js',
+            '/foo.js',
             '/foo.js',
             'http://site.com/foo.js'
         ], [x.get('src') for x in scriptTags])
@@ -147,7 +147,7 @@ class TestAbsolutePrefix(unittest.TestCase):
         self.assertEquals([
             '/abs/foo.jpg',
             '/abs/foo.jpg',
-            '/abs/../foo.jpg',
+            '/foo.jpg',
             '/foo.jpg',
             'http://site.com/foo.jpg'
         ], [x.get('src') for x in imgTags])
@@ -156,7 +156,7 @@ class TestAbsolutePrefix(unittest.TestCase):
         self.assertEquals([
             '/abs/foo.jpg',
             '/abs/foo.jpg',
-            '/abs/../foo.jpg',
+            '/foo.jpg',
             '/foo.jpg',
             'http://site.com/foo.jpg'
         ], [x.get('src') for x in inputTags])
