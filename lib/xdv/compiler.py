@@ -60,6 +60,8 @@ def to_absolute(path, prefix):
         return path
     
     absolute = "%s/%s" % (prefix, path)
+    if '://' in absolute:
+        return absolute
     return os.path.normpath(absolute)
 
 def apply_absolute_prefix(theme_doc, absolute_prefix):
