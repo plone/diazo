@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name='xdv',
-    version='0.3a2',
+    version='0.3a3',
     description='''\
 XDV implements a subset of Deliverance using a pure XSLT engine. With XDV, you
 "compile" your theme and ruleset in one step, then use a superfast/simple
