@@ -5,5 +5,6 @@
     <replace theme="//*[@id='core']" content="//*[@id='core']"/>
     <copy theme="/html/body/h2" content="//*[@class='missing']"/>
     <copy theme="//*[@id='portlets']" content="//*[@class='missing']"/>
-    <copy theme="//*[@id='portlet-wrapper']" content="//*[@id='portlet']"/>    
+    <copy theme="//*[@id='portlet-wrapper']" content="//*[@id='portlet']"/>
+    <drop theme="//*[@id='ignore]"/>
 </rules>
