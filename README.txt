@@ -830,7 +830,8 @@ the `html-xslt project page <http://code.google.com/p/html-xslt/>`_.
 As well as the libxml2 and libxslt development packages, you will require
 libapreq2 and the Apache development pacakges::
 
-    $ sudo apt-get install libxslt1-dev libapache2-mod-apreq2 libapreq2-dev apache2-threaded-dev
+    $ sudo apt-get install libxslt1-dev libapache2-mod-apreq2 libapreq2-dev \
+    > apache2-threaded-dev
 
 Install mod_depends then mod_transform using the standard procedure::
 
