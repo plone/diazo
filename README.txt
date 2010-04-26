@@ -290,7 +290,8 @@ element. If there are no matching elements in the content we drop the
 
 Here is another example using CSS selectors::
 
-    <copy css:theme="#header" css:content="#header-box > *" css:if-content="#personal-bar"/>
+    <copy css:theme="#header" css:content="#header-box > *" 
+          css:if-content="#personal-bar"/>
 
 This will copy the children of the element with id ``header-box`` in the
 content into the element with id ``header`` in the theme, so long as an
@@ -301,15 +302,19 @@ works with an empty ``css:if-content``). This is a shortcut that means "use
 the expression in the ``content`` or ``css:content``` attribute as the
 condition". Hence the following two rules are equivalent::
 
-    <copy css:theme="#header" css:content="#header-box > *" css:if-content="#header-box > *"/>
-    <copy css:theme="#header" css:content="#header-box > *" css:if-content=""/>
+    <copy css:theme="#header" css:content="#header-box > *"
+          css:if-content="#header-box > *"/>
+    <copy css:theme="#header" css:content="#header-box > *" 
+          css:if-content=""/>
 
 If multiple rules of the same type match the same theme node but have
 different ``if-content`` expressions, they will be combined as an
 if..else if...else block::
 
-    <copy theme="/html/body/h1" content="/html/body/h1/text()" if-content="/html/body/h1"/>
-    <copy theme="/html/body/h1" content="//h1[@id='first-heading']/text()" if-content="//h1[@id='first-heading']"/>
+    <copy theme="/html/body/h1" content="/html/body/h1/text()"
+          if-content="/html/body/h1"/>
+    <copy theme="/html/body/h1" content="//h1[@id='first-heading']/text()"
+          if-content="//h1[@id='first-heading']"/>
     <copy theme="/html/body/h1" content="/html/head/title/text()" />
 
 These rules all attempt to fill the text in the ``<h1 />`` inside the body.
@@ -341,16 +346,19 @@ The inclusion can happen in one of three ways:
   rule element. Whether this is able to resolve the URL depends on how and
   where the compiled XSLT is being executed::
   
-    <append css:theme="#left-column" css:content="#portlet" href="/extra.html" method="document" />
+    <append css:theme="#left-column" css:content="#portlet"
+            href="/extra.html" method="document" />
   
 * Via a Server Side Include directive. This can be specified by setting the
   ``method`` attribute to ``ssi``::
   
-    <append css:theme="#left-column" css:content="#portlet" href="/extra.html" method="ssi"/>
+    <append css:theme="#left-column" css:content="#portlet"
+            href="/extra.html" method="ssi"/>
 
   The output will look something like this::
   
-    <!--# include  virtual="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']" wait="yes" -->
+    <!--# include wait="yes"
+              virtual="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']" -->
   
   This SSI instruction would need to be processed by a fronting web server
   such as Apache or nginx. Also note the ``;filter_xpath`` query string
@@ -363,11 +371,13 @@ The inclusion can happen in one of three ways:
 * Via an Edge Side Includes directive. This can be specified by setting the
   ``method`` attribute to ``esi``::
   
-    <append css:theme="#left-column" css:content="#portlet" href="/extra.html" method="esi"/>
+    <append css:theme="#left-column" css:content="#portlet"
+            href="/extra.html" method="esi"/>
 
   The output is similar to that for the SSI mode::
 
-    <esi:include src="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']"></esi:include>
+    <esi:include src="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']">
+    </esi:include>
   
   Again, the directive would need to be processed by a fronting server, such
   as Varnish. Chances are an ESI-aware cache server would not support
