@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/xdv"
+       xmlns:css="http://namespaces.plone.org/xdv+css">
+    <before css:theme="#target" css:content="#before"/>
+    <prepend css:theme="#target" css:content="#prepend"/>
+    <append css:theme="#target" css:content="#append"/>
+    <after css:theme="#target" css:content="#after"/>
+</rules>
