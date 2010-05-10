@@ -172,8 +172,8 @@ behaviour attached to the target element (with id ``main`` in this case).
 
 Used to copy elements from the content into an element in the theme,
 leaving existing content in place. ``<append />`` places the matched
-content directly before the closing tag in the theme; append places it
-directly after the opening tag. For example::
+content directly before the closing tag in the theme; ``<prepend />`` places
+it directly after the opening tag. For example::
 
     <append theme="/html/head" content="/html/head/link" />
 
