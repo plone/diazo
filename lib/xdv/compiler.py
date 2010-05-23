@@ -155,15 +155,6 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_p
         logger.info(msg)
     return compiled
 
-def prepare_filename(filename):
-    """Make file name string parameters compatible with xdv's compiler.xsl
-    """
-    filename = os.path.abspath(filename)
-    if sys.platform.startswith('win'):
-        # compiler.xsl on Windows wants c:/foo/bar instead of C:\foo\bar
-        filename = filename.replace('\\', '/')
-    return filename
-
 def main():
     """Called from console script
     """
