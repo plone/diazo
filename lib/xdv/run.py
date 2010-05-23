@@ -47,7 +47,12 @@ def main():
     op.add_option("--xinclude", action="store_true",
                   help="Run XInclude on rules.xml",
                   dest="xinclude", default=False)
+    op.add_option("-n", "--network", action="store_true",
+                  help="Allow reads to the network to fetch resources",
+                  dest="read_network", default=False)
     (options, args) = op.parse_args()
+
+    access_control = etree.XSLTAccessControl(read_network=options.read_network)
 
     if len(args) == 2:
         transform_path, content = args
@@ -57,7 +62,7 @@ def main():
         if options.theme and options.rules:
             content, = args
             parser = etree.HTMLParser()
-            output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, xinclude=options.xinclude, parser=parser)
+            output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, xinclude=options.xinclude, parser=parser, access_control=access_control)
         else:
             op.error("Theme and rules must be supplied.")
     else:
@@ -67,7 +72,7 @@ def main():
         content = sys.stdin
 
     parser.resolvers.add(RunResolver(os.path.dirname(content)))
-    transform = etree.XSLT(output_xslt)
+    transform = etree.XSLT(output_xslt, access_control=access_control)
     content_doc = etree.parse(content, parser=etree.HTMLParser())
     output_html = transform(content_doc)
     output_html.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
