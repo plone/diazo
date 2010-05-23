@@ -225,7 +225,7 @@ def test_suite():
         path = os.path.join(HERE, name)
         if not os.path.isdir(path):
             continue
-        cls = type('Test%s'%name, (XDVTestCase,), dict(testdir=path))
+        cls = type('Test-%s'%name, (XDVTestCase,), dict(testdir=path))
         suite.addTest(unittest.makeSuite(cls))
     suite.addTest(unittest.makeSuite(TestAbsolutePrefix))
     return suite
