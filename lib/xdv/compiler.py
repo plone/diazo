@@ -83,16 +83,17 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         elif node.tag == 'style' or node.tag == etree.Comment and node.text.startswith("[if IE"):
             node.text = IMPORT_STYLESHEET.sub(lambda match: match.group(1) + to_absolute(match.group(2), absolute_prefix) + match.group(3), node.text)
 
-def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None, access_control=None):
+def compile_theme(rules, theme, extra=None, css=True, xinclude=True, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None, access_control=None):
     """Invoke the xdv compiler.
     
     * ``rules`` is the rules file
     * ``theme`` is the theme file
-    * ``extra`` is an optional XSLT file with XDV extensions
+    * ``extra`` is an optional XSLT file with XDV extensions (depracated, use
+      inline xsl in the rules instead)
     * ``css``   can be set to False to disable CSS syntax support (providing a
       moderate speed gain)
-    * ``xinclude`` can be set to True to enable XInclude support (at a
-      moderate speed cost)
+    * ``xinclude`` can be set to False to disable XInclude support during the
+      compile phase (providing a moderate speed gain)
     * ``absolute_prefix`` can be set to a string that will be prefixed to any
       *relative* URL referenced in an image, link or stylesheet in the theme
       HTML file before the theme is passed to the compiler. This allows a
@@ -159,9 +160,6 @@ def main():
     """Called from console script
     """
     parser = OptionParser(usage=usage)
-    parser.add_option("-e", "--extra", metavar="extra.xsl",
-                      help="Extra XSL to be included in the transform",
-                      dest="extra", default=None)
     parser.add_option("-o", "--output", metavar="output.xsl",
                       help="Output filename (instead of stdout)",
                       dest="output", default=sys.stdout)
@@ -172,8 +170,8 @@ def main():
                       help="Compiler trace logging",
                       dest="trace", default=False)
     parser.add_option("--xinclude", action="store_true",
-                      help="Run XInclude on rules.xml",
-                      dest="xinclude", default=False)
+                      help="Run XInclude on rules.xml (depracated, xinclude is always run)",
+                      dest="xinclude", default=True)
     parser.add_option("-a", "--absolute-prefix", metavar="/",
                       help="relative urls in the theme file will be made into absolute links with this prefix.",
                       dest="absolute_prefix", default=None)
@@ -189,6 +187,9 @@ def main():
     parser.add_option("-r", "--rules", metavar="rules.xml",
                       help="XDV rules file", 
                       dest="rules", default=None)
+    parser.add_option("-e", "--extra", metavar="extra.xsl",
+                      help="Extra XSL to be included in the transform (depracated, use inline xsl in the rules instead)",
+                      dest="extra", default=None)
     (options, args) = parser.parse_args()
 
     if options.rules is None and options.theme is None:
