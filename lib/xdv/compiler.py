@@ -83,7 +83,7 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         elif node.tag == 'style' or node.tag == etree.Comment and node.text.startswith("[if IE"):
             node.text = IMPORT_STYLESHEET.sub(lambda match: match.group(1) + to_absolute(match.group(2), absolute_prefix) + match.group(3), node.text)
 
-def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None):
+def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None, access_control=None):
     """Invoke the xdv compiler.
     
     * ``rules`` is the rules file
@@ -134,7 +134,9 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_p
     
     if compiler_parser is None:
         compiler_parser = etree.XMLParser()
-    compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH, parser=compiler_parser))
+    if access_control is None:
+        access_control = etree.XSLTAccessControl()
+    compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH, parser=compiler_parser), access_control=access_control)
 
     params = dict(rulesuri="'xdv:rules'")
     if extra:
@@ -187,6 +189,9 @@ def main():
     parser.add_option("-i", "--includemode", metavar="INC",
                       help="include mode (document, ssi or esi)",
                       dest="includemode", default=None)
+    parser.add_option("-n", "--network", action="store_true",
+                      help="Allow reads to the network to fetch resources",
+                      dest="read_network", default=False)
     (options, args) = parser.parse_args()
     
     if len(args) !=2:
@@ -195,8 +200,10 @@ def main():
 
     if options.trace:
         logger.setLevel(logging.DEBUG)
+    
+    access_control = etree.XSLTAccessControl(read_network=options.read_network)
 
-    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, absolute_prefix=options.absolute_prefix, includemode=options.includemode)
+    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, absolute_prefix=options.absolute_prefix, includemode=options.includemode, access_control=access_control)
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
 
 if __name__ == '__main__':
