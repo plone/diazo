@@ -215,6 +215,11 @@
         </xsl:if>
     </xsl:template>
 
+    <xsl:template match="pre/text()" mode="annotate-html">
+        <!-- Filter out quoted &#13; -->
+        <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')"/>
+    </xsl:template>
+
     <!--
         Apply the rules
     -->
