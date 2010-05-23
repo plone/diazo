@@ -101,6 +101,7 @@
                 <xsl:if test="$extraurl">
                     <xsl:copy-of select="document($extraurl, $theme)/xsl:stylesheet/node()" />
                 </xsl:if>
+                <xsl:copy-of select="$rules/dv:rules/xsl:*" />
             </xsl:when>
             <xsl:otherwise>
                 <xsl:copy>
@@ -139,7 +140,7 @@
     <xsl:template match="dv:rules" mode="annotate-rules">
         <xsl:param name="themehtml"/>
         <xsl:copy>
-            <xsl:for-each select="*">
+            <xsl:for-each select="dv:*">
                 <xsl:copy>
                     <xsl:attribute name="xml:id">r<xsl:value-of select="position()"/></xsl:attribute>
                     <xsl:copy-of select="@*[local-name() != 'if-content']"/>
@@ -169,6 +170,7 @@
                     </dv:matches>
                 </xsl:copy>
             </xsl:for-each>
+            <xsl:copy-of select="xsl:*"/>
         </xsl:copy>
     </xsl:template>
 
