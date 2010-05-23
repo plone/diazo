@@ -140,7 +140,7 @@
     <xsl:template match="dv:rules" mode="annotate-rules">
         <xsl:param name="themehtml"/>
         <xsl:copy>
-            <xsl:for-each select="dv:*">
+            <xsl:for-each select="//dv:rules/dv:*[local-name() != 'rules']">
                 <xsl:copy>
                     <xsl:attribute name="xml:id">r<xsl:value-of select="position()"/></xsl:attribute>
                     <xsl:copy-of select="@*[local-name() != 'if-content']"/>

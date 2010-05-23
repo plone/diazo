@@ -36,7 +36,7 @@ def main():
                   help="XDV rules file", 
                   dest="rules", default=None)
     op.add_option("-e", "--extra", metavar="extra.xsl",
-                  help="XDV extraurl XSLT file",
+                  help="XDV extraurl XSLT file (depracated, use inline xsl in the rules instead)",
                   dest="extra", default=None)
     op.add_option("-o", "--output", metavar="output.html",
                   help="Output filename (instead of stdout)",
@@ -45,8 +45,8 @@ def main():
                   help="Pretty print output (can alter rendering on the browser)",
                   dest="pretty_print", default=False)
     op.add_option("--xinclude", action="store_true",
-                  help="Run XInclude on rules.xml",
-                  dest="xinclude", default=False)
+                  help="Run XInclude on rules.xml (depracated, xinclude is always run)",
+                  dest="xinclude", default=True)
     op.add_option("-n", "--network", action="store_true",
                   help="Allow reads to the network to fetch resources",
                   dest="read_network", default=False)
@@ -62,7 +62,7 @@ def main():
         if options.theme and options.rules:
             content, = args
             parser = etree.HTMLParser()
-            output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, xinclude=options.xinclude, parser=parser, access_control=access_control)
+            output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, parser=parser, access_control=access_control)
         else:
             op.error("Theme and rules must be supplied.")
     else:
