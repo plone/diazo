@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """\
-Usage: %prog [options] RULES THEME
+Usage: %prog [options] [-r] RULES [-t] THEME
 
   THEME is an html file.
   RULES is a file defining a set of xdv rules in css syntax, e.g:
@@ -183,18 +183,28 @@ def main():
     parser.add_option("-n", "--network", action="store_true",
                       help="Allow reads to the network to fetch resources",
                       dest="read_network", default=False)
+    parser.add_option("-t", "--theme", metavar="theme.html",
+                      help="Theme file",
+                      dest="theme", default=None)
+    parser.add_option("-r", "--rules", metavar="rules.xml",
+                      help="XDV rules file", 
+                      dest="rules", default=None)
     (options, args) = parser.parse_args()
-    
-    if len(args) !=2:
-        parser.error("Wrong number of arguments.")
-    rules, theme = args
+
+    if options.rules is None and options.theme is None:
+        if len(args) == 2:
+            options.rules, options.theme = args
+        else:
+            parser.error("Wrong number of arguments.")
+    elif not(options.rules is not None and options.theme is not None):
+        parser.error("Both theme and rules must be supplied as options or as arguments.")
 
     if options.trace:
         logger.setLevel(logging.DEBUG)
 
     access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=options.read_network, write_network=False)
 
-    output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, absolute_prefix=options.absolute_prefix, includemode=options.includemode, access_control=access_control)
+    output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, absolute_prefix=options.absolute_prefix, includemode=options.includemode, access_control=access_control)
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
 
 if __name__ == '__main__':
