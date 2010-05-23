@@ -1,0 +1,8 @@
+Changelog
+=========
+
+0.3rc1 - 2010-05-23
+-------------------
+
+* First release candidate.
+  [laurence]
