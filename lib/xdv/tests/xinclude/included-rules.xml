@@ -1,0 +1,6 @@
+<rules xmlns="http://namespaces.plone.org/xdv"
+    xmlns:css="http://namespaces.plone.org/xdv+css">
+
+    <copy css:theme="#target" css:content="body > *"/>
+
+</rules>
