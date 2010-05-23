@@ -52,7 +52,7 @@ def main():
                   dest="read_network", default=False)
     (options, args) = op.parse_args()
 
-    access_control = etree.XSLTAccessControl(read_network=options.read_network)
+    access_control = access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=options.read_network, write_network=False)
 
     if len(args) == 2:
         transform_path, content = args
