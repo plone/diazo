@@ -52,7 +52,7 @@ It would be useful to group together rules that share the same condition::
 
 Nested conditions would be allowed and simply ANDed together.
 
-* Maybe this should be called ``rules`` instead. Then inclusion works better.
+* Maybe this should be called ``rules`` instead.
 
 
 Path conditions
@@ -134,8 +134,8 @@ ancestor-or-self::, though that may interact badly with complex xpath
 selectors.
 
 
-Include directive
------------------
+Include directive (rejected)
+----------------------------
 
 The current xinclude syntax is complex, maybe we need a dedicated directive::
 
@@ -169,6 +169,7 @@ The current xinclude syntax is complex, maybe we need a dedicated directive::
       </group>
     </rules>
 
+* Nested <rules> now works, so this is not necessary.
 
 Theme directive / multiple theme support
 ----------------------------------------
