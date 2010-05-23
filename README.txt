@@ -357,8 +357,7 @@ The inclusion can happen in one of three ways:
 
   The output will look something like this::
   
-    <!--# include wait="yes"
-              virtual="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']" -->
+    <!--# include wait="yes" virtual="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']" -->
   
   This SSI instruction would need to be processed by a fronting web server
   such as Apache or nginx. Also note the ``;filter_xpath`` query string
@@ -367,6 +366,15 @@ The inclusion can happen in one of three ways:
   has executed), we need to ask the SSI processor to filter out elements in
   the included file that we are not interested in. This requires specific
   configuration. An example for nginx is included below.
+  
+  For simple SSI includes of a whole document, you may omit the ``content``
+  selector from the rule::
+  
+    <append css:theme="#left-column" href="/extra.html" method="ssi"/>
+  
+  The output then renders like this::
+  
+    <!--# include wait="yes" virtual="/extra.html" -->
 
 * Via an Edge Side Includes directive. This can be specified by setting the
   ``method`` attribute to ``esi``::
@@ -376,8 +384,7 @@ The inclusion can happen in one of three ways:
 
   The output is similar to that for the SSI mode::
 
-    <esi:include src="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']">
-    </esi:include>
+    <esi:include src="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']"></esi:include>
   
   Again, the directive would need to be processed by a fronting server, such
   as Varnish. Chances are an ESI-aware cache server would not support
@@ -386,6 +393,15 @@ The inclusion can happen in one of three ways:
   return a tailored response. Otherwise, if a server that can be made aware
   of this is placed in-between the cache server and the underlying web server,
   that server can perform the necessary filtering.
+
+  For simple ESI includes of a whole document, you may omit the ``content``
+  selector from the rule::
+  
+    <append css:theme="#left-column" href="/extra.html" method="esi"/>
+  
+  The output then renders like this::
+  
+    <esi:include src="/extra.html"></esi:include>
 
 Modifying the theme on the fly
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
