@@ -540,6 +540,7 @@
                     * When using ssiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
                 <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"/><xsl:choose>
+                    <xsl:when test="not($content)"><xsl:value-of select="$href"/></xsl:when>
                     <xsl:when test="contains($href, '?')"><xsl:value-of select="concat(str:replace($href, '?', concat($ssisuffix, '?')), $ssiquerysuffix, $content_quoted)"/></xsl:when>
                     <xsl:otherwise><xsl:value-of select="concat($href, $ssisuffix, '?', $ssiquerysuffix, $content_quoted)"/></xsl:otherwise>
                     </xsl:choose>" wait="yes" </xsl:element>
@@ -549,6 +550,7 @@
                     * When using esiprefix, $href should be an absolute local path (i.e.  /foo/bar)
                 -->
                 <esi:include><xsl:attribute name="src"><xsl:choose>
+                    <xsl:when test="not($content)"><xsl:value-of select="$href"/></xsl:when>
                     <xsl:when test="contains($href, '?')"><xsl:value-of select="concat(str:replace($href, '?', concat($esisuffix, '?')), $esiquerysuffix, $content_quoted)"/></xsl:when>
                     <xsl:otherwise><xsl:value-of select="concat($href, $esisuffix, '?', $esiquerysuffix, $content_quoted)"/></xsl:otherwise>
                     </xsl:choose></xsl:attribute></esi:include>
