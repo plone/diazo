@@ -6,8 +6,8 @@
 0.3 release
 ===========
 
-``pre`` double linebreaks
--------------------------
+``pre`` double linebreaks (complete)
+------------------------------------
 
 libxml2 quotes CR characters on output, this causes Firefox to insert extra
 blank lines in ``<pre>`` blocks. As HTTP specified CRLF line endings for form
@@ -20,8 +20,8 @@ this is a problem for us. plone.org works around this with::
 This should be included in the boilerplate xsl.
 
 
-Copy xsl directives from the rules file
----------------------------------------
+Copy xsl directives from the rules file (complete)
+--------------------------------------------------
 
 We want to be able to do::
 

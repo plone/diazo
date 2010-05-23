@@ -442,6 +442,26 @@ so ``css:select="table#details > tr"`` converts to
 use ``css:select="td:first-child > *"`` as you want a relative selector here.
 You can, of course, just use a manual XPath in a ``select`` attribute instead.
 
+Inline XSL directives
+~~~~~~~~~~~~~~~~~~~~~
+
+You may supply inline XSL directives in the rules to tweak the final output,
+for instance to strip space from the output document use::
+
+    <rules xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+        <xsl:strip-space elements="*" />
+
+    </rules>
+
+Note: this may effect the rendering of the page on the browser.
+
+To use a strict doctype::
+
+    <xsl:output
+        doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+        doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+
 XInclude
 ~~~~~~~~
 
@@ -449,9 +469,7 @@ You may wish to re-use elements of your rules file across multiple themes.
 This is particularly useful if you have multiple variations on the same theme
 used to style different pages on a particular website.
 
-Rules files can be included using the XInclude protocol. By default, XInclude
-processing is disabled (since it is a slight performance hit at compile
-time), but it can be enabled in the XDV compiler using a command line option.
+Rules files may be included using the XInclude protocol.
 
 Inclusions use standard XInclude syntax. For example::
 
@@ -460,11 +478,9 @@ Inclusions use standard XInclude syntax. For example::
         xmlns:css="http://namespaces.plone.org/xdv+css"
         xmlns:xi="http://www.w3.org/2001/XInclude">
         
-        <xi:include href="standard-rules.xml#xpointer(/*/node())" />
+        <xi:include href="standard-rules.xml" />
     
     </rules>
-
-An xpointer is used so as not to pull in the outer <rules> element.
 
 Compilation
 ===========
@@ -498,12 +514,8 @@ The following command line options are available:
 * Use ``-a`` to set an absolute prefix - see below.
 * Use ``-i`` to set the default external file inclusion mode to one of
   ``document``, ``ssi`` or ``esi``.
-* Use ``-e`` to specify an "extras" XSLT file to be included in the compiled
-  theme. This allows you to include arbitrary XSLT instructions beyond what
-  XDV creates for you.
 * Use ``--trace`` to output trace logging during the compilation step. This
   can be helpful in debugging rules.
-* Use ``--xinclude`` to process XInclude instructions in the rules file.
 
 Check the output of the ``--help`` option for more details.
 
@@ -565,9 +577,10 @@ This method takes the following arguments:
 * ``theme`` is the theme file, given either as a file name or a string with
   the file contents
 * ``extra`` is an optional XSLT file with XDV extensions, given as a URI
+  (depracated, use inline xsl in the rules instead)
 * ``css``   can be set to False to disable CSS syntax support (providing a
   moderate speed gain)
-* ``xinclude`` can be set to ``True`` to enable XInclude support (at a
+* ``xinclude`` can be set to ``False`` to enable XInclude support (at a
   moderate speed cost). If enabled, XInclude syntax can be used to split the
   rules file into multiple, re-usable fragments.
 * ``absolute_prefix`` can be set an string to be used as the "absolute prefix"
@@ -594,15 +607,12 @@ format. To set up a transform representing the theme and rules, you can do::
     from lxml import etree
     from xdv.compiler import compile_theme
     
-    extraurl = None
     absolute_prefix = "/static"
-    xinclude = False
             
     rules = "rules.xml"
     theme = "theme.html"
             
-    compiled_theme = compile_theme(rules, theme, extra=extraurl, 
-                                   xinclude=xinclude,
+    compiled_theme = compile_theme(rules, theme,
                                    absolute_prefix=absolute_prefix)
             
     transform = etree.XSLT(compiled_theme)
@@ -864,4 +874,4 @@ The +ApacheFS directive enables XSLT ``document()`` inclusion.
 Unfortunately it is not possible to theme error responses (such as a 404 Not
 Found page) with Apache as these do not pass through the filter chain.
 
-.. _Deliverance: http://deliverance.openplans.org/
+.. _Deliverance: http://deliveranceproject.org/
