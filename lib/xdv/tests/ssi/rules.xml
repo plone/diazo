@@ -4,5 +4,6 @@
     >
 
     <replace css:theme="#include" css:content="#something" href="extra.html" method="ssi"/>
+    <replace css:theme="#include-fragment" href="fragment.html" method="ssi"/>
 
 </rules>
