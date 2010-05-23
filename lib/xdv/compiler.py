@@ -47,9 +47,9 @@ class CompileResolver(etree.Resolver):
         self.extra = extra
         
     def resolve(self, url, pubid, context):
-        if url == 'xdv:rules':
+        if url == '__xdv__rules':
             return self.resolve_string(self.rules, context)
-        if url == 'xdv:extra' and self.extra is not None:
+        if url == '__xdv__extra' and self.extra is not None:
             return self.resolve_string(self.extra, context)
 
 def to_absolute(path, prefix):
@@ -135,12 +135,12 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=False, absolute_p
     if compiler_parser is None:
         compiler_parser = etree.XMLParser()
     if access_control is None:
-        access_control = etree.XSLTAccessControl()
+        access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=False, write_network=False)
     compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH, parser=compiler_parser), access_control=access_control)
 
-    params = dict(rulesuri="'xdv:rules'")
+    params = dict(rulesuri="'__xdv__rules'")
     if extra:
-        params['extraurl'] = "'xdv:extra'"
+        params['extraurl'] = "'__xdv__extra'"
         resolver = CompileResolver(etree.tostring(rules_doc), etree.tostring(etree.parse(extra)))
     else:
         resolver = CompileResolver(etree.tostring(rules_doc))
@@ -200,8 +200,8 @@ def main():
 
     if options.trace:
         logger.setLevel(logging.DEBUG)
-    
-    access_control = etree.XSLTAccessControl(read_network=options.read_network)
+
+    access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=options.read_network, write_network=False)
 
     output_xslt = compile_theme(rules=rules, theme=theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, absolute_prefix=options.absolute_prefix, includemode=options.includemode, access_control=access_control)
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
