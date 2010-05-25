@@ -4,6 +4,9 @@ Changelog
 0.3rc2 - 2010-05-25
 -------------------
 
+Note: the current lxml Windows binaries are unable to load files over the
+network.
+
 * Fixed bug resolving the rules files while use a network theme.
   [elro]
 
