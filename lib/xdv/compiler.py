@@ -47,9 +47,9 @@ class CompileResolver(etree.Resolver):
         self.extra = extra
         
     def resolve(self, url, pubid, context):
-        if url == '__xdv__rules':
+        if url == 'file:///__xdv__rules':
             return self.resolve_string(self.rules, context)
-        if url == '__xdv__extra' and self.extra is not None:
+        if url == 'file:///__xdv__extra' and self.extra is not None:
             return self.resolve_string(self.extra, context)
 
 def to_absolute(path, prefix):
@@ -139,9 +139,9 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=True, absolute_pr
         access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=False, write_network=False)
     compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH, parser=compiler_parser), access_control=access_control)
 
-    params = dict(rulesuri="'__xdv__rules'")
+    params = dict(rulesuri="'file:///__xdv__rules'")
     if extra:
-        params['extraurl'] = "'__xdv__extra'"
+        params['extraurl'] = "'file:///__xdv__extra'"
         resolver = CompileResolver(etree.tostring(rules_doc), etree.tostring(etree.parse(extra)))
     else:
         resolver = CompileResolver(etree.tostring(rules_doc))

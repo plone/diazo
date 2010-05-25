@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3rc2 - 2010-05-25
+-------------------
+
+* Fixed bug resolving the rules files while use a network theme.
+  [elro]
+
 0.3rc1 - 2010-05-23
 -------------------
 
