@@ -4,5 +4,31 @@ Changelog
 0.3rc1 - 2010-05-23
 -------------------
 
+* Nested <rules> are now allowed, so you can simply::
+
+    ``<xi:include href="standard-rules.xml" />``
+
+  [elro]
+
+* XInclude processing is now enabled by default
+  [elro]
+
+* XSL directives inlined in the rules file are now supported (e.g.
+  <xsl:strip-space elements="*" />). With the inline XSL support, there should
+  now be no need for extra.xsl.
+  [elro]
+
+* libxml2 quotes CR characters on output, causing Firefox to insert extra
+  blank lines in ``<pre>`` blocks. As HTTP specified CRLF line endings for
+  form this was a problem for us. This is now caught by the compiled XSL.
+  [elro]
+
+* Support for including complete fragment documents with SSI/ESI.
+  [elro]
+
+* A bug on namespace upgrade is fixed, but you should update your namespace to
+  http://namespaces.plone.org/xdv anyway.
+  [elro]
+
 * First release candidate.
-  [laurence]
+  [elro]
