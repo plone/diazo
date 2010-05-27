@@ -68,7 +68,7 @@ class XDVTestCase(unittest.TestCase):
         result = processor(contentdoc)
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = etree.tostring(result, pretty_print=True)
+        self.themed_string = etree.tostring(result, encoding="UTF-8", pretty_print=True)
         self.themed_content = etree.ElementTree(file=StringIO(self.themed_string), 
                                                 parser=etree.HTMLParser())
 

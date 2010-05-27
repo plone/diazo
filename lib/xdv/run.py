@@ -75,7 +75,7 @@ def main():
     transform = etree.XSLT(output_xslt, access_control=access_control)
     content_doc = etree.parse(content, parser=etree.HTMLParser())
     output_html = transform(content_doc)
-    output_html.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
+    output_html.write(options.output, encoding='UTF-8', pretty_print=options.pretty_print)
     for msg in transform.error_log:
         print msg
 
