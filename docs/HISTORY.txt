@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.3 - 2010-05-29
+----------------
+
+* Added access control defaults, xdv.utils.AC_READ_NET, xdv.utils.AC_READ_FILE
+
 0.3rc2 - 2010-05-25
 -------------------
 
