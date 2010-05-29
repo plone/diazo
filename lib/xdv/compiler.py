@@ -18,7 +18,7 @@ import logging
 from lxml import etree
 from optparse import OptionParser
 
-from utils import namespaces
+from utils import namespaces, AC_READ_NET, AC_READ_FILE
 from cssrules import convert_css_selectors
 
 logger = logging.getLogger('xdv')
@@ -136,7 +136,7 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=True, absolute_pr
     if compiler_parser is None:
         compiler_parser = etree.XMLParser()
     if access_control is None:
-        access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=False, write_network=False)
+        access_control = AC_READ_FILE
     compiler_transform = etree.XSLT(etree.parse(COMPILER_PATH, parser=compiler_parser), access_control=access_control)
 
     params = dict(rulesuri="'file:///__xdv__rules'")
@@ -203,7 +203,10 @@ def main():
     if options.trace:
         logger.setLevel(logging.DEBUG)
 
-    access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=options.read_network, write_network=False)
+    if options.read_network:
+        access_control = AC_READ_NET
+    else:
+        access_control = AC_READ_FILE
 
     output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, trace=options.trace, xinclude=options.xinclude, absolute_prefix=options.absolute_prefix, includemode=options.includemode, access_control=access_control)
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)

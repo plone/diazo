@@ -14,6 +14,7 @@ import os.path
 from lxml import etree
 from optparse import OptionParser
 from compiler import compile_theme
+from utils import AC_READ_NET, AC_READ_FILE
 
 class RunResolver(etree.Resolver):
     def __init__(self, directory):
@@ -52,7 +53,10 @@ def main():
                   dest="read_network", default=False)
     (options, args) = op.parse_args()
 
-    access_control = access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=options.read_network, write_network=False)
+    if options.read_network:
+        access_control = AC_READ_NET
+    else:
+        access_control = AC_READ_FILE
 
     if len(args) == 2:
         transform_path, content = args
