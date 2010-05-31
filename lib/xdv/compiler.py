@@ -11,79 +11,20 @@ Usage: %prog [options] [-r] RULES [-t] THEME
 """
 usage = __doc__
 
-import re
-import os.path
-import sys
 import logging
+import sys
+
 from lxml import etree
 from optparse import OptionParser
+from urlparse import urljoin
 
-from utils import namespaces, AC_READ_NET, AC_READ_FILE
-from cssrules import convert_css_selectors
+from xdv.rules import process_rules
+from xdv.utils import namespaces, AC_READ_NET, AC_READ_FILE
 
 logger = logging.getLogger('xdv')
 
-HERE = os.path.dirname(__file__)
 
-IMPORT_STYLESHEET = re.compile(r'''(@import\s+(?:url\(['"]?|['"]))(.+)(['"]?\)|['"])''', re.IGNORECASE)
-
-COMPILER_PATH = os.path.join(HERE, 'compiler.xsl')
-
-UPDATE_PATH = os.path.join(HERE, 'update-namespace.xsl')
-update_transform = etree.XSLT(etree.parse(UPDATE_PATH))
-
-def update_namespace(rules):
-    """Convert old namespace to new namespace in place
-    """
-    if rules.xpath("//*[namespace-uri()='%s']" % namespaces['old']):
-        logger.warning('The %s namespace is deprecated, use %s instead.' % (namespaces['old'], namespaces['xdv']))
-        return update_transform(rules)
-    else:
-        return rules
-
-class CompileResolver(etree.Resolver):
-    def __init__(self, rules, extra=None):
-        self.rules = rules
-        self.extra = extra
-        
-    def resolve(self, url, pubid, context):
-        if url == 'file:///__xdv__rules':
-            return self.resolve_string(self.rules, context)
-        if url == 'file:///__xdv__extra' and self.extra is not None:
-            return self.resolve_string(self.extra, context)
-
-def to_absolute(path, prefix):
-    """Make a url/path into an absolute URL by applying the given prefix
-    """
-    # Absolute path or full url
-    if path.startswith('/') or '://' in path:
-        return path
-    
-    absolute = "%s/%s" % (prefix, path)
-    if '://' in absolute:
-        return absolute
-        
-    normalized = os.path.normpath(absolute)
-    if os.path.sep != '/':
-        normalized = normalized.replace(os.path.sep, '/')
-    return normalized    
-
-def apply_absolute_prefix(theme_doc, absolute_prefix):
-    if absolute_prefix.endswith('/'):
-        absolute_prefix = absolute_prefix[:-1]
-    for node in theme_doc.xpath('*//style | *//script | *//img | *//link | *//input | *//comment() '):
-        if node.tag in ('img', 'script', 'input',):
-            src = node.get('src')
-            if src:
-                node.set('src', to_absolute(src, absolute_prefix))
-        elif node.tag == 'link':
-            href = node.get('href')
-            if href:
-                node.set('href', to_absolute(href, absolute_prefix))
-        elif node.tag == 'style' or node.tag == etree.Comment and node.text.startswith("[if IE"):
-            node.text = IMPORT_STYLESHEET.sub(lambda match: match.group(1) + to_absolute(match.group(2), absolute_prefix) + match.group(3), node.text)
-
-def compile_theme(rules, theme, extra=None, css=True, xinclude=True, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None, access_control=None):
+def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None, access_control=None):
     """Invoke the xdv compiler.
     
     * ``rules`` is the rules file
@@ -112,9 +53,9 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=True, absolute_pr
     * ``compiler_parser``` can be set to an lxml parser instance; the default is a
       XMLParser
     * ``rules_parser`` can be set to an lxml parser instance; the default is a
-      XMLParse.
+      XMLParser.
     """
-    
+    return process_rules(rules, theme=theme, extra=extra, css=css, xinclude=xinclude, absolute_prefix=absolute_prefix, update=update, trace=trace, includemode=includemode, parser=parser, compiler_parser=compiler_parser, rules_parser=rules_parser, access_control=access_control)
     if rules_parser is None:
         rules_parser = etree.XMLParser(recover=False)
     rules_doc = etree.parse(rules, parser=rules_parser)
@@ -128,7 +69,10 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=True, absolute_pr
     
     if parser is None:
         parser = etree.HTMLParser()
-    theme_doc = etree.parse(theme, parser=parser)
+    if theme is None:
+        theme_doc = etree.parse(DUMMY_PATH, parser=parser)
+    else:
+        theme_doc = etree.parse(theme, parser=parser)
     
     if absolute_prefix:
         apply_absolute_prefix(theme_doc, absolute_prefix)
@@ -150,10 +94,9 @@ def compile_theme(rules, theme, extra=None, css=True, xinclude=True, absolute_pr
     if includemode:
         params['includemode'] = "'%s'" % includemode
 
-    compiler_parser.resolvers.add(resolver)
-    compiled = compiler_transform(theme_doc, **params)
-    for msg in compiler_transform.error_log:
-        logger.info(msg)
+    #compiled = compiler_transform(theme_doc, **params)
+    #for msg in compiler_transform.error_log:
+    #    logger.info(msg)
     return compiled
 
 def main():

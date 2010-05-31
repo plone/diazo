@@ -39,6 +39,16 @@ support to be depracated
 0.4 release
 ===========
 
+Refactor compiler
+-----------------
+
+Move to a pipeline. Running compiler.xsl in Apache did not work out in
+practise.
+
+# css -> xpath
+# rules.xml + themes merged together
+# annotate
+# compile theme
 
 Group directive
 ---------------

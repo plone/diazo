@@ -4,6 +4,7 @@ namespaces = dict(
     xdv="http://namespaces.plone.org/xdv",
     css="http://namespaces.plone.org/xdv+css",
     old="http://openplans.org/deliverance",
+    xsl="http://www.w3.org/1999/XSL/Transform",
     )
 
 def localname(name):
