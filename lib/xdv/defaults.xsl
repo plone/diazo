@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:css="http://namespaces.plone.org/xdv+css"
     xmlns:dv="http://namespaces.plone.org/xdv"
-    xmlns:dyn="http://exslt.org/dynamic"
     xmlns:esi="http://www.edge-delivery.org/esi/1.0"
     xmlns:exsl="http://exslt.org/common"
     xmlns:str="http://exslt.org/strings"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="exsl str css dv dyn xhtml">
-
-    <xsl:param name="path"/>
-    <xsl:variable name="normalized_path"><xsl:value-of select="$path"/><xsl:if test="substring($path, string-length($path)) != '/'">/</xsl:if></xsl:variable>
+    exclude-result-prefixes="exsl str dv xhtml">
 
     <xsl:output method="xml" indent="no" omit-xml-declaration="yes"
         media-type="text/html" encoding="UTF-8"

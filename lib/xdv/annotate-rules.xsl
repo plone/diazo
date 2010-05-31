@@ -3,7 +3,6 @@
     xmlns:dyn="http://exslt.org/dynamic"
     xmlns:esi="http://www.edge-delivery.org/esi/1.0"
     xmlns:exsl="http://exslt.org/common"
-    xmlns:str="http://exslt.org/strings"
     xmlns:xdv="http://namespaces.plone.org/xdv"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -20,6 +19,11 @@
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
+    </xsl:template>
+
+    <xsl:template match="xdv:*/@if-content[. = '']">
+        <!-- if-content="" shortcut -->
+        <xsl:attribute name="if-content"><xsl:value-of select="../@content"/></xsl:attribute>
     </xsl:template>
 
     <xsl:template match="xdv:drop[@content]">
@@ -74,7 +78,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="/" mode="matches">
+    <xsl:template  match="/" mode="matches">
         <xsl:param name="themexpath"/>
         <xsl:param name="themeid"/>
         <xsl:for-each select="dyn:evaluate($themexpath)">
@@ -97,23 +101,23 @@
     
     <xsl:template match="*[@method = 'document']" mode="include">
         <xsl:element name="xsl:copy-of">
-            <xsl:attribute name="select">document('<xsl:value-of select="@href"/>', $base)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
+            <xsl:attribute name="select">document('<xsl:value-of select="@href"/>', .)<xsl:value-of select="@content"/></xsl:attribute>
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="*[@method = 'ssi' or @method = 'ssiwait']" mode="include">
+    <xsl:template test="*[@method = 'ssi']" mode="include">
         <!-- Assumptions:
             * When using ssiprefix, @href should be an absolute local path (i.e.  /foo/bar)
         -->
         <xsl:variable name="content_quoted" select="str:encode-uri(@content, false())"/>
-        <xsl:element name="xsl:comment">#include  virtual="<xsl:value-of select="$ssiprefix"/><xsl:choose>
+        <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"/><xsl:choose>
             <xsl:when test="not(@content)"><xsl:value-of select="@href"/></xsl:when>
             <xsl:when test="contains(@href, '?')"><xsl:value-of select="concat(str:replace(@href, '?', concat($ssisuffix, '?')), $ssiquerysuffix, $content_quoted)"/></xsl:when>
             <xsl:otherwise><xsl:value-of select="concat(@href, $ssisuffix, '?', $ssiquerysuffix, $content_quoted)"/></xsl:otherwise>
-            </xsl:choose>"<xsl:if test="@method = 'ssiwait'"> wait="yes"</xsl:if></xsl:element>
+            </xsl:choose>" wait="yes" </xsl:element>
     </xsl:template>
     
-    <xsl:template match="*[@method = 'esi']" mode="include">
+    <xsl:template test="*[@method = 'esi']" mode="include">
         <!-- Assumptions:
             * When using esiprefix, @href should be an absolute local path (i.e.  /foo/bar)
         -->
@@ -125,7 +129,7 @@
             </xsl:choose></xsl:attribute></esi:include>
     </xsl:template>
     
-    <xsl:template match="*" mode="include">
+    <xsl:template test="*" mode="include">
         <xsl:message terminate="yes">
             ERROR: Unknown includemode or @method attribute
         </xsl:message>

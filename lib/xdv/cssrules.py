@@ -32,6 +32,7 @@ def convert_css_selectors(rules, prefix='//'):
                     element.attrib[utils.localname(name)] = css_to_xpath(value, prefix=prefix)
                 else:
                     element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = ""
+    return rules
 
 def main():
     """Called from console script

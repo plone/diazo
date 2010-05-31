@@ -20,23 +20,16 @@
         </xsl:copy>
     </xsl:template>
 
+
     <!--
         Apply the rules
     -->
 
-    <xsl:template match="dv:theme">
-        <xsl:call-template name="trace-tags">
-            <xsl:with-param name="title" select="'THEME'"/>
-            <xsl:with-param name="tags" select="."/>
-        </xsl:call-template>
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-        </xsl:copy>
-    </xsl:template>
-
     <xsl:template match="//dv:theme//*">
         <xsl:variable name="thisxmlid" select="@xml:id"/>
         <xsl:variable name="matching-rules" select="$rules[./dv:matches/dv:xmlid=$thisxmlid]"/>
+        <xsl:message><xsl:value-of select="$thisxmlid"/></xsl:message>
+        <xsl:message><xsl:value-of select="count($matching-rules)"/></xsl:message>
         <xsl:choose>
             <xsl:when test="$matching-rules">
                 <xsl:call-template name="trace-path"/>
@@ -65,7 +58,20 @@
     <xsl:template match="//dv:theme/*//@xml:id" priority="5">
         <!-- Filter this out -->
     </xsl:template>
-
+<!--
+    <xsl:template priority="5"
+        match="text()[parent::style|parent::script|parent::xhtml:style|parent::xhtml:script]">
+        <! Emit xsl that avoids escaping >
+        <xsl:element name="xsl:variable">
+            <xsl:attribute name="name">tag_text</xsl:attribute>
+            <xsl:value-of select="."/>
+        </xsl:element>
+        <xsl:element name="xsl:value-of">
+            <xsl:attribute name="select">$tag_text</xsl:attribute>
+            <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
+        </xsl:element>
+    </xsl:template>
+-->
     <!--
         Rule templates
     -->
@@ -77,13 +83,13 @@
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
         <xsl:choose>
-            <xsl:when test="$matching-this[not(@merged-condition)]">
+            <xsl:when test="$matching-this[not(@if-content)]">
                 <!--
                     Do nothing.  We want to get rid of this node
                     in the theme. Next rule is `after`.
                 -->
             </xsl:when>
-            <xsl:when test="$matching-this/@merged-condition">
+            <xsl:when test="$matching-this/@if-content">
                 <!--
                     <drop condition="content" ...
                     When the rule matches, toss out the theme node.
@@ -92,7 +98,7 @@
                 <xsl:element name="xsl:choose">
                     <xsl:element name="xsl:when">
                         <xsl:attribute name="test">
-                            <xsl:for-each select="$matching-this/@merged-condition">
+                            <xsl:for-each select="$matching-this/@if-content">
                                 <xsl:text>(</xsl:text><xsl:value-of select="."/><xsl:text>)</xsl:text>
                                 <xsl:if test="position() != last()">
                                     <xsl:text> or </xsl:text>
@@ -129,8 +135,8 @@
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
 
-        <xsl:variable name="unconditional" select="$matching-this[not(@merged-condition)]"/>
-        <xsl:variable name="conditional" select="$matching-this[@merged-condition]"/>
+        <xsl:variable name="unconditional" select="$matching-this[not(@if-content)]"/>
+        <xsl:variable name="conditional" select="$matching-this[@if-content]"/>
         <xsl:if test="count($unconditional) > 1">
             <xsl:message terminate="yes">
                 ERROR: Multiple unconditional replace rules may not match a single theme node.
@@ -146,7 +152,7 @@
                     <xsl:for-each select="$conditional">
                         <xsl:element name="xsl:when">
                             <xsl:attribute name="test">
-                                <xsl:value-of select="@merged-condition"/>
+                                <xsl:value-of select="@if-content"/>
                             </xsl:attribute>
                             <xsl:apply-templates select="." mode="include"/>
                         </xsl:element>
@@ -202,8 +208,8 @@
                     <xsl:apply-templates select="$matching-this[local-name()='prepend']" mode="conditional-include"/>
 
                     <!-- Copy -->
-                    <xsl:variable name="unconditional" select="$matching-this[local-name()='copy' and not(@merged-condition)]"/>
-                    <xsl:variable name="conditional" select="$matching-this[local-name()='copy' and @merged-condition]"/>
+                    <xsl:variable name="unconditional" select="$matching-this[local-name()='copy' and not(@if-content)]"/>
+                    <xsl:variable name="conditional" select="$matching-this[local-name()='copy' and @if-content]"/>
                     <xsl:if test="count($unconditional) > 1">
                         <xsl:message terminate="yes">
                             ERROR: Multiple unconditional copy rules may not match a single theme node.
@@ -218,31 +224,26 @@
                             Otherwise keep theme node. -->
                             <xsl:element name="xsl:choose">
                                 <xsl:for-each select="$conditional">
-                                    <xsl:text>&#10;</xsl:text>
                                     <xsl:element name="xsl:when">
                                         <xsl:attribute name="test">
-                                            <xsl:value-of select="@merged-condition"/>
+                                            <xsl:value-of select="@if-content"/>
                                         </xsl:attribute>
                                         <xsl:apply-templates select="." mode="include"/>
                                     </xsl:element>
                                 </xsl:for-each>
                                 <xsl:choose>
                                     <xsl:when test="$unconditional">
-                                        <xsl:text>&#10;</xsl:text>
                                         <xsl:element name="xsl:otherwise">
                                             <!-- unconditional <copy. Simply include the @content. -->
                                             <xsl:apply-templates select="$unconditional" mode="include"/>
                                         </xsl:element>
-                                        <xsl:text>&#10;</xsl:text>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:text>&#10;</xsl:text>
                                         <xsl:element name="xsl:otherwise">
                                             <xsl:apply-templates select="node()">
                                                 
                                             </xsl:apply-templates>
                                         </xsl:element>
-                                        <xsl:text>&#10;</xsl:text>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:element>
@@ -265,16 +266,17 @@
 
     </xsl:template>
 
+
     <!--
         Content inclusion
     -->
 
     <xsl:template match="*" mode="conditional-include">
         <xsl:choose>
-            <xsl:when test="@merged-condition">
+            <xsl:when test="@if-content">
                 <xsl:element name="xsl:if">
                     <xsl:attribute name="test">
-                        <xsl:value-of select="@merged-condition"/>
+                        <xsl:value-of select="@if-content"/>
                     </xsl:attribute>
                     <xsl:apply-templates mode="include" select="."/>
                 </xsl:element>
@@ -322,29 +324,19 @@
         <xsl:param name="matching" select="/.."/>
         <xsl:if test="$trace">
             <xsl:if test="not($matching)"><xsl:message>TRACE: (<xsl:value-of select="$rule-name"/>)</xsl:message></xsl:if>
-            <xsl:call-template name="trace-tags">
-                <xsl:with-param name="title" select="'RULE'"/>
-                <xsl:with-param name="tags" select="$matching"/>
-            </xsl:call-template>
+            <xsl:for-each select="$matching">
+                <xsl:message>RULE: &lt;<xsl:value-of select="name()"/><xsl:for-each select="@*">
+                    <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:message>
+            </xsl:for-each>
         </xsl:if>
     </xsl:template>
 
     <xsl:template name="trace-path">
         <xsl:if test="$trace">
-            <xsl:message>THEME: <xsl:for-each select="ancestor-or-self::*[namespace-uri() != 'http://namespaces.plone.org/xdv']"><xsl:variable name="this" select="."
+            <xsl:message>THEME: <xsl:for-each select="ancestor-or-self::*"><xsl:variable name="this" select="."
                 />/<xsl:value-of select="name()"/><xsl:choose><xsl:when test="@id">[@id='<xsl:value-of select="@id"/>']</xsl:when><xsl:when test="preceding-sibling::*[name()=name($this)]|following-sibling::*[name()=name($this)]">[<xsl:number/>]</xsl:when></xsl:choose></xsl:for-each></xsl:message>
         </xsl:if>
     </xsl:template>
 
-    <xsl:template name="trace-tags">
-        <xsl:param name="title"/>
-        <xsl:param name="tags"/>
-        <xsl:if test="$trace">
-            <xsl:for-each select="$tags">
-                <xsl:message><xsl:value-of select="$title"/>: &lt;<xsl:value-of select="name()"/><xsl:for-each select="@*">
-                    <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:message>
-            </xsl:for-each>
-        </xsl:if>
-    </xsl:template>
 
 </xsl:stylesheet>

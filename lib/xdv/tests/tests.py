@@ -66,6 +66,7 @@ class XDVTestCase(unittest.TestCase):
         theme_parser.resolvers.add(xdv.run.RunResolver(self.testdir))
         processor = etree.XSLT(ct)
         result = processor(contentdoc)
+
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
         self.themed_string = etree.tostring(result, encoding="UTF-8", pretty_print=True)
@@ -95,10 +96,9 @@ class XDVTestCase(unittest.TestCase):
             if old != new:
                 #if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
-                print "ERROR:", "output.html has CHANGED"
                 for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
                     print  line
-                self.assertEquals(old, new)
+                assert old == new, "output.html has CHANGED"
 
         # Write out the result to catch unexpected changes
         if self.writefiles:
