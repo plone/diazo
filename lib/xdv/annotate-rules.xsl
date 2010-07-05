@@ -3,6 +3,7 @@
     xmlns:dyn="http://exslt.org/dynamic"
     xmlns:esi="http://www.edge-delivery.org/esi/1.0"
     xmlns:exsl="http://exslt.org/common"
+    xmlns:str="http://exslt.org/strings"
     xmlns:xdv="http://namespaces.plone.org/xdv"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -78,7 +79,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template  match="/" mode="matches">
+    <xsl:template match="/" mode="matches">
         <xsl:param name="themexpath"/>
         <xsl:param name="themeid"/>
         <xsl:for-each select="dyn:evaluate($themexpath)">
@@ -105,7 +106,7 @@
         </xsl:element>
     </xsl:template>
     
-    <xsl:template test="*[@method = 'ssi']" mode="include">
+    <xsl:template match="*[@method = 'ssi']" mode="include">
         <!-- Assumptions:
             * When using ssiprefix, @href should be an absolute local path (i.e.  /foo/bar)
         -->
@@ -117,7 +118,7 @@
             </xsl:choose>" wait="yes" </xsl:element>
     </xsl:template>
     
-    <xsl:template test="*[@method = 'esi']" mode="include">
+    <xsl:template match="*[@method = 'esi']" mode="include">
         <!-- Assumptions:
             * When using esiprefix, @href should be an absolute local path (i.e.  /foo/bar)
         -->
@@ -129,7 +130,7 @@
             </xsl:choose></xsl:attribute></esi:include>
     </xsl:template>
     
-    <xsl:template test="*" mode="include">
+    <xsl:template match="*" mode="include">
         <xsl:message terminate="yes">
             ERROR: Unknown includemode or @method attribute
         </xsl:message>

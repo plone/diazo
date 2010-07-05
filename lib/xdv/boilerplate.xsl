@@ -6,62 +6,47 @@
     xmlns:exsl="http://exslt.org/common"
     xmlns:str="http://exslt.org/strings"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="exsl str dv xhtml" >
+    exclude-result-prefixes="exsl str dv xhtml">
   <xsl:output method="xml" indent="no" omit-xml-declaration="yes"
       media-type="text/html" encoding="utf-8"
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
-
+    
     <xsl:template match="/">
+        <dv:insert/>
+        <xsl:choose>
+            <xsl:when test="use-theme1">
+                <xsl:apply-templates select="." mode="theme1-id"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates select="."/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
-        <!-- Pass incoming content through initial-stage filter. -->
-        <xsl:variable name="initial-stage-rtf">
-            <xsl:apply-templates select="/" mode="initial-stage"/>
-        </xsl:variable>
-        <xsl:variable name="initial-stage" select="exsl:node-set($initial-stage-rtf)"/>
-
-        <!-- Now apply the theme to the initial-stage content -->
-        <xsl:variable name="themedcontent-rtf">
-            <xsl:apply-templates select="$initial-stage" mode="apply-theme"/>
-        </xsl:variable>
-        <xsl:variable name="content" select="exsl:node-set($themedcontent-rtf)"/>
-
-        <!-- We're done, so generate some output by passing 
-            through a final stage. -->
-        <xsl:apply-templates select="$content" mode="final-stage"/>
-
+    <xsl:template match="none" mode="insert-drop-rules">
+        <!-- The compiler looks for this and replaces 
+        the @match and @mode. -->
     </xsl:template>
 
     <!-- 
     
         Utility templates
     -->
-    <xsl:template match="none" mode="insert-drop-rules">
-        <!-- The compiler looks for this and replaces 
-        the @match and @mode. -->
-    </xsl:template>
-    <xsl:template match="node()|@*" mode="initial-stage">
+    
+    <xsl:template match="node()|@*">
         <xsl:copy>
-            <xsl:apply-templates select="node()|@*" mode="initial-stage"/>
+            <xsl:apply-templates select="node()|@*"/>
         </xsl:copy>
     </xsl:template>
-    <xsl:template match="pre/text()" mode="initial-stage">
+
+    <xsl:template match="pre/text()">
         <!-- Filter out quoted &#13; -->
         <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')"/>
     </xsl:template>
-    <xsl:template match="/" mode="apply-theme">
-        <dv:insert/>
-    </xsl:template>
-    <xsl:template match="style|script|xhtml:style|xhtml:script" priority="5" mode="final-stage">
-        <xsl:element name="{local-name()}">
-            <xsl:apply-templates select="@*" mode="final-stage"/>
-            <xsl:value-of select="text()" disable-output-escaping="yes"/>
-        </xsl:element>
-    </xsl:template>
-    <xsl:template match="node()|@*" priority="1" mode="final-stage">
-        <xsl:copy>
-            <xsl:apply-templates select="node()|@*" mode="final-stage"/>
-        </xsl:copy>
+
+    <xsl:template match="style/text()|script/text()">
+        <xsl:value-of select="." disable-output-escaping="yes"/>
     </xsl:template>
 
     <!-- 

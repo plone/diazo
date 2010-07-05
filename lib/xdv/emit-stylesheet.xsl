@@ -13,6 +13,7 @@
 
     <xsl:param name="defaultsurl">defaults.xsl</xsl:param>
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
+    <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="themes" select="//dv:theme"/>
     <xsl:variable name="conditional" select="//dv:theme[@if-content]"/>
     <xsl:variable name="unconditional" select="//dv:theme[not(@if-content)]"/>
@@ -87,7 +88,7 @@
                 <xsl:message>THEME <xsl:value-of select="$themeid"/></xsl:message>
                 <!-- If there are any <drop @content> rules, put it in 
                 here. -->
-                <xsl:for-each select="$rules/dv:rules/dv:drop[@content]">
+                <xsl:for-each select="$drop-content-rules">
                     <xsl:element name="xsl:template">
                         <xsl:attribute name="match">
                             <xsl:value-of select="@content"/>
@@ -140,7 +141,7 @@
 
     <xsl:template match="xsl:stylesheet/@exclude-result-prefixes">
         <xsl:choose>
-            <xsl:when test="$rules//*[@method='esi']">
+            <xsl:when test="$rules[@method='esi']">
                 <xsl:copy/>
             </xsl:when>
             <xsl:otherwise>
