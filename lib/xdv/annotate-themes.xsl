@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
     xmlns:esi="http://www.edge-delivery.org/esi/1.0"
+    xmlns:str="http://exslt.org/strings"
     xmlns:xdv="http://namespaces.plone.org/xdv"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"

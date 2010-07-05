@@ -12,7 +12,7 @@
         </p>
     </xdv:before>
     
-    <xdv:append theme="/html/head">
+    <xdv:append css:theme="head">
         <style type="text/css">
             /* From the rules */
             body > h1 { color: red; }

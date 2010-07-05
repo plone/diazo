@@ -15,14 +15,14 @@ from lxml import etree
 from urlparse import urljoin
 
 from xdv.cssrules import convert_css_selectors
-from xdv.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE
+from xdv.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE, CustomResolver
 
 logger = logging.getLogger('xdv')
 
 IMPORT_STYLESHEET = re.compile(r'''(@import\s+(?:url\(['"]?|['"]))(.+)(['"]?\)|['"])''', re.IGNORECASE)
 
-def pkg_xsl(name):
-    return etree.XSLT(etree.parse(pkg_resources.resource_filename('xdv', name)))
+def pkg_xsl(name, parser=None):
+    return etree.XSLT(etree.parse(pkg_resources.resource_filename('xdv', name), parser=parser))
 
 update_transform = pkg_xsl('update-namespace.xsl')
 normalize_rules  = pkg_xsl('normalize-rules.xsl')
@@ -30,7 +30,6 @@ annotate_themes  = pkg_xsl('annotate-themes.xsl')
 annotate_rules   = pkg_xsl('annotate-rules.xsl')
 apply_rules      = pkg_xsl('apply-rules.xsl')
 emit_stylesheet  = pkg_xsl('emit-stylesheet.xsl')
-
 
 def update_namespace(rules_doc):
     """Convert old namespace to new namespace in place
@@ -58,6 +57,10 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None):
     return rules_doc
 
 def apply_absolute_prefix(theme_doc, absolute_prefix):
+    if not absolute_prefix:
+        return
+    if not absolute_prefix.endswith('/'):
+        absolute_prefix = absolute_prefix + '/'
     for node in theme_doc.xpath('//*[@src]'):
         url = urljoin(absolute_prefix, node.get('src'))
         node.set('src', url)
@@ -88,11 +91,24 @@ def add_theme(rules_doc, theme, parser=None, absolute_prefix=None):
     root.append(element)
     return rules_doc
 
+def set_parser(stylesheet, parser, compiler_parser=None):
+    dummy_doc = etree.parse(pkg_resources.resource_filename('xdv', 'dummy.html'), parser=parser)
+    name = 'file:///__xdv__'
+    resolver = CustomResolver({name: stylesheet})
+    if compiler_parser is None:
+        compiler_parser = etree.XMLParser()
+    compiler_parser.resolvers.add(resolver)
+    identity = pkg_xsl('identity.xsl', compiler_parser)
+    output_doc = identity(dummy_doc, docurl="'%s'"%name)
+    compiler_parser.resolvers.remove(resolver)
+    return output_doc
+
 def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=True, absolute_prefix=None, includemode=None, update=True, parser=None, rules_parser=None, compiler_parser=None, access_control=None):
     if rules_parser is None:
         rules_parser = etree.XMLParser(recover=False)
     rules_doc = etree.parse(rules, parser=rules_parser)
-
+    if parser is None:
+        parser = etree.HTMLParser()
     if xinclude:
         rules_doc.xinclude()
     if update:
@@ -106,11 +122,12 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
         includemode = 'document'
     includemode = "'%s'" % includemode
     rules_doc = normalize_rules(rules_doc, includemode=includemode)
+    #import pdb; pdb.set_trace()
     rules_doc = annotate_themes(rules_doc)
     rules_doc = annotate_rules(rules_doc)
     rules_doc = apply_rules(rules_doc)
     compiled_doc = emit_stylesheet(rules_doc)
-    #import pdb; pdb.set_trace()
+    compiled_doc = set_parser(etree.tostring(compiled_doc), parser, compiler_parser)
     return compiled_doc
 
 
