@@ -135,13 +135,13 @@ def main():
                       dest="extra", default=None)
     (options, args) = parser.parse_args()
 
-    if options.rules is None and options.theme is None:
-        if len(args) == 2:
+    if options.rules is None:
+        if len(args) == 2 and options.theme is None:
             options.rules, options.theme = args
+        elif len(args) == 1:
+            options.rules, = args
         else:
             parser.error("Wrong number of arguments.")
-    elif not(options.rules is not None and options.theme is not None):
-        parser.error("Both theme and rules must be supplied as options or as arguments.")
 
     if options.trace:
         logger.setLevel(logging.DEBUG)
