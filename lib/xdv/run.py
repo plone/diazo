@@ -69,12 +69,12 @@ def main():
         parser = etree.XMLParser()
         output_xslt = etree.parse(transform_path, parser=parser)
     elif len(args) == 1:
-        if options.theme and options.rules:
+        if options.rules:
             content, = args
             parser = etree.HTMLParser()
             output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, parser=parser, access_control=access_control, absolute_prefix=options.absolute_prefix, includemode=options.includemode)
         else:
-            op.error("Theme and rules must be supplied.")
+            op.error("Rules must be supplied.")
     else:
         op.error("Wrong number of arguments.")
 
