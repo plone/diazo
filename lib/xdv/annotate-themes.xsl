@@ -50,6 +50,10 @@
         </xsl:if>
     </xsl:template>
 
+    <xsl:template match="html/@*[name() = 'xml:lang']" priority="5">
+        <!-- Filter it out, rely on lang attribute -->
+    </xsl:template>
+
     <xsl:template match="pre/text()">
         <!-- Filter out quoted &#13; -->
         <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')"/>
