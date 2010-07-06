@@ -14,6 +14,7 @@
     <xsl:param name="defaultsurl">defaults.xsl</xsl:param>
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
+    <xsl:variable name="inline-xsl" select="/dv:rules/xsl:*"/>
     <xsl:variable name="themes" select="//dv:theme"/>
     <xsl:variable name="conditional" select="//dv:theme[@if-content]"/>
     <xsl:variable name="unconditional" select="//dv:theme[not(@if-content)]"/>
@@ -114,7 +115,10 @@
                     <xsl:with-param name="mode" select="$themeid"/>
                 </xsl:apply-templates>
             </xsl:for-each>
-            <!-- XXX extra xsl in rules -->
+            <!-- Copy the inline xsl from rules (usually xsl:output) -->
+            <xsl:for-each select="$inline-xsl">
+                <xsl:copy-of select="."/>
+            </xsl:for-each>
         </xsl:copy>
     </xsl:template>
 
