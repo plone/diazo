@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>Absolute prefix</title>
+        
+        <style type="text/css">
+            @import "foo.css";        
+            @import url("foo.css");
+            @import url('./foo.css');
+            @import url('../foo.css');
+            @import url('/foo.css');
+            @import url('http://site.com/foo.css');
+        </style>
+        
+        <link rel="stylesheet" href="foo.css" />
+        <link rel="stylesheet" href="./foo.css" />
+        <link rel="stylesheet" href="../foo.css" />
+        <link rel="stylesheet" href="/foo.css" />
+        <link rel="stylesheet" href="http://site.com/foo.css" />
+        
+        <script type="text/javascript" src="foo.js" />
+        <script type="text/javascript" src="./foo.js" />
+        <script type="text/javascript" src="../foo.js" />
+        <script type="text/javascript" src="/foo.js" />
+        <script type="text/javascript" src="http://site.com/foo.js" />
+        
+    </head>
+    <body>
+        <img src="foo.jpg" />
+        <img src="./foo.jpg" />
+        <img src="../foo.jpg" />
+        <img src="/foo.jpg" />
+        <img src="http://site.com/foo.jpg" />
+        
+        <input type="submit" src="foo.jpg" />
+        <input type="submit" src="./foo.jpg" />
+        <input type="submit" src="../foo.jpg" />
+        <input type="submit" src="/foo.jpg" />
+        <input type="submit" src="http://site.com/foo.jpg" />
+        
+        <a href="foo.html">Link</a>
+        
+    </body>
+</html>
