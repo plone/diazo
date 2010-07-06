@@ -51,6 +51,12 @@ def main():
     op.add_option("-n", "--network", action="store_true",
                   help="Allow reads to the network to fetch resources",
                   dest="read_network", default=False)
+    op.add_option("-a", "--absolute-prefix", metavar="/",
+                  help="relative urls in the theme file will be made into absolute links with this prefix.",
+                  dest="absolute_prefix", default=None)
+    op.add_option("-i", "--includemode", metavar="INC",
+                  help="include mode (document, ssi or esi)",
+                  dest="includemode", default=None)
     (options, args) = op.parse_args()
 
     if options.read_network:
@@ -66,7 +72,7 @@ def main():
         if options.theme and options.rules:
             content, = args
             parser = etree.HTMLParser()
-            output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, parser=parser, access_control=access_control)
+            output_xslt = compile_theme(rules=options.rules, theme=options.theme, extra=options.extra, parser=parser, access_control=access_control, absolute_prefix=options.absolute_prefix, includemode=options.includemode)
         else:
             op.error("Theme and rules must be supplied.")
     else:
