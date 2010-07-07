@@ -20,7 +20,6 @@
         </xsl:copy>
     </xsl:template>
 
-
     <!--
         Apply the rules
     -->
@@ -58,20 +57,7 @@
     <xsl:template match="//dv:theme/*//@xml:id" priority="5">
         <!-- Filter this out -->
     </xsl:template>
-<!--
-    <xsl:template priority="5"
-        match="text()[parent::style|parent::script|parent::xhtml:style|parent::xhtml:script]">
-        <! Emit xsl that avoids escaping >
-        <xsl:element name="xsl:variable">
-            <xsl:attribute name="name">tag_text</xsl:attribute>
-            <xsl:value-of select="."/>
-        </xsl:element>
-        <xsl:element name="xsl:value-of">
-            <xsl:attribute name="select">$tag_text</xsl:attribute>
-            <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
-        </xsl:element>
-    </xsl:template>
--->
+
     <!--
         Rule templates
     -->
@@ -271,7 +257,6 @@
 
     </xsl:template>
 
-
     <!--
         Content inclusion
     -->
@@ -342,6 +327,5 @@
                 />/<xsl:value-of select="name()"/><xsl:choose><xsl:when test="@id">[@id='<xsl:value-of select="@id"/>']</xsl:when><xsl:when test="preceding-sibling::*[name()=name($this)]|following-sibling::*[name()=name($this)]">[<xsl:number/>]</xsl:when></xsl:choose></xsl:for-each></xsl:message>
         </xsl:if>
     </xsl:template>
-
 
 </xsl:stylesheet>
