@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/xdv"
+       xmlns:css="http://namespaces.plone.org/xdv+css">
+    <rules css:if-content="body.test1">
+        <copy css:if-content="body.test2"
+              css:theme="#target" css:content="body > *"/>
+    </rules>
+</rules>

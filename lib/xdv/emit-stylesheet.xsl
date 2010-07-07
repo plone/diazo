@@ -16,8 +16,8 @@
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="inline-xsl" select="/dv:rules/xsl:*"/>
     <xsl:variable name="themes" select="//dv:theme"/>
-    <xsl:variable name="conditional" select="//dv:theme[@if-content]"/>
-    <xsl:variable name="unconditional" select="//dv:theme[not(@if-content)]"/>
+    <xsl:variable name="conditional" select="//dv:theme[@merged-condition]"/>
+    <xsl:variable name="unconditional" select="//dv:theme[not(@merged-condition)]"/>
     <xsl:variable name="defaults" select="document($defaultsurl)"/>
 
     <xsl:template match="@*|node()">
@@ -37,6 +37,7 @@
     <xsl:template match="xsl:stylesheet">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
+            <xsl:text>&#10;</xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">/</xsl:attribute>
                 <xsl:choose>
@@ -44,9 +45,10 @@
                         <xsl:element name="xsl:choose">
                             <xsl:for-each select="$conditional">
                                 <xsl:variable name="themeid" select="@xml:id"/>
+                                <xsl:text>&#10;</xsl:text>
                                 <xsl:element name="xsl:when">
                                     <xsl:attribute name="test">
-                                        <xsl:value-of select="@if-content"/>
+                                        <xsl:value-of select="@merged-condition"/>
                                     </xsl:attribute>
                                     <xsl:element name="xsl:apply-templates">
                                         <xsl:attribute name="select">.</xsl:attribute>
@@ -55,7 +57,9 @@
                                         </xsl:attribute>
                                     </xsl:element>
                                 </xsl:element>
+                                <xsl:text>&#10;</xsl:text>
                             </xsl:for-each>
+                            <xsl:text>&#10;</xsl:text>
                             <xsl:element name="xsl:otherwise">
                                 <xsl:element name="xsl:apply-templates">
                                     <xsl:attribute name="select">.</xsl:attribute>
@@ -69,6 +73,7 @@
                                     </xsl:if>
                                 </xsl:element>
                             </xsl:element>
+                            <xsl:text>&#10;</xsl:text>
                         </xsl:element>
                     </xsl:when>
                     <xsl:when test="$unconditional"> <!-- assert unconditional = 1 -->
@@ -84,12 +89,16 @@
                     </xsl:when>
                 </xsl:choose>
             </xsl:element>
+            <xsl:text>&#10;</xsl:text>
             <xsl:for-each select="$themes">
                 <xsl:variable name="themeid" select="@xml:id"/>
-                <xsl:message>THEME <xsl:value-of select="$themeid"/></xsl:message>
+                <xsl:text>&#10;</xsl:text>
+                <xsl:comment>THEME <xsl:value-of select="$themeid"/> <xsl:value-of select="@href"/></xsl:comment>
+                <xsl:text>&#10;</xsl:text>
                 <!-- If there are any <drop @content> rules, put it in 
                 here. -->
                 <xsl:for-each select="$drop-content-rules">
+                    <xsl:text>&#10;</xsl:text>
                     <xsl:element name="xsl:template">
                         <xsl:attribute name="match">
                             <xsl:value-of select="@content"/>
@@ -99,8 +108,10 @@
                         </xsl:attribute>
                         <xsl:comment>Do nothing, skip these nodes</xsl:comment>
                     </xsl:element>
+                    <xsl:text>&#10;</xsl:text>
                 </xsl:for-each>
                 <!-- template for this theme -->
+                <xsl:text>&#10;</xsl:text>
                 <xsl:element name="xsl:template">
                     <xsl:attribute name="match">/</xsl:attribute>
                     <xsl:attribute name="mode">
@@ -110,14 +121,19 @@
                         <xsl:with-param name="mode" select="$themeid"/>
                     </xsl:apply-templates>
                 </xsl:element>
+                <xsl:text>&#10;</xsl:text>
                 <!-- Copy the default templates into this theme's mode -->
+                <xsl:text>&#10;</xsl:text>
                 <xsl:apply-templates select="$defaults/xsl:stylesheet/xsl:template[not(@mode)]" mode="rewrite-mode">
                     <xsl:with-param name="mode" select="$themeid"/>
                 </xsl:apply-templates>
+                <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
             <!-- Copy the inline xsl from rules (usually xsl:output) -->
             <xsl:for-each select="$inline-xsl">
+                <xsl:text>&#10;</xsl:text>
                 <xsl:copy-of select="."/>
+                <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
         </xsl:copy>
     </xsl:template>

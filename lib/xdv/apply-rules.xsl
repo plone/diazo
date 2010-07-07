@@ -83,13 +83,13 @@
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
         <xsl:choose>
-            <xsl:when test="$matching-this[not(@if-content)]">
+            <xsl:when test="$matching-this[not(@merged-condition)]">
                 <!--
                     Do nothing.  We want to get rid of this node
                     in the theme. Next rule is `after`.
                 -->
             </xsl:when>
-            <xsl:when test="$matching-this/@if-content">
+            <xsl:when test="$matching-this/@merged-condition">
                 <!--
                     <drop condition="content" ...
                     When the rule matches, toss out the theme node.
@@ -98,7 +98,7 @@
                 <xsl:element name="xsl:choose">
                     <xsl:element name="xsl:when">
                         <xsl:attribute name="test">
-                            <xsl:for-each select="$matching-this/@if-content">
+                            <xsl:for-each select="$matching-this/@merged-condition">
                                 <xsl:text>(</xsl:text><xsl:value-of select="."/><xsl:text>)</xsl:text>
                                 <xsl:if test="position() != last()">
                                     <xsl:text> or </xsl:text>
@@ -135,8 +135,8 @@
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
 
-        <xsl:variable name="unconditional" select="$matching-this[not(@if-content)]"/>
-        <xsl:variable name="conditional" select="$matching-this[@if-content]"/>
+        <xsl:variable name="unconditional" select="$matching-this[not(@merged-condition)]"/>
+        <xsl:variable name="conditional" select="$matching-this[@merged-condition]"/>
         <xsl:if test="count($unconditional) > 1">
             <xsl:message terminate="yes">
                 ERROR: Multiple unconditional replace rules may not match a single theme node.
@@ -152,7 +152,7 @@
                     <xsl:for-each select="$conditional">
                         <xsl:element name="xsl:when">
                             <xsl:attribute name="test">
-                                <xsl:value-of select="@if-content"/>
+                                <xsl:value-of select="@merged-condition"/>
                             </xsl:attribute>
                             <xsl:apply-templates select="." mode="include"/>
                         </xsl:element>
@@ -208,8 +208,8 @@
                     <xsl:apply-templates select="$matching-this[local-name()='prepend']" mode="conditional-include"/>
 
                     <!-- Copy -->
-                    <xsl:variable name="unconditional" select="$matching-this[local-name()='copy' and not(@if-content)]"/>
-                    <xsl:variable name="conditional" select="$matching-this[local-name()='copy' and @if-content]"/>
+                    <xsl:variable name="unconditional" select="$matching-this[local-name()='copy' and not(@merged-condition)]"/>
+                    <xsl:variable name="conditional" select="$matching-this[local-name()='copy' and @merged-condition]"/>
                     <xsl:if test="count($unconditional) > 1">
                         <xsl:message terminate="yes">
                             ERROR: Multiple unconditional copy rules may not match a single theme node.
@@ -224,26 +224,31 @@
                             Otherwise keep theme node. -->
                             <xsl:element name="xsl:choose">
                                 <xsl:for-each select="$conditional">
+                                    <xsl:text>&#10;</xsl:text>
                                     <xsl:element name="xsl:when">
                                         <xsl:attribute name="test">
-                                            <xsl:value-of select="@if-content"/>
+                                            <xsl:value-of select="@merged-condition"/>
                                         </xsl:attribute>
                                         <xsl:apply-templates select="." mode="include"/>
                                     </xsl:element>
                                 </xsl:for-each>
                                 <xsl:choose>
                                     <xsl:when test="$unconditional">
+                                        <xsl:text>&#10;</xsl:text>
                                         <xsl:element name="xsl:otherwise">
                                             <!-- unconditional <copy. Simply include the @content. -->
                                             <xsl:apply-templates select="$unconditional" mode="include"/>
                                         </xsl:element>
+                                        <xsl:text>&#10;</xsl:text>
                                     </xsl:when>
                                     <xsl:otherwise>
+                                        <xsl:text>&#10;</xsl:text>
                                         <xsl:element name="xsl:otherwise">
                                             <xsl:apply-templates select="node()">
                                                 
                                             </xsl:apply-templates>
                                         </xsl:element>
+                                        <xsl:text>&#10;</xsl:text>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:element>
@@ -273,10 +278,10 @@
 
     <xsl:template match="*" mode="conditional-include">
         <xsl:choose>
-            <xsl:when test="@if-content">
+            <xsl:when test="@merged-condition">
                 <xsl:element name="xsl:if">
                     <xsl:attribute name="test">
-                        <xsl:value-of select="@if-content"/>
+                        <xsl:value-of select="@merged-condition"/>
                     </xsl:attribute>
                     <xsl:apply-templates mode="include" select="."/>
                 </xsl:element>
