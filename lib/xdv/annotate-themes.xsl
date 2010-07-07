@@ -19,11 +19,7 @@
             <xsl:apply-templates select="node()|@*"/>
         </xsl:copy>
     </xsl:template>   
-<!--
-    <xsl:template match="//xdv:theme//comment()">
-        <xsl:element name="xsl:comment"><xsl:value-of select="."/></xsl:element>
-    </xsl:template>
--->
+
     <xsl:template match="//xdv:theme//*">
         <xsl:copy>
             <xsl:attribute name="xml:id">
