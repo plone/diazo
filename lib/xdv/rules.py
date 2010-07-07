@@ -26,6 +26,8 @@ def pkg_xsl(name, parser=None):
 
 update_transform = pkg_xsl('update-namespace.xsl')
 normalize_rules  = pkg_xsl('normalize-rules.xsl')
+apply_conditions = pkg_xsl('apply-conditions.xsl')
+merge_conditions = pkg_xsl('merge-conditions.xsl')
 annotate_themes  = pkg_xsl('annotate-themes.xsl')
 annotate_rules   = pkg_xsl('annotate-rules.xsl')
 apply_rules      = pkg_xsl('apply-rules.xsl')
@@ -122,7 +124,8 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
         includemode = 'document'
     includemode = "'%s'" % includemode
     rules_doc = normalize_rules(rules_doc, includemode=includemode)
-    #import pdb; pdb.set_trace()
+    rules_doc = apply_conditions(rules_doc)
+    rules_doc = merge_conditions(rules_doc)
     rules_doc = annotate_themes(rules_doc)
     rules_doc = annotate_rules(rules_doc)
     rules_doc = apply_rules(rules_doc)
