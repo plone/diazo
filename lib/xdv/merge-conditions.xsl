@@ -11,7 +11,7 @@
             <xsl:apply-templates select="@*"/>
             <xsl:if test="$conditions">
                 <xsl:attribute name="merged-condition">
-                    <xsl:for-each select="$conditions">(<xsl:value-of select="@if-content"/>)<xsl:if test="position() != last()"> and </xsl:if></xsl:for-each>
+                    <xsl:for-each select="$conditions">(<xsl:value-of select="@condition"/>)<xsl:if test="position() != last()"> and </xsl:if></xsl:for-each>
                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="node()"/>

@@ -9,7 +9,14 @@
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
             <xsl:attribute name="condition">
-                <xsl:value-of select="@if-content"/>
+                <xsl:choose>
+                    <xsl:when test="@if-content = ''">
+                        <xsl:value-of select="@content"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="@if-content"/>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:attribute>
             <xsl:apply-templates select="node()"/>
         </xsl:copy>

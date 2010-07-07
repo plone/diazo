@@ -22,11 +22,6 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="xdv:*/@if-content[. = '']">
-        <!-- if-content="" shortcut -->
-        <xsl:attribute name="if-content"><xsl:value-of select="../@content"/></xsl:attribute>
-    </xsl:template>
-
     <xsl:template match="xdv:drop[@content]">
         <xsl:if test="@theme">
             <xsl:message terminate="yes">
