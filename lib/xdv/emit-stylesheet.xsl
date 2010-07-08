@@ -12,6 +12,7 @@
     exclude-result-prefixes="dv dyn exsl xml">
 
     <xsl:param name="defaultsurl">defaults.xsl</xsl:param>
+    <xsl:param name="usebase"/>
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="inline-xsl" select="/dv:rules/xsl:*"/>
@@ -36,7 +37,35 @@
 
     <xsl:template match="xsl:stylesheet">
         <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
+            <xsl:apply-templates select="@*"/>
+            <xsl:if test="$rules[@method='document']">
+                <xsl:choose>
+                    <xsl:when test="$usebase">
+                        <!-- When usebase is true, document() includes are resolved internally using the base tag -->
+                        <xsl:text>&#10;    </xsl:text>
+                        <xsl:element name="xsl:variable">
+                            <xsl:attribute name="name">base</xsl:attribute>
+                            <xsl:text>/</xsl:text>
+                        </xsl:element>
+                        <xsl:text>&#10;</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <!-- otherwise use a hack to ensure the relative path is used -->
+                        <xsl:text>&#10;    </xsl:text>
+                        <xsl:element name="xsl:variable">
+                            <xsl:attribute name="name">base-rtf</xsl:attribute>
+                        </xsl:element>
+                        <xsl:text>&#10;</xsl:text>
+                        <xsl:text>&#10;    </xsl:text>
+                        <xsl:element name="xsl:variable">
+                            <xsl:attribute name="name">base</xsl:attribute>
+                            <xsl:attribute name="select">exsl:node-set($base-rtf)</xsl:attribute>
+                        </xsl:element>
+                        <xsl:text>&#10;</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:if>
+            <xsl:apply-templates select="node()"/>
             <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">/</xsl:attribute>
