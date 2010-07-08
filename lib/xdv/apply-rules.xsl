@@ -24,11 +24,19 @@
         Apply the rules
     -->
 
+    <xsl:template match="dv:theme">
+        <xsl:call-template name="trace-tags">
+            <xsl:with-param name="title" select="'THEME'"/>
+            <xsl:with-param name="tags" select="."/>
+        </xsl:call-template>
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:copy>
+    </xsl:template>
+
     <xsl:template match="//dv:theme//*">
         <xsl:variable name="thisxmlid" select="@xml:id"/>
         <xsl:variable name="matching-rules" select="$rules[./dv:matches/dv:xmlid=$thisxmlid]"/>
-        <xsl:message><xsl:value-of select="$thisxmlid"/></xsl:message>
-        <xsl:message><xsl:value-of select="count($matching-rules)"/></xsl:message>
         <xsl:choose>
             <xsl:when test="$matching-rules">
                 <xsl:call-template name="trace-path"/>
@@ -314,17 +322,28 @@
         <xsl:param name="matching" select="/.."/>
         <xsl:if test="$trace">
             <xsl:if test="not($matching)"><xsl:message>TRACE: (<xsl:value-of select="$rule-name"/>)</xsl:message></xsl:if>
-            <xsl:for-each select="$matching">
-                <xsl:message>RULE: &lt;<xsl:value-of select="name()"/><xsl:for-each select="@*">
-                    <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:message>
-            </xsl:for-each>
+            <xsl:call-template name="trace-tags">
+                <xsl:with-param name="title" select="'RULE'"/>
+                <xsl:with-param name="tags" select="$matching"/>
+            </xsl:call-template>
         </xsl:if>
     </xsl:template>
 
     <xsl:template name="trace-path">
         <xsl:if test="$trace">
-            <xsl:message>THEME: <xsl:for-each select="ancestor-or-self::*"><xsl:variable name="this" select="."
+            <xsl:message>THEME: <xsl:for-each select="ancestor-or-self::*[namespace-uri() != 'http://namespaces.plone.org/xdv']"><xsl:variable name="this" select="."
                 />/<xsl:value-of select="name()"/><xsl:choose><xsl:when test="@id">[@id='<xsl:value-of select="@id"/>']</xsl:when><xsl:when test="preceding-sibling::*[name()=name($this)]|following-sibling::*[name()=name($this)]">[<xsl:number/>]</xsl:when></xsl:choose></xsl:for-each></xsl:message>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template name="trace-tags">
+        <xsl:param name="title"/>
+        <xsl:param name="tags"/>
+        <xsl:if test="$trace">
+            <xsl:for-each select="$tags">
+                <xsl:message><xsl:value-of select="$title"/>: &lt;<xsl:value-of select="name()"/><xsl:for-each select="@*">
+                    <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:message>
+            </xsl:for-each>
         </xsl:if>
     </xsl:template>
 
