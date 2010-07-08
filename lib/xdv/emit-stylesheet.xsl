@@ -37,7 +37,7 @@
     <xsl:template match="xsl:stylesheet">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
-            <xsl:text>&#10;</xsl:text>
+            <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">/</xsl:attribute>
                 <xsl:choose>
@@ -92,13 +92,17 @@
             <xsl:text>&#10;</xsl:text>
             <xsl:for-each select="$themes">
                 <xsl:variable name="themeid" select="@xml:id"/>
-                <xsl:text>&#10;</xsl:text>
-                <xsl:comment>THEME <xsl:value-of select="$themeid"/> <xsl:value-of select="@href"/></xsl:comment>
+                <xsl:text>&#10;    </xsl:text>
+                <xsl:comment>THEME <xsl:value-of select="$themeid"/>: <xsl:choose>
+                        <xsl:when test="@href"><xsl:value-of select="@href"/></xsl:when>
+                        <xsl:otherwise>(inline)</xsl:otherwise>
+                    </xsl:choose>
+                </xsl:comment>
                 <xsl:text>&#10;</xsl:text>
                 <!-- If there are any <drop @content> rules, put it in 
                 here. -->
                 <xsl:for-each select="$drop-content-rules">
-                    <xsl:text>&#10;</xsl:text>
+                    <xsl:text>&#10;    </xsl:text>
                     <xsl:element name="xsl:template">
                         <xsl:attribute name="match">
                             <xsl:value-of select="@content"/>
@@ -111,7 +115,7 @@
                     <xsl:text>&#10;</xsl:text>
                 </xsl:for-each>
                 <!-- template for this theme -->
-                <xsl:text>&#10;</xsl:text>
+                <xsl:text>&#10;    </xsl:text>
                 <xsl:element name="xsl:template">
                     <xsl:attribute name="match">/</xsl:attribute>
                     <xsl:attribute name="mode">
@@ -123,15 +127,17 @@
                 </xsl:element>
                 <xsl:text>&#10;</xsl:text>
                 <!-- Copy the default templates into this theme's mode -->
-                <xsl:text>&#10;</xsl:text>
-                <xsl:apply-templates select="$defaults/xsl:stylesheet/xsl:template[not(@mode)]" mode="rewrite-mode">
-                    <xsl:with-param name="mode" select="$themeid"/>
-                </xsl:apply-templates>
-                <xsl:text>&#10;</xsl:text>
+                <xsl:for-each select="$defaults/xsl:stylesheet/xsl:template[not(@mode)]">
+                    <xsl:text>&#10;    </xsl:text>
+                    <xsl:apply-templates select="." mode="rewrite-mode">
+                        <xsl:with-param name="mode" select="$themeid"/>
+                    </xsl:apply-templates>
+                    <xsl:text>&#10;</xsl:text>
+                </xsl:for-each>
             </xsl:for-each>
             <!-- Copy the inline xsl from rules (usually xsl:output) -->
             <xsl:for-each select="$inline-xsl">
-                <xsl:text>&#10;</xsl:text>
+                <xsl:text>&#10;    </xsl:text>
                 <xsl:copy-of select="."/>
                 <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
