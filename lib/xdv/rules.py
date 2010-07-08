@@ -22,7 +22,17 @@ logger = logging.getLogger('xdv')
 IMPORT_STYLESHEET = re.compile(r'''(@import\s+(?:url\(['"]?|['"]))(.+)(['"]?\)|['"])''', re.IGNORECASE)
 
 def pkg_xsl(name, parser=None):
-    return etree.XSLT(etree.parse(pkg_resources.resource_filename('xdv', name), parser=parser))
+    xslt = etree.XSLT(etree.parse(pkg_resources.resource_filename('xdv', name), parser=parser))
+    def wrapped(*args, **kw):
+        result = xslt(*args, **kw)
+        for msg in xslt.error_log:
+            if msg.type == etree.ErrorTypes.ERR_OK:
+                logger.debug(msg.message)
+            else:
+                logger.debug(msg)
+        return result
+    wrapped.xslt = xslt
+    return wrapped
 
 update_transform = pkg_xsl('update-namespace.xsl')
 normalize_rules  = pkg_xsl('normalize-rules.xsl')
@@ -106,6 +116,10 @@ def set_parser(stylesheet, parser, compiler_parser=None):
     return output_doc
 
 def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=True, absolute_prefix=None, includemode=None, update=True, parser=None, rules_parser=None, compiler_parser=None, access_control=None):
+    if trace:
+        trace = '1'
+    else:
+        trace = '0'
     if rules_parser is None:
         rules_parser = etree.XMLParser(recover=False)
     rules_doc = etree.parse(rules, parser=rules_parser)
@@ -128,7 +142,7 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
     rules_doc = merge_conditions(rules_doc)
     rules_doc = annotate_themes(rules_doc)
     rules_doc = annotate_rules(rules_doc)
-    rules_doc = apply_rules(rules_doc)
+    rules_doc = apply_rules(rules_doc, trace=trace)
     compiled_doc = emit_stylesheet(rules_doc)
     compiled_doc = set_parser(etree.tostring(compiled_doc), parser, compiler_parser)
     return compiled_doc
