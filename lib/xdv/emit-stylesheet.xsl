@@ -127,7 +127,7 @@
                 </xsl:element>
                 <xsl:text>&#10;</xsl:text>
                 <!-- Copy the default templates into this theme's mode -->
-                <xsl:for-each select="$defaults/xsl:stylesheet/xsl:template[not(@mode)]">
+                <xsl:for-each select="$defaults/xsl:stylesheet/xsl:template[not(@mode)] | $inline-xsl[local-name()='template' and not(@mode)]">
                     <xsl:text>&#10;    </xsl:text>
                     <xsl:apply-templates select="." mode="rewrite-mode">
                         <xsl:with-param name="mode" select="$themeid"/>
@@ -136,7 +136,7 @@
                 </xsl:for-each>
             </xsl:for-each>
             <!-- Copy the inline xsl from rules (usually xsl:output) -->
-            <xsl:for-each select="$inline-xsl">
+            <xsl:for-each select="$inline-xsl[not(local-name()='template' and @mode)]">
                 <xsl:text>&#10;    </xsl:text>
                 <xsl:copy-of select="."/>
                 <xsl:text>&#10;</xsl:text>
