@@ -1,4 +1,8 @@
 from lxml import etree
+import logging
+import pkg_resources
+
+logger=logging.getLogger('xdv')
 
 namespaces = dict(
     xdv="http://namespaces.plone.org/xdv",
@@ -24,3 +28,21 @@ class CustomResolver(etree.Resolver):
         output = self.data.get(url)
         if output is not None:
             return self.resolve_string(output, context)
+
+
+class LoggingXSLTWrapper:
+    def __init__(self, xslt, logger):
+        self.xslt = xslt
+        self.logger = logger
+    def __call__(self, *args, **kw):
+        result = self.xslt(*args, **kw)
+        for msg in self.xslt.error_log:
+            if msg.type == etree.ErrorTypes.ERR_OK:
+                self.logger.debug(msg.message)
+            else:
+                self.logger.debug(msg)
+        return result
+
+
+def pkg_xsl(name, parser=None):
+    return LoggingXSLTWrapper(etree.XSLT(etree.parse(pkg_resources.resource_filename('xdv', name), parser=parser)), logger)

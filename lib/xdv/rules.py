@@ -2,7 +2,7 @@
 """\
 Usage: %prog RULES
 
-Preprocess RULES, and xdv rules file
+Preprocess RULES, an xdv rules file
 """
 usage = __doc__
 
@@ -15,24 +15,12 @@ from lxml import etree
 from urlparse import urljoin
 
 from xdv.cssrules import convert_css_selectors
-from xdv.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE, CustomResolver
+from xdv.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE, CustomResolver, pkg_xsl
 
 logger = logging.getLogger('xdv')
 
 IMPORT_STYLESHEET = re.compile(r'''(@import\s+(?:url\(['"]?|['"]))(.+)(['"]?\)|['"])''', re.IGNORECASE)
 
-def pkg_xsl(name, parser=None):
-    xslt = etree.XSLT(etree.parse(pkg_resources.resource_filename('xdv', name), parser=parser))
-    def wrapped(*args, **kw):
-        result = xslt(*args, **kw)
-        for msg in xslt.error_log:
-            if msg.type == etree.ErrorTypes.ERR_OK:
-                logger.debug(msg.message)
-            else:
-                logger.debug(msg)
-        return result
-    wrapped.xslt = xslt
-    return wrapped
 
 update_transform = pkg_xsl('update-namespace.xsl')
 normalize_rules  = pkg_xsl('normalize-rules.xsl')
