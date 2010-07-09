@@ -1,6 +1,9 @@
-from lxml import etree
 import logging
 import pkg_resources
+import sys
+
+from lxml import etree
+from optparse import OptionParser
 
 logger=logging.getLogger('xdv')
 
@@ -46,3 +49,35 @@ class LoggingXSLTWrapper:
 
 def pkg_xsl(name, parser=None):
     return LoggingXSLTWrapper(etree.XSLT(etree.parse(pkg_resources.resource_filename('xdv', name), parser=parser)), logger)
+
+
+def _createOptionParser(usage):
+    parser = OptionParser(usage=usage)
+    parser.add_option("-o", "--output", metavar="output.xsl",
+                      help="Output filename (instead of stdout)",
+                      dest="output", default=sys.stdout)
+    parser.add_option("-p", "--pretty-print", action="store_true",
+                      help="Pretty print output (may alter rendering in browser)",
+                      dest="pretty_print", default=False)
+    parser.add_option("--trace", action="store_true",
+                      help="Compiler trace logging",
+                      dest="trace", default=False)
+    parser.add_option("-a", "--absolute-prefix", metavar="/",
+                      help="relative urls in the theme file will be made into absolute links with this prefix.",
+                      dest="absolute_prefix", default=None)
+    parser.add_option("-i", "--includemode", metavar="INC",
+                      help="include mode (document, ssi or esi)",
+                      dest="includemode", default=None)
+    parser.add_option("-n", "--network", action="store_true",
+                      help="Allow reads to the network to fetch resources",
+                      dest="read_network", default=False)
+    parser.add_option("-t", "--theme", metavar="theme.html",
+                      help="Theme file",
+                      dest="theme", default=None)
+    parser.add_option("-r", "--rules", metavar="rules.xml",
+                      help="XDV rules file", 
+                      dest="rules", default=None)
+    parser.add_option("-e", "--extra", metavar="extra.xsl",
+                      help="Extra XSL to be included in the transform (depracated, use inline xsl in the rules instead)",
+                      dest="extra", default=None)
+    return parser

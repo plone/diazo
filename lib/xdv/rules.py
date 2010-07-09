@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 """\
-Usage: %prog RULES
+Usage: %prog [-r] RULES
 
 Preprocess RULES, an xdv rules file
 """
 usage = __doc__
 
 import logging
-import pkg_resources
 import re
 
 from optparse import OptionParser
@@ -15,7 +14,7 @@ from lxml import etree
 from urlparse import urljoin
 
 from xdv.cssrules import convert_css_selectors
-from xdv.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE, CustomResolver, pkg_xsl
+from xdv.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE, pkg_xsl, _createOptionParser
 
 logger = logging.getLogger('xdv')
 
@@ -29,7 +28,6 @@ merge_conditions = pkg_xsl('merge-conditions.xsl')
 annotate_themes  = pkg_xsl('annotate-themes.xsl')
 annotate_rules   = pkg_xsl('annotate-rules.xsl')
 apply_rules      = pkg_xsl('apply-rules.xsl')
-emit_stylesheet  = pkg_xsl('emit-stylesheet.xsl')
 
 def update_namespace(rules_doc):
     """Convert old namespace to new namespace in place
@@ -40,7 +38,7 @@ def update_namespace(rules_doc):
     else:
         return rules_doc
 
-def expand_themes(rules_doc, parser=None, absolute_prefix=None):
+def expand_themes(rules_doc, parser=None, absolute_prefix=None, read_network=False):
     """Expand <theme href='...'/> nodes with the theme html.
     """
     if absolute_prefix is None:
@@ -50,6 +48,9 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None):
         parser = etree.HTMLParser()
     for element in rules_doc.xpath('xdv:theme[@href]', namespaces=namespaces):
         url = urljoin(base, element.get('href'))
+        if '://' in url:
+            if not theme.startswith('file://'):
+                raise ValueError("Supplied theme '%s', but network access denied." % url)
         theme_doc = etree.parse(url, parser=parser)
         prefix = urljoin(absolute_prefix, element.get('prefix', ''))
         apply_absolute_prefix(theme_doc, prefix)
@@ -69,7 +70,9 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         node.set('href', url)
     for node in theme_doc.xpath('//comment() | //style'):
         if node.tag == 'style' or node.tag == etree.Comment and node.text.startswith("[if IE"):
-            node.text = IMPORT_STYLESHEET.sub(lambda match: match.group(1) + urljoin(absolute_prefix, match.group(2)) + match.group(3), node.text)
+            node.text = IMPORT_STYLESHEET.sub(
+                lambda match: match.group(1) + urljoin(absolute_prefix, match.group(2)) + match.group(3),
+                node.text)
 
 def add_extra(rules_doc, extra):
     root = rules_doc.getroot()
@@ -77,7 +80,10 @@ def add_extra(rules_doc, extra):
     root.extend(extra_elements)
     return rules_doc
 
-def add_theme(rules_doc, theme, parser=None, absolute_prefix=None):
+def add_theme(rules_doc, theme, parser=None, absolute_prefix=None, read_network=False):
+    if isinstance(theme, basestring) and '://' in theme:
+        if not theme.startswith('file://'):
+            raise ValueError("Supplied theme '%s', but network access denied." % theme)
     if absolute_prefix is None:
         absolute_prefix = ''
     if parser is None:
@@ -91,19 +97,8 @@ def add_theme(rules_doc, theme, parser=None, absolute_prefix=None):
     root.append(element)
     return rules_doc
 
-def set_parser(stylesheet, parser, compiler_parser=None):
-    dummy_doc = etree.parse(pkg_resources.resource_filename('xdv', 'dummy.html'), parser=parser)
-    name = 'file:///__xdv__'
-    resolver = CustomResolver({name: stylesheet})
-    if compiler_parser is None:
-        compiler_parser = etree.XMLParser()
-    compiler_parser.resolvers.add(resolver)
-    identity = pkg_xsl('identity.xsl', compiler_parser)
-    output_doc = identity(dummy_doc, docurl="'%s'"%name)
-    compiler_parser.resolvers.remove(resolver)
-    return output_doc
-
-def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=True, absolute_prefix=None, includemode=None, update=True, parser=None, rules_parser=None, compiler_parser=None, access_control=None):
+def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=True, absolute_prefix=None,
+                  includemode=None, update=True, parser=None, rules_parser=None, read_network=False, stop=None):
     if trace:
         trace = '1'
     else:
@@ -111,57 +106,72 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
     if rules_parser is None:
         rules_parser = etree.XMLParser(recover=False)
     rules_doc = etree.parse(rules, parser=rules_parser)
+    if stop == 0: return rules_doc
     if parser is None:
         parser = etree.HTMLParser()
     if xinclude:
-        rules_doc.xinclude()
+        rules_doc.xinclude() # XXX read_network limitation not yet supported for xinclude
+    if stop == 1: return rules_doc
     if update:
         rules_doc = update_namespace(rules_doc)
+    if stop == 2: return rules_doc
     if css:
         rules_doc = convert_css_selectors(rules_doc)
-    rules_doc = expand_themes(rules_doc, parser, absolute_prefix)
+    if stop == 3: return rules_doc
+    rules_doc = expand_themes(rules_doc, parser, absolute_prefix, read_network)
     if theme is not None:
-        rules_doc = add_theme(rules_doc, theme, parser, absolute_prefix)
+        rules_doc = add_theme(rules_doc, theme, parser, absolute_prefix, read_network)
+    if stop == 4: return rules_doc
     if includemode is None:
         includemode = 'document'
     includemode = "'%s'" % includemode
     rules_doc = normalize_rules(rules_doc, includemode=includemode)
+    if stop == 5: return rules_doc
     rules_doc = apply_conditions(rules_doc)
+    if stop == 6: return rules_doc
     rules_doc = merge_conditions(rules_doc)
+    if stop == 7: return rules_doc
     rules_doc = annotate_themes(rules_doc)
+    if stop == 8: return rules_doc
     rules_doc = annotate_rules(rules_doc)
+    if stop == 9: return rules_doc
     rules_doc = apply_rules(rules_doc, trace=trace)
-    compiled_doc = emit_stylesheet(rules_doc)
-    compiled_doc = set_parser(etree.tostring(compiled_doc), parser, compiler_parser)
-    return compiled_doc
-
+    assert stop < 10, "There are only 10 steps"
+    return rules_doc
 
 
 def main():
     """Called from console script
     """
-    parser = OptionParser(usage=usage)
-    parser.add_option("-o", "--output", metavar="output.html",
-                      help="Output filename (instead of stdout)",
-                      dest="output", default=sys.stdout)
-    parser.add_option("-p", "--pretty-print", action="store_true",
-                      help="Pretty print output",
-                      dest="pretty_print", default=False)
-    parser.add_option("-a", "--absolute-prefix", metavar="/",
-                      help="relative urls in the theme file will be made into absolute links with this prefix.",
-                      dest="absolute_prefix", default=None)
-    parser.add_option("-i", "--includemode", metavar="INC",
-                      help="include mode (document, ssi or esi)",
-                      dest="includemode", default=None)
-    parser.add_option("-t", "--theme", metavar="theme.html",
-                      help="Theme file",
-                      dest="theme", default=None)
+    parser = _createOptionParser(usage=usage)
+    parser.add_option("-s", "--stop", metavar="n", type="int",
+                      help="Stop preprocessing at stage n", 
+                      dest="stop", default=None)
     (options, args) = parser.parse_args()
 
-    if len(args) != 1:
-        parser.error("Invalid number of arguments")
-    rules = args[0]
-    rules_doc = process_rules(rules, theme=options.theme, absolute_prefix=options.absolute_prefix, includemode=options.includemode)
+    if options.rules is None:
+        if len(args) == 2 and options.theme is None:
+            options.rules, options.theme = args
+        elif len(args) == 1:
+            options.rules, = args
+        else:
+            parser.error("Wrong number of arguments.")
+    elif args:
+        parser.error("Wrong number of arguments.")
+
+    if options.trace:
+        logger.setLevel(logging.DEBUG)
+
+    rules_doc = process_rules(
+        options.rules,
+        theme=options.theme,
+        extra=options.extra,
+        trace=options.trace,
+        absolute_prefix=options.absolute_prefix,
+        includemode=options.includemode,
+        read_network=options.read_network,
+        stop=options.stop,
+        )
     rules_doc.write(options.output, pretty_print=options.pretty_print)
 
 if __name__ == '__main__':
