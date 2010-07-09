@@ -13,7 +13,6 @@
 
     <xsl:param name="defaultsurl">defaults.xsl</xsl:param>
     <xsl:param name="usebase"/>
-    <xsl:param name="indent"/>
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="inline-xsl" select="/dv:rules/xsl:*"/>
@@ -30,17 +29,6 @@
 
     <xsl:template match="/">
         <xsl:apply-templates select="$defaults/xsl:stylesheet"/>
-    </xsl:template>
-
-    <xsl:template match="xsl:output/@indent">
-        <xsl:choose>
-            <xsl:when test="$indent">
-                <xsl:attribute name="indent"><xsl:value-of select="$indent"/></xsl:attribute>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:copy/>
-            </xsl:otherwise>
-        </xsl:choose>
     </xsl:template>
 
     <!--
@@ -102,24 +90,17 @@
                             </xsl:for-each>
                             <xsl:text>&#10;</xsl:text>
                             <xsl:element name="xsl:otherwise">
-                                <xsl:choose>
-                                    <xsl:when test="$unconditional">
+                                <xsl:element name="xsl:apply-templates">
+                                    <xsl:attribute name="select">.</xsl:attribute>
+                                    <xsl:if test="$unconditional">
                                         <xsl:for-each select="$unconditional">
                                             <xsl:variable name="themeid" select="@xml:id"/>
-                                            <xsl:element name="xsl:apply-templates">
-                                                <xsl:attribute name="select">.</xsl:attribute>
-                                                <xsl:attribute name="mode">
-                                                    <xsl:value-of select="$themeid"/>
-                                                </xsl:attribute>
-                                            </xsl:element>
+                                            <xsl:attribute name="mode">
+                                                <xsl:value-of select="$themeid"/>
+                                            </xsl:attribute>
                                         </xsl:for-each>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:element name="xsl:apply-templates">
-                                            <xsl:attribute name="select">@*|node()</xsl:attribute>
-                                        </xsl:element>
-                                    </xsl:otherwise>
-                                </xsl:choose>
+                                    </xsl:if>
+                                </xsl:element>
                             </xsl:element>
                             <xsl:text>&#10;</xsl:text>
                         </xsl:element>

@@ -28,8 +28,6 @@ merge_conditions = pkg_xsl('merge-conditions.xsl')
 annotate_themes  = pkg_xsl('annotate-themes.xsl')
 annotate_rules   = pkg_xsl('annotate-rules.xsl')
 apply_rules      = pkg_xsl('apply-rules.xsl')
-fixup_themes     = pkg_xsl('fixup-themes.xsl')
-
 
 def update_namespace(rules_doc):
     """Convert old namespace to new namespace in place
@@ -48,10 +46,11 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None, read_network=Fal
     base = rules_doc.docinfo.URL
     if parser is None:
         parser = etree.HTMLParser()
-    for element in rules_doc.xpath('//xdv:theme[@href]', namespaces=namespaces):
+    for element in rules_doc.xpath('xdv:theme[@href]', namespaces=namespaces):
         url = urljoin(base, element.get('href'))
-        if url[:6] in ('ftp://', 'http:/', 'https:'):
-            raise ValueError("Supplied theme '%s', but network access denied." % url)
+        if '://' in url:
+            if not theme.startswith('file://'):
+                raise ValueError("Supplied theme '%s', but network access denied." % url)
         theme_doc = etree.parse(url, parser=parser)
         prefix = urljoin(absolute_prefix, element.get('prefix', ''))
         apply_absolute_prefix(theme_doc, prefix)
@@ -82,8 +81,9 @@ def add_extra(rules_doc, extra):
     return rules_doc
 
 def add_theme(rules_doc, theme, parser=None, absolute_prefix=None, read_network=False):
-    if isinstance(theme, basestring) and theme[:6] in ('ftp://', 'http:/', 'https:'):
-        raise ValueError("Supplied theme '%s', but network access denied." % theme)
+    if isinstance(theme, basestring) and '://' in theme:
+        if not theme.startswith('file://'):
+            raise ValueError("Supplied theme '%s', but network access denied." % theme)
     if absolute_prefix is None:
         absolute_prefix = ''
     if parser is None:
@@ -96,15 +96,6 @@ def add_theme(rules_doc, theme, parser=None, absolute_prefix=None, read_network=
     element.append(theme_doc.getroot())   
     root.append(element)
     return rules_doc
-
-def fixup_theme_comment_selectors(rules):
-    """Comments must be converted to <xsl:comment> to be output, doing it early
-    allows them to get an xml:id so they can be matched in the theme. The theme
-    selector needs rewriting to replace comment() with xsl:comment
-    """
-    for element in rules.xpath("//@theme[contains(., 'comment()')]/.."):
-        element.attrib['theme'] = element.attrib['theme'].replace('comment()', 'xsl:comment')
-    return rules
 
 def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=True, absolute_prefix=None,
                   includemode=None, update=True, parser=None, rules_parser=None, read_network=False, stop=None):
@@ -127,28 +118,25 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
     if css:
         rules_doc = convert_css_selectors(rules_doc)
     if stop == 3: return rules_doc
-    rules_doc = fixup_theme_comment_selectors(rules_doc)
-    if stop == 4: return rules_doc
     rules_doc = expand_themes(rules_doc, parser, absolute_prefix, read_network)
     if theme is not None:
         rules_doc = add_theme(rules_doc, theme, parser, absolute_prefix, read_network)
-    if stop == 5: return rules_doc
+    if stop == 4: return rules_doc
     if includemode is None:
         includemode = 'document'
     includemode = "'%s'" % includemode
     rules_doc = normalize_rules(rules_doc, includemode=includemode)
-    if stop == 6: return rules_doc
+    if stop == 5: return rules_doc
     rules_doc = apply_conditions(rules_doc)
-    if stop == 7: return rules_doc
+    if stop == 6: return rules_doc
     rules_doc = merge_conditions(rules_doc)
-    if stop == 8: return rules_doc
-    rules_doc = fixup_themes(rules_doc)
-    if stop == 9: return rules_doc
+    if stop == 7: return rules_doc
     rules_doc = annotate_themes(rules_doc)
-    if stop == 10: return rules_doc
+    if stop == 8: return rules_doc
     rules_doc = annotate_rules(rules_doc)
-    if stop == 11: return rules_doc
+    if stop == 9: return rules_doc
     rules_doc = apply_rules(rules_doc, trace=trace)
+    assert stop < 10, "There are only 10 steps"
     return rules_doc
 
 

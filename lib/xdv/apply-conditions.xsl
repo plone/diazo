@@ -1,39 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
-    xmlns:str="http://exslt.org/strings"
     xmlns:xdv="http://namespaces.plone.org/xdv"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
-    <xsl:template match="xdv:*[@if-content or @if-path]">
+    <xsl:template match="xdv:*[@if-content]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
             <xsl:attribute name="condition">
                 <xsl:choose>
-                    <xsl:when test="@if-content = ''"><xsl:value-of select="@content"/></xsl:when>
-                    <xsl:when test="@if-content">(<xsl:value-of select="@if-content"/>)</xsl:when>
+                    <xsl:when test="@if-content = ''">
+                        <xsl:value-of select="@content"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="@if-content"/>
+                    </xsl:otherwise>
                 </xsl:choose>
-                <xsl:if test="@if-content and @if-path"> and </xsl:if>
-                <xsl:if test="@if-path">
-                    <xsl:variable name="paths" select="str:tokenize(@if-path)"/>
-                    <xsl:if test="count($paths) > 1">(</xsl:if>
-                    <xsl:for-each select="$paths">
-                        <xsl:variable name="path" select="text()"/>
-                        <xsl:choose>
-                            <xsl:when test="starts-with($path, '/') and substring($path, string-length($path)) = '/'"
-                                >$normalized_path = '<xsl:value-of select="$path"/>'</xsl:when>
-                            <xsl:when test="substring($path, string-length($path)) = '/'"
-                                >substring($normalized_path, string-length($normalized_path) - <xsl:value-of select="string-length($path)"/>) = '/<xsl:value-of select="$path"/>'</xsl:when>
-                            <xsl:when test="starts-with($path, '/')"
-                                >starts-with($normalized_path, '<xsl:value-of select="$path"/>/')</xsl:when>
-                            <xsl:otherwise
-                                >contains($normalized_path, '/<xsl:value-of select="$path"/>/')</xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="count($paths) > 1 and position() != last()"> or </xsl:if>
-                    </xsl:for-each>
-                    <xsl:if test="count($paths) > 1">)</xsl:if>
-                </xsl:if>
             </xsl:attribute>
             <xsl:apply-templates select="node()"/>
         </xsl:copy>

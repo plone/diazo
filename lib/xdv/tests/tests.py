@@ -9,6 +9,8 @@ import traceback
 import difflib
 from StringIO import StringIO
 import unittest
+import ConfigParser
+import pkg_resources
 
 import xdv.compiler
 import xdv.run
@@ -17,6 +19,8 @@ if __name__ == '__main__':
     __file__ = sys.argv[0]
 
 HERE = os.path.abspath(os.path.dirname(__file__))
+
+defaultsfn = pkg_resources.resource_filename('xdv.tests', 'default-options.cfg')
 
 class XDVTestCase(unittest.TestCase):
     
@@ -27,7 +31,12 @@ class XDVTestCase(unittest.TestCase):
     
     def testAll(self):
         self.errors = StringIO()
-        themefn = os.path.join(self.testdir, "theme.html")
+        config = ConfigParser.ConfigParser()
+        config.read([defaultsfn, os.path.join(self.testdir, "options.cfg")])
+        
+        themefn = None
+        if config.get('xdvtest', 'theme'):
+            themefn = os.path.join(self.testdir, config.get('xdvtest', 'theme'))
         contentfn = os.path.join(self.testdir, "content.html")
         rulesfn = os.path.join(self.testdir, "rules.xml")
         xpathsfn = os.path.join(self.testdir, "xpaths.txt")
@@ -39,7 +48,13 @@ class XDVTestCase(unittest.TestCase):
 
         # Make a compiled version
         theme_parser = etree.HTMLParser()
-        ct = xdv.compiler.compile_theme(rules=rulesfn, theme=themefn, parser=theme_parser)
+        ct = xdv.compiler.compile_theme(
+            rules=rulesfn,
+            theme=themefn,
+            parser=theme_parser,
+            absolute_prefix=config.get('xdvtest', 'absolute-prefix'),
+            includemode=config.get('xdvtest', 'includemode'),
+            )
         
         # Serialize / parse the theme - this can catch problems with escaping.
         cts = etree.tostring(ct)
@@ -66,9 +81,10 @@ class XDVTestCase(unittest.TestCase):
         theme_parser.resolvers.add(xdv.run.RunResolver(self.testdir))
         processor = etree.XSLT(ct)
         result = processor(contentdoc)
+
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = etree.tostring(result, encoding="UTF-8", pretty_print=True)
+        self.themed_string = etree.tostring(result, encoding="UTF-8", pretty_print=config.getboolean('xdvtest', 'pretty-print'))
         self.themed_content = etree.ElementTree(file=StringIO(self.themed_string), 
                                                 parser=etree.HTMLParser())
 
@@ -95,126 +111,13 @@ class XDVTestCase(unittest.TestCase):
             if old != new:
                 #if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
-                print "ERROR:", "output.html has CHANGED"
                 for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
                     print  line
-                self.assertEquals(old, new)
+                assert old == new, "output.html has CHANGED"
 
         # Write out the result to catch unexpected changes
         if self.writefiles:
             open(outputfn, 'w').write(self.themed_string)
-    
-class TestAbsolutePrefix(unittest.TestCase):
-    
-    def testEnabled(self):
-        themefn = os.path.join(HERE, "absolute_theme.html")
-        rulesfn = os.path.join(HERE, "absolute_rules.xml")
-        
-        compiled = xdv.compiler.compile_theme(rules=rulesfn, theme=themefn, absolute_prefix="/abs")
-        
-        styleTag = compiled.xpath('//style')[0]
-        styleLines = [x.strip() for x in styleTag.getchildren()[0].text.split('\n') if x.strip()]
-        expectedLines = [
-            '@import "/abs/foo.css";',
-            '@import url("/abs/foo.css");',
-            "@import url('/abs/foo.css');",
-            "@import url('/foo.css');",
-            "@import url('/foo.css');",
-            "@import url('http://site.com/foo.css');"
-            ]
-        for line, expected in zip(styleLines, expectedLines):
-            self.assertEquals(line, expected)
-        
-        linkTags = compiled.xpath('//link')
-        self.assertEquals([
-            '/abs/foo.css',
-            '/abs/foo.css',
-            '/foo.css',
-            '/foo.css',
-            'http://site.com/foo.css'
-        ], [x.get('href') for x in linkTags])
-        
-        scriptTags = compiled.xpath('//script')
-        self.assertEquals([
-            '/abs/foo.js',
-            '/abs/foo.js',
-            '/foo.js',
-            '/foo.js',
-            'http://site.com/foo.js'
-        ], [x.get('src') for x in scriptTags])
-        
-        imgTags = compiled.xpath('//img')
-        self.assertEquals([
-            '/abs/foo.jpg',
-            '/abs/foo.jpg',
-            '/foo.jpg',
-            '/foo.jpg',
-            'http://site.com/foo.jpg'
-        ], [x.get('src') for x in imgTags])
-        
-        inputTags = compiled.xpath('//input')
-        self.assertEquals([
-            '/abs/foo.jpg',
-            '/abs/foo.jpg',
-            '/foo.jpg',
-            '/foo.jpg',
-            'http://site.com/foo.jpg'
-        ], [x.get('src') for x in inputTags])
-    
-    def testDisabled(self):
-        themefn = os.path.join(HERE, "absolute_theme.html")
-        rulesfn = os.path.join(HERE, "absolute_rules.xml")
-        
-        compiled = xdv.compiler.compile_theme(rules=rulesfn, theme=themefn)
-        
-        styleTag = compiled.xpath('//style')[0]
-        styleLines = [x.strip() for x in styleTag.getchildren()[0].text.split('\n') if x.strip()]
-        expectedLines = [
-            '@import "foo.css";',
-            '@import url("foo.css");',
-            "@import url('./foo.css');",
-            "@import url('../foo.css');",
-            "@import url('/foo.css');",
-            "@import url('http://site.com/foo.css');"
-            ]
-        for line, expected in zip(styleLines, expectedLines):
-            self.assertEquals(line, expected)
-        
-        linkTags = compiled.xpath('//link')
-        self.assertEquals([
-            'foo.css',
-            './foo.css',
-            '../foo.css',
-            '/foo.css',
-            'http://site.com/foo.css'
-        ], [x.get('href') for x in linkTags])
-        
-        scriptTags = compiled.xpath('//script')
-        self.assertEquals([
-            'foo.js',
-            './foo.js',
-            '../foo.js',
-            '/foo.js',
-            'http://site.com/foo.js'
-        ], [x.get('src') for x in scriptTags])
-        
-        imgTags = compiled.xpath('//img')
-        self.assertEquals([
-            'foo.jpg',
-            './foo.jpg',
-            '../foo.jpg',
-            '/foo.jpg',
-            'http://site.com/foo.jpg'
-        ], [x.get('src') for x in imgTags])
-        
-        inputTags = compiled.xpath('//input')
-        self.assertEquals([
-            'foo.jpg',
-            './foo.jpg',
-            '../foo.jpg',
-            '/foo.jpg',
-            'http://site.com/foo.jpg'
-        ], [x.get('src') for x in inputTags])
 
 
 def test_suite():
@@ -227,5 +130,4 @@ def test_suite():
             continue
         cls = type('Test-%s'%name, (XDVTestCase,), dict(testdir=path))
         suite.addTest(unittest.makeSuite(cls))
-    suite.addTest(unittest.makeSuite(TestAbsolutePrefix))
     return suite
