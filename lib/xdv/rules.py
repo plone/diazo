@@ -48,9 +48,8 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None, read_network=Fal
         parser = etree.HTMLParser()
     for element in rules_doc.xpath('xdv:theme[@href]', namespaces=namespaces):
         url = urljoin(base, element.get('href'))
-        if '://' in url:
-            if not theme.startswith('file://'):
-                raise ValueError("Supplied theme '%s', but network access denied." % url)
+        if url[:6] in ('ftp://', 'http:/', 'https:'):
+            raise ValueError("Supplied theme '%s', but network access denied." % url)
         theme_doc = etree.parse(url, parser=parser)
         prefix = urljoin(absolute_prefix, element.get('prefix', ''))
         apply_absolute_prefix(theme_doc, prefix)
@@ -81,9 +80,8 @@ def add_extra(rules_doc, extra):
     return rules_doc
 
 def add_theme(rules_doc, theme, parser=None, absolute_prefix=None, read_network=False):
-    if isinstance(theme, basestring) and '://' in theme:
-        if not theme.startswith('file://'):
-            raise ValueError("Supplied theme '%s', but network access denied." % theme)
+    if isinstance(theme, basestring) and theme[:6] in ('ftp://', 'http:/', 'https:'):
+        raise ValueError("Supplied theme '%s', but network access denied." % theme)
     if absolute_prefix is None:
         absolute_prefix = ''
     if parser is None:
