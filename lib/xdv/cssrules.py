@@ -20,7 +20,7 @@ import utils
 import logging
 logger = logging.getLogger('xdv')
 
-def convert_css_selectors(rules, prefix='//'):
+def convert_css_selectors(rules):
     """Convert css rules to xpath rules element tree in place
     """
     #XXX: There is a :root pseudo-class - http://www.w3.org/TR/css3-selectors/#root-pseudo
@@ -28,10 +28,17 @@ def convert_css_selectors(rules, prefix='//'):
     for element in rules.xpath("//@*[namespace-uri()='%s']/.." % utils.namespaces['css']):
         for name, value in element.attrib.items():
             if name.startswith('{%s}' % utils.namespaces['css']):
-                if value:
-                    element.attrib[utils.localname(name)] = css_to_xpath(value, prefix=prefix)
+                localname = utils.localname(name)
+                if not value:
+                    element.attrib[localname] = ""
+                    continue
+                if localname == 'content' and element.tag == '{%s}drop' % utils.namespaces['xdv']:
+                    prefix = '//'
                 else:
-                    element.attrib[utils.fullname(element.nsmap[element.prefix], utils.localname(name))] = ""
+                    prefix = 'descendant-or-self::'                    
+                element.attrib[localname] = css_to_xpath(value, prefix=prefix)
+
+    return rules
 
 def main():
     """Called from console script

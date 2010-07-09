@@ -26,5 +26,6 @@ development, check it into Subversion, and not touch XDV during deployment.''',
         [console_scripts]
         xdvcompiler = xdv.compiler:main
         xdvrun = xdv.run:main
+        xdvpreprocessor = xdv.rules:main
         """,
     )
