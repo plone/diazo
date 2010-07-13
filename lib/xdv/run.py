@@ -59,10 +59,12 @@ def main():
     if options.trace:
         logger.setLevel(logging.DEBUG)
 
+    parser = etree.HTMLParser()
+    parser.resolvers.add(RunResolver(os.path.dirname(content)))
+
     if options.xsl is not None:
         output_xslt = etree.parse(options.xsl)
     else:
-        parser = etree.HTMLParser()
         output_xslt = compile_theme(
             rules=options.rules,
             theme=options.theme,
@@ -81,9 +83,8 @@ def main():
     else:
         access_control = AC_READ_FILE
 
-    parser.resolvers.add(RunResolver(os.path.dirname(content)))
     transform = etree.XSLT(output_xslt, access_control=access_control)
-    content_doc = etree.parse(content, parser=etree.HTMLParser())
+    content_doc = etree.parse(content, parser=parser)
     output_html = transform(content_doc)
     output_html.write(options.output, encoding='UTF-8', pretty_print=options.pretty_print)
     for msg in transform.error_log:
