@@ -101,16 +101,16 @@
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="*[@method = 'ssi']" mode="include">
+    <xsl:template match="*[@method = 'ssi' or @method = 'ssiwait']" mode="include">
         <!-- Assumptions:
             * When using ssiprefix, @href should be an absolute local path (i.e.  /foo/bar)
         -->
         <xsl:variable name="content_quoted" select="str:encode-uri(@content, false())"/>
-        <xsl:element name="xsl:comment"># include  virtual="<xsl:value-of select="$ssiprefix"/><xsl:choose>
+        <xsl:element name="xsl:comment">#include  virtual="<xsl:value-of select="$ssiprefix"/><xsl:choose>
             <xsl:when test="not(@content)"><xsl:value-of select="@href"/></xsl:when>
             <xsl:when test="contains(@href, '?')"><xsl:value-of select="concat(str:replace(@href, '?', concat($ssisuffix, '?')), $ssiquerysuffix, $content_quoted)"/></xsl:when>
             <xsl:otherwise><xsl:value-of select="concat(@href, $ssisuffix, '?', $ssiquerysuffix, $content_quoted)"/></xsl:otherwise>
-            </xsl:choose>" wait="yes" </xsl:element>
+            </xsl:choose>"<xsl:if test="@method = 'ssiwait'"> wait="yes"</xsl:if></xsl:element>
     </xsl:template>
     
     <xsl:template match="*[@method = 'esi']" mode="include">
