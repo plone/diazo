@@ -66,7 +66,7 @@ def _createOptionParser(usage):
                       help="relative urls in the theme file will be made into absolute links with this prefix.",
                       dest="absolute_prefix", default=None)
     parser.add_option("-i", "--includemode", metavar="INC",
-                      help="include mode (document, ssi or esi)",
+                      help="include mode (document, ssi, ssiwait or esi)",
                       dest="includemode", default=None)
     parser.add_option("-n", "--network", action="store_true",
                       help="Allow reads to the network to fetch resources",
