@@ -12,6 +12,7 @@
         <ul>
             <li>The predefined XML entities are always available: &quot;, &amp;, &apos;, &lt;, &gt;.</li>
             <li>Other entities must be explicitly declared in the doctype, as they are here for &nbsp; and &mdash;.</li>
+            <li><a href="http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references">More on character entity references</a></li>
         </ul>
     </append>
 
