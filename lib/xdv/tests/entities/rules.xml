@@ -1,0 +1,18 @@
+<!DOCTYPE rules [
+    <!ENTITY mdash "&#8212;">
+    <!ENTITY nbsp "&#160;">
+]>
+<rules xmlns="http://namespaces.plone.org/xdv"
+       xmlns:css="http://namespaces.plone.org/xdv+css">
+
+    <append css:theme="body" css:content="body > *"/>
+
+    <append css:theme="body">
+        <p>The rules are parsed as XML, this means that:</p>
+        <ul>
+            <li>The predefined XML entities are always available: &quot;, &amp;, &apos;, &lt;, &gt;.</li>
+            <li>Other entities must be explicitly declared in the doctype, as they are here for &nbsp; and &mdash;.</li>
+        </ul>
+    </append>
+
+</rules>
