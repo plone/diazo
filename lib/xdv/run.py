@@ -27,6 +27,9 @@ class RunResolver(etree.Resolver):
     def resolve(self, url, id, context):
         # libxml2 does not do this correctly on it's own with the HTMLParser
         # but it does work in Apache
+        if '://' in url or url.startswith('/'):
+            # It seems we must explicitly resolve the url here
+            return self.resolve_filename(url, context)
         url = os.path.join(self.directory, url)
         return self.resolve_filename(url, context)
 
