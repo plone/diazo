@@ -86,7 +86,7 @@ Note that ``lxml`` is a dependency of ``xdv``, so you may need to install the
 libxml2 and libxslt development packages in order for it to build. On
 Debian/Ubuntu you can run::
 
-    $ sudo apt-get install libxslt1-dev
+    $ sudo apt-get install build-essential python2.6-dev libxslt1-dev
 
 On some operating systems, notably Mac OS X, installing a "good" ``lxml`` egg
 can be problematic, due to a mismatch in the operating system versions of the
@@ -102,7 +102,7 @@ you can compile a static ``lxml`` egg using the following buildout recipe::
     [lxml]
     recipe = z3c.recipe.staticlxml
     egg = lxml
-    libxml2-url = http://xmlsoft.org/sources/libxml2-2.7.6.tar.gz
+    libxml2-url = http://xmlsoft.org/sources/libxml2-2.7.7.tar.gz
     libxslt-url = http://xmlsoft.org/sources/libxslt-1.1.26.tar.gz
     
     [xdv]
@@ -118,7 +118,6 @@ Rules file syntax
 The rules file, conventionally called ``rules.xml``, is rooted in a tag
 called ``<rules />``::
 
-    <?xml version="1.0" encoding="UTF-8"?>
     <rules xmlns="http://namespaces.plone.org/xdv"
            xmlns:css="http://namespaces.plone.org/xdv+css">
            
@@ -137,6 +136,16 @@ XDV supports complex CSS3 and XPath selectors, including things like the
 if you are new to XPath and/or CSS3.
 
 The following elements are allowed inside the ``<rules />`` element:
+
+``<theme />``
+-------------
+
+Used to specify the theme file. For example::
+
+    <theme href="theme.html"/>
+
+Relative paths are resolved relative to the rules.xml file. For http/https
+urls, the ``--network`` switch must be supplied to xdvcompiler/xdvrun.
 
 ``<replace />``
 ---------------
@@ -325,6 +334,55 @@ final rule will be used as a fallback (since it has no ``if-content``),
 taking the contents of the ``<title />`` tag in the head of the content
 document.
 
+Condition grouping and nesting
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A condition may be applied to multiple rules by placing it on a ``<rules>``
+tag::
+
+    <rules xmlns="http://namespaces.plone.org/xdv"
+           xmlns:css="http://namespaces.plone.org/xdv+css">
+        
+        <rules css:if-content="#personal-bar">
+            <append css:theme="#header-box" css:content="#user-prefs"/>
+            <append css:theme="#header-box" css:content="#logout"/>
+        </rules>
+        
+        ...
+        
+    </rules>
+
+Conditions may also be nested, so::
+
+    <rules if-content="condition1">
+        <rules if-content="condition2">
+            <copy if-content="condition3" css:theme="#a" css:content="#b"/>
+        </rules>
+    </rules>
+
+Is equivalent to::
+
+    <copy if-content="(condition1) and (condition2) and (condition3)" css:theme="#a" css:content="#b"/>
+
+Multiple themes
+~~~~~~~~~~~~~~~
+
+It's possible to specify multiple themes using conditions. For instance::
+
+    <theme href="theme.html"/>
+    <theme href="news.html" css:if-content="body.section-news"/>
+    <theme href="members.html" css:if-content="body.section-members"/>
+
+The unconditional theme is used as a fallback when no other theme's condition is satisfied.
+
+All rules are applied to all themes. To have a rule apply to only a single
+theme, use the condition grouping syntax::
+
+    <rules css:if-content="body.section-news">
+        <theme href="news.html"/>
+        <copy css:content="h2.articleheading" css:theme="h1"/>
+    </rules>
+
 Including external content
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -355,17 +413,17 @@ The inclusion can happen in one of three ways:
     <append css:theme="#left-column" css:content="#portlet"
             href="/extra.html" method="ssi"/>
 
-  The output will look something like this::
+  The output will render like this::
   
-    <!--# include wait="yes" virtual="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']" -->
+    <!--#include virtual="/extra.html?;filter_xpath=descendant-or-self::*[@id%20=%20'portlet']"-->
   
   This SSI instruction would need to be processed by a fronting web server
-  such as Apache or nginx. Also note the ``;filter_xpath`` query string
+  such as Apache or Nginx. Also note the ``;filter_xpath`` query string
   parameter. Since we are deferring resolution of the referenced document
   until SSI processing takes place (i.e. after the compiled XDV XSLT transform
   has executed), we need to ask the SSI processor to filter out elements in
   the included file that we are not interested in. This requires specific
-  configuration. An example for nginx is included below.
+  configuration. An example for Nginx is included below.
   
   For simple SSI includes of a whole document, you may omit the ``content``
   selector from the rule::
@@ -374,7 +432,11 @@ The inclusion can happen in one of three ways:
   
   The output then renders like this::
   
-    <!--# include wait="yes" virtual="/extra.html" -->
+    <!--#include virtual="/extra.html"-->
+
+  Some versions of Nginx have required the ``wait="yes"`` ssi option to be
+  stable. This can be specified by setting the ``method`` attribute to
+  ``ssiwait``.
 
 * Via an Edge Side Includes directive. This can be specified by setting the
   ``method`` attribute to ``esi``::
@@ -384,7 +446,7 @@ The inclusion can happen in one of three ways:
 
   The output is similar to that for the SSI mode::
 
-    <esi:include src="/extra.html?;filter_xpath=//*[@id%20=%20'portlet']"></esi:include>
+    <esi:include src="/extra.html?;filter_xpath=descendant-or-self::*[@id%20=%20'portlet']"></esi:include>
   
   Again, the directive would need to be processed by a fronting server, such
   as Varnish. Chances are an ESI-aware cache server would not support
@@ -416,23 +478,20 @@ stated in the rules file, rather than pulled from the response being styled.
 
 For example::
 
-    <xdv:rules
-        xmlns:xdv="http://namespaces.plone.org/xdv"
+    <rules
+        xmlns="http://namespaces.plone.org/xdv"
         xmlns:css="http://namespaces.plone.org/xdv+css"
         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
         >
 
-        <xdv:append theme="/html/head">
+        <append theme="/html/head">
             <style type="text/css">
                 /* From the rules */
                 body > h1 { color: red; }
             </style>
-        </xdv:append>
+        </append>
 
     </xdv:rules>
-
-Notice how we have placed the rules in an explicit ``xdv`` namespace, so that
-we can write the "inline" HTML without a namespace prefix.
 
 In the example above, the ``<append />`` rule will copy the ``<style />``
 attribute and its contents into the ``<head />`` of the theme. Similar rules
@@ -443,20 +502,14 @@ It is even possible to insert XSLT instructions into the compiled theme in
 this manner. Having declared the ``xsl`` namespace as shown above, we can do
 something like this::
 
-    <xdv:replace css:theme="#details">
+    <replace css:theme="#details">
         <dl id="details">
             <xsl:for-each css:select="table#details > tr">
                 <dt><xsl:copy-of select="td[1]/text()"/></dt>
                 <dd><xsl:copy-of select="td[2]/node()"/></dd>
             </xsl:for-each>
         </dl>
-    </xdv:replace>
-
-Note that css expressions are converted to "placeless" XPath expressions,
-so ``css:select="table#details > tr"`` converts to
-``select="//table[@id='details]/tr"``. This means it would not be possible to
-use ``css:select="td:first-child > *"`` as you want a relative selector here.
-You can, of course, just use a manual XPath in a ``select`` attribute instead.
+    </replace>
 
 Inline XSL directives
 ~~~~~~~~~~~~~~~~~~~~~
@@ -472,11 +525,24 @@ for instance to strip space from the output document use::
 
 Note: this may effect the rendering of the page on the browser.
 
-To use a strict doctype::
+Doctypes
+~~~~~~~~
+
+By default, XDV transforms output pages with the XHTML 1.0 Transitional
+doctype. To use a strict doctype include this inline XSL::
 
     <xsl:output
         doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
         doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+
+It's important to note that only the XHTML 1.0 Strict and XHTML 1.0
+Transitional doctypes trigger the special XHTML compatibility mode of
+libxml2's XML serializer. This ensures ``<br/>`` is rendered as ``<br />`` and
+``<div/>`` as ``<div></div>``, which is necessary for browsers to correctly
+parse the document as HTML.
+
+The HTML5 specification lists XHTML 1.0 Strict as as `obsolete permitted
+doctype string`_, so this doctype is recommended when HTML5 output is desired.
 
 XInclude
 ~~~~~~~~
@@ -503,8 +569,8 @@ Compilation
 
 Once you have written your rules file, you need to compile it to an XSLT for
 deployment. In some cases, you may have an application server that does this
-on the fly, e.g. if you are using the ``collective.xdv`` package with Plone.
-For deployment to a web server like Apache or nginx, however, you will need
+on the fly, e.g. if you are using the collective.xdv_ package with Plone.
+For deployment to a web server like Apache or Nginx, however, you will need
 to perform this step manually.
 
 The easiest way to invoke the XDV compiler is via the ``xdvcompiler`` command
@@ -513,17 +579,18 @@ do::
 
     $ bin/xdvcompiler --help
 
-To run the compiler with ``rules.xml`` operating on ``theme.html``::
+To run the compiler with ``rules.xml``::
 
-    $ bin/xdvcompiler rules.xml theme.html
+    $ bin/xdvcompiler rules.xml
 
 This will print the compiled XSLT file to the standard output. You can save
 it to a file instead using::
 
-    $ bin/xdvcompiler -o theme.xsl rules.xml theme.html
+    $ bin/xdvcompiler -o theme.xsl -r rules.xml
 
 The following command line options are available:
 
+* Use ``-t theme.html`` to supply a theme if none is specified in the rules.
 * Use ``-p`` to pretty-print the output for improved readability. There is a
   risk that this could alter rendering in the browser, though, as browsers
   are sensitive to some kinds of whitespace.
@@ -562,17 +629,17 @@ Testing the compiled theme
 To test the compiled theme, you can apply it to a static file representing
 the content. The easiest way to do this is via the ``xdvrun`` script::
 
-    $ bin/xdvrun theme.xsl content.html
+    $ bin/xdvrun --xsl theme.xsl content.html
 
 This will print the output to the standard output. You can save it to a file
 instead with::
 
-    $ bin/xdvrun -o output.html theme.xsl content.html
+    $ bin/xdvrun -o output.html --xsl theme.xsl content.html
 
-For testing, you can also compile and run the theme in one go, by using the
-``-r`` (rules) and ``-t`` (theme) arguments to ``xdvrun``::
+For testing, you can also compile and run the theme in one go, by supplying the
+``-r`` (rules) argument to ``xdvrun``::
 
-    $ bin/xdvrun -o output.html -r rules.xml -t theme.html content.html
+    $ bin/xdvrun -o output.html -r rules.xml content.html
 
 To see the built-in help for this command, run::
     
@@ -591,7 +658,7 @@ This method takes the following arguments:
 * ``rules`` is the rules file, given either as a file name or a string with
   the file contents.
 * ``theme`` is the theme file, given either as a file name or a string with
-  the file contents
+  the file contents (deprecated, use inline <theme> instead.)
 * ``extra`` is an optional XSLT file with XDV extensions, given as a URI
   (depracated, use inline xsl in the rules instead)
 * ``css``   can be set to False to disable CSS syntax support (providing a
@@ -660,76 +727,74 @@ Plone
 -----
 
 If you are working with Plone, the easiest way to use XDV is via the
-`collective.xdv <http://pypi.python.org/pypi/collective.xdv>`_ add-on. This
-provides a control panel for configuring the XDV rules file, theme and
-other options, and hooks into a transformation chain that executes after
-Plone has rendered the final page to apply the XDV transform.
+collective.xdv_ add-on. This provides a control panel for configuring the XDV
+rules file, theme and other options, and hooks into a transformation chain
+that executes after Plone has rendered the final page to apply the XDV
+transform.
 
 Even if you intend to deploy the compiled theme to another web server,
-``collective.xdv`` is a useful development tool: so long as Zope is in
-"development mode", it will re-compile the theme on the fly, allowing you
-to make changes to theme and rules on the fly. It also provides some tools
-for packaging up your theme and deploying it to different sites.
+collective.xdv_ is a useful development tool: so long as Zope is in
+"development mode", it will re-compile the theme on the fly, allowing you to
+make changes to theme and rules on the fly. It also provides some tools for
+packaging up your theme and deploying it to different sites.
 
 WSGI
 ----
 
-If you are using a WSGI stack, you can use the `dv.xdvserver
-<http://pypi.python.org/pypi/dv.xdvserver>`_ middleware to apply an XDV
-theme. This supports all the core XDV options, and can be configured to
-either re-compile the theme on the fly (useful for development), or compile
-it only once (useful for deployment.)
+If you are using a WSGI stack, you can use the dv.xdvserver_ middleware to
+apply an XDV theme. This supports all the core XDV options, and can be
+configured to either re-compile the theme on the fly (useful for development),
+or compile it only once (useful for deployment.)
 
 It is also possible to use this with the Paste ``proxy`` middleware to
-create a standalone XDV proxy for any site. See the `dv.xdvserver`_
+create a standalone XDV proxy for any site. See the dv.xdvserver_
 documentation for details.
 
-nginx
+Nginx
 -----
 
-To deploy an XDV theme to the `nginx <http://nginx.org>`_ web server, you
-will need to compile nginx with a special version of the XSLT module that
+To deploy an XDV theme to the Nginx_ web server, you
+will need to compile Nginx with a special version of the XSLT module that
 can (optionally) use the HTML parser from libxml2.
 
 In the future, the necessary patches to enable HTML mode parsing will
-hopefully be part of the standard nginx distribution. In the meantime,
-they are maintained in the `html-xslt <http://code.google.com/p/html-xslt/>`_
-project.
+hopefully be part of the standard Nginx distribution. In the meantime, they
+are maintained in the html-xslt_ project.
 
-Using a properly patched nginx, you can configure it with XSLT support like
+Using a properly patched Nginx, you can configure it with XSLT support like
 so::
 
     $ ./configure --with-http_xslt_module
 
-If you are using zc.buildout and would like to build nginx, you can start
+If you are using zc.buildout and would like to build Nginx, you can start
 with the following example::
 
     [buildout]
     parts =
         ...
-        nginx
+        Nginx
     
     ...
         
-    [nginx]
+    [Nginx]
     recipe = zc.recipe.cmmi
-    url = http://html-xslt.googlecode.com/files/nginx-0.7.65-html-xslt-2.tar.gz
+    url = http://html-xslt.googlecode.com/files/Nginx-0.7.67-html-xslt-4.tar.gz
     extra_options =
-        --conf-path=${buildout:directory}/etc/nginx.conf
+        --conf-path=${buildout:directory}/etc/Nginx.conf
         --sbin-path=${buildout:directory}/bin
-        --error-log-path=${buildout:directory}/var/log/nginx-error.log
-        --http-log-path=${buildout:directory}/var/log/nginx-access.log
-        --pid-path=${buildout:directory}/var/nginx.pid
-        --lock-path=${buildout:directory}/var/nginx.lock
+        --error-log-path=${buildout:directory}/var/log/Nginx-error.log
+        --http-log-path=${buildout:directory}/var/log/Nginx-access.log
+        --pid-path=${buildout:directory}/var/Nginx.pid
+        --lock-path=${buildout:directory}/var/Nginx.lock
         --with-http_stub_status_module
         --with-http_xslt_module
 
 If libxml2 or libxslt are installed in a non-standard location you may need to
 supply the ``--with-libxml2=<path>`` and ``--with-libxslt=<path>`` options.
 This requires that you set an appropriate ``LD_LIBRARY_PATH`` (Linux / BSD) or
-``DYLD_LIBRARY_PATH`` (Mac OS X) environment variable when running nginx.
+``DYLD_LIBRARY_PATH`` (Mac OS X) environment variable when running Nginx.
 
-For theming a static site, enable the XSLT transform in the nginx
+For theming a static site, enable the XSLT transform in the Nginx
 configuration as follows::
 
     location / {
@@ -738,7 +803,7 @@ configuration as follows::
         xslt_types text/html;
     }
 
-nginx may also be configured as a transforming proxy server::
+Nginx may also be configured as a transforming proxy server::
 
     location / {
         xslt_stylesheet /path/to/compiled-theme.xsl;
@@ -754,8 +819,8 @@ nginx may also be configured as a transforming proxy server::
 
 Removing the Accept-Encoding header is sometimes necessary to prevent the
 backend server compressing the response (and preventing transformation). The
-response may be compressed in nginx by setting ``gzip on;`` - see the `gzip
-module documentation <http://wiki.nginx.org/NginxHttpGzipModule>`_ for
+response may be compressed in Nginx by setting ``gzip on;`` - see the `gzip
+module documentation <http://wiki.Nginx.org/NginxHttpGzipModule>`_ for
 details.
 
 In this example an X-XDV header was set so the backend server may choose to
@@ -765,7 +830,7 @@ Including external content
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As an event based server, it is not practical to add ``document()`` support to
-the nginx XSLT module for in-transform inclusion. Instead, external content is
+the Nginx XSLT module for in-transform inclusion. Instead, external content is
 included through SSI in a sub-request. The SSI sub-request includes a query
 string parameter to indicate which parts of the resultant document to include,
 called ``;filter_xpath`` - see above for a full example. The configuration
@@ -829,9 +894,9 @@ below uses this parameter to apply a filter::
 
 In this example the sub-request is set to loop back on itself, so the include
 is taken from a themed page. ``filter.xsl`` (in the lib/xdv directory) and
-``theme.xsl`` should both be placed in the same directory as ``nginx.conf``.
+``theme.xsl`` should both be placed in the same directory as ``Nginx.conf``.
 
-An example buildout is available in ``nginx.cfg`` in this package.
+An example buildout is available in ``Nginx.cfg`` in this package.
 
 Varnish
 -------
@@ -849,17 +914,18 @@ An example buildout is available in ``varnish.cfg``.
 Apache
 ------
 
-XDV currently requires a version of mod_transform with html parsing support
-and a disabled mod_depends. The latest patched versions may be downloaded from
-the `html-xslt project page <http://code.google.com/p/html-xslt/>`_.
+XDV currently requires a version of mod_transform with html parsing support.
+The latest patched versions may be downloaded from the html-xslt_ project
+page.
 
-As well as the libxml2 and libxslt development packages, you will require
-libapreq2 and the Apache development pacakges::
+As well as the libxml2 and libxslt development packages, you will require the
+appropriate Apache development pacakge::
 
-    $ sudo apt-get install libxslt1-dev libapache2-mod-apreq2 libapreq2-dev \
-    > apache2-threaded-dev
+    $ sudo apt-get install libxslt1-dev apache2-threaded-dev
 
-Install mod_depends then mod_transform using the standard procedure::
+(or ``apache2-prefork-dev`` when using PHP.)
+
+Install mod_transform using the standard procedure::
 
     $ ./configure
     $ make
@@ -868,14 +934,13 @@ Install mod_depends then mod_transform using the standard procedure::
 An example virtual host configuration is shown below::
 
     NameVirtualHost *
-    LoadModule depends_module /usr/lib/apache2/modules/mod_depends.so
     LoadModule transform_module /usr/lib/apache2/modules/mod_transform.so
     <VirtualHost *>
 
         FilterDeclare THEME
         FilterProvider THEME XSLT resp=Content-Type $text/html
 
-        TransformOptions +ApacheFS +HTML
+        TransformOptions ApacheFS HTML HideParseErrors
         TransformSet /theme.xsl
         TransformCache /theme.xsl /etc/apache2/theme.xsl
 
@@ -885,9 +950,14 @@ An example virtual host configuration is shown below::
         
     </VirtualHost>
 
-The +ApacheFS directive enables XSLT ``document()`` inclusion.
+The ``ApacheFS`` directive enables XSLT ``document()`` inclusion.
 
 Unfortunately it is not possible to theme error responses (such as a 404 Not
 Found page) with Apache as these do not pass through the filter chain.
 
 .. _Deliverance: http://deliveranceproject.org/
+.. _collective.xdv: http://pypi.python.org/pypi/collective.xdv
+.. _dv.xdvserver: http://pypi.python.org/pypi/dv.xdvserver
+.. Nginx: http://nginx.org
+.. _html-xslt: http://code.google.com/p/html-xslt/
+.. _`obsolete permitted doctype string`: http://dev.w3.org/html5/spec/Overview.html#obsolete-permitted-doctype-string

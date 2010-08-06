@@ -1,0 +1,26 @@
+Changelog
+=========
+
+0.4b1 - 2010-08-06
+------------------
+
+* Multistage compiler breaks down work into smaller, more easily debugged
+  chunks. (In the spirit of the original DVNG prototype.)
+
+* Refactoring of generated XSLT to perform its work in a single pass, bringing
+  a 30-50% speedup.
+
+* Multiple theme support using the new <theme> directive.
+
+* Nested <rules> and condition merging allows for condition grouping.
+
+* Allow comments to be selected in the theme.
+
+* Tweaked ``ssi`` includemode for Apache compatibility. The previous
+  ``wait="yes"`` behaviour no longer seems necessary with current versions of
+  Nginx, but is available using the ``ssiwait`` includemode.
+
+* CSS expressions are now converted to relative rather than absolute xpaths.
+  While this makes no difference to their use in xdv directives (which are
+  executed in the context of the root node), more flexibility is available
+  when used with inline XSL.
