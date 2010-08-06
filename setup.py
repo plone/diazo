@@ -3,7 +3,7 @@ import os.path
 
 setup(
     name='xdv',
-    version='0.4b1',
+    version='0.4b2',
     description='''\
 XDV implements a subset of Deliverance using a pure XSLT engine. With XDV, you
 "compile" your theme and ruleset in one step, then use a superfast/simple
