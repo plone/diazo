@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.4b2 - unreleased
+0.4b2 - 2010-08-16
 ------------------
 
 * When no conditional themes match, pass the document through without theming.
