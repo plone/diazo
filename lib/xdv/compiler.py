@@ -25,7 +25,7 @@ logger = logging.getLogger('xdv')
 emit_stylesheet = pkg_xsl('emit-stylesheet.xsl')
 
 def set_parser(stylesheet, parser, compiler_parser=None):
-    dummy_doc = etree.parse(pkg_resources.resource_filename('xdv', 'dummy.html'), parser=parser)
+    dummy_doc = etree.parse(open(pkg_resources.resource_filename('xdv', 'dummy.html')), parser=parser)
     name = 'file:///__xdv__'
     resolver = CustomResolver({name: stylesheet})
     if compiler_parser is None:

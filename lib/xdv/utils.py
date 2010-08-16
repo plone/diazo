@@ -48,7 +48,7 @@ class LoggingXSLTWrapper:
 
 
 def pkg_xsl(name, parser=None):
-    return LoggingXSLTWrapper(etree.XSLT(etree.parse(pkg_resources.resource_filename('xdv', name), parser=parser)), logger)
+    return LoggingXSLTWrapper(etree.XSLT(etree.parse(open(pkg_resources.resource_filename('xdv', name)), parser=parser)), logger)
 
 
 def _createOptionParser(usage):
