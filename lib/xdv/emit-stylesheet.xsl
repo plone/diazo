@@ -91,7 +91,7 @@
                             <xsl:text>&#10;</xsl:text>
                             <xsl:element name="xsl:otherwise">
                                 <xsl:element name="xsl:apply-templates">
-                                    <xsl:attribute name="select">.</xsl:attribute>
+                                    <xsl:attribute name="select">@*|node()</xsl:attribute>
                                     <xsl:if test="$unconditional">
                                         <xsl:for-each select="$unconditional">
                                             <xsl:variable name="themeid" select="@xml:id"/>
