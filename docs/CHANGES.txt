@@ -4,7 +4,7 @@ Changelog
 0.4b2 - unreleased
 ------------------
 
-
+* Fix loading of compiler stylesheets so as not to be affected by resolvers.
 
 0.4b1 - 2010-08-06
 ------------------
