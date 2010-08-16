@@ -373,7 +373,9 @@ It's possible to specify multiple themes using conditions. For instance::
     <theme href="news.html" css:if-content="body.section-news"/>
     <theme href="members.html" css:if-content="body.section-members"/>
 
-The unconditional theme is used as a fallback when no other theme's condition is satisfied.
+The unconditional theme is used as a fallback when no other theme's condition
+is satisfied. If no unconditional theme is specified, the document is passed
+through without theming.
 
 All rules are applied to all themes. To have a rule apply to only a single
 theme, use the condition grouping syntax::
