@@ -48,7 +48,7 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None, read_network=Fal
     base = rules_doc.docinfo.URL
     if parser is None:
         parser = etree.HTMLParser()
-    for element in rules_doc.xpath('xdv:theme[@href]', namespaces=namespaces):
+    for element in rules_doc.xpath('//xdv:theme[@href]', namespaces=namespaces):
         url = urljoin(base, element.get('href'))
         if url[:6] in ('ftp://', 'http:/', 'https:'):
             raise ValueError("Supplied theme '%s', but network access denied." % url)
