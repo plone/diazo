@@ -4,6 +4,8 @@ Changelog
 0.4b3 - unreleased
 ------------------
 
+* Fix for default theme.
+
 * Fix for themes in nested rules tags.
 
 0.4b2 - 2010-08-16
