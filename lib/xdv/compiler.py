@@ -36,7 +36,7 @@ def set_parser(stylesheet, parser, compiler_parser=None):
     compiler_parser.resolvers.remove(resolver)
     return output_doc
 
-def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None, access_control=None, read_network=False):
+def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None, access_control=None, read_network=False, indent=None):
     """Invoke the xdv compiler.
     
     * ``rules`` is the rules file
@@ -83,7 +83,10 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True, absolu
         rules_parser=rules_parser,
         read_network=read_network,
         )
-    compiled_doc = emit_stylesheet(rules_doc)
+    params = {}
+    if indent is not None:
+        params['indent'] = indent and "'yes'" or "'no'"
+    compiled_doc = emit_stylesheet(rules_doc, **params)
     compiled_doc = set_parser(etree.tostring(compiled_doc), parser, compiler_parser)
     return compiled_doc
 
