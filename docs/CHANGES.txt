@@ -4,6 +4,8 @@ Changelog
 0.4b3 - unreleased
 ------------------
 
+* if-path support.
+
 * $path parameter. 
 
 * Serialize using XSLT method from xdvrun.
