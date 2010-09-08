@@ -80,7 +80,9 @@ class XDVTestCase(unittest.TestCase):
         # Apply the compiled version, then test against desired output
         theme_parser.resolvers.add(xdv.run.RunResolver(self.testdir))
         processor = etree.XSLT(ct)
-        result = processor(contentdoc)
+        params = {}
+        params['path'] = "'%s'" % config.get('xdvtest', 'path')
+        result = processor(contentdoc, **params)
 
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.

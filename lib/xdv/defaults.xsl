@@ -10,6 +10,8 @@
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="exsl str css dv dyn xhtml">
 
+    <xsl:param name="path"/>
+
     <xsl:output method="xml" indent="no" omit-xml-declaration="yes"
         media-type="text/html" encoding="UTF-8"
         doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"

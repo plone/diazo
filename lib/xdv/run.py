@@ -40,6 +40,9 @@ def main():
     op.add_option("-x", "--xsl", metavar="transform.xsl",
                       help="XSL transform", 
                       dest="xsl", default=None)
+    op.add_option("--path", metavar="PATH",
+                      help="URI path", 
+                      dest="path", default=None)
     (options, args) = op.parse_args()
 
     if len(args) > 2:
@@ -89,7 +92,10 @@ def main():
 
     transform = etree.XSLT(output_xslt, access_control=access_control)
     content_doc = etree.parse(content, parser=parser)
-    output_html = transform(content_doc)
+    params = {}
+    if options.path is not None:
+        params['path'] = "'%s'" % options.path
+    output_html = transform(content_doc, **params)
     if isinstance(options.output, basestring):
         out = open(options.output, 'wt')
     else:
