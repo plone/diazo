@@ -53,7 +53,7 @@ class XDVTestCase(unittest.TestCase):
             theme=themefn,
             parser=theme_parser,
             absolute_prefix=config.get('xdvtest', 'absolute-prefix'),
-            includemode=config.get('xdvtest', 'includemode'),
+            indent=config.getboolean('xdvtest', 'pretty-print')
             )
         
         # Serialize / parse the theme - this can catch problems with escaping.
@@ -84,7 +84,7 @@ class XDVTestCase(unittest.TestCase):
 
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = etree.tostring(result, encoding="UTF-8", pretty_print=config.getboolean('xdvtest', 'pretty-print'))
+        self.themed_string = str(result)
         self.themed_content = etree.ElementTree(file=StringIO(self.themed_string), 
                                                 parser=etree.HTMLParser())
 

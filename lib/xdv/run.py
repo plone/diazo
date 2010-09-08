@@ -76,6 +76,7 @@ def main():
             read_network=options.read_network,
             absolute_prefix=options.absolute_prefix,
             includemode=options.includemode,
+            indent=options.pretty_print,
             )
 
     if content == '-':
@@ -89,7 +90,11 @@ def main():
     transform = etree.XSLT(output_xslt, access_control=access_control)
     content_doc = etree.parse(content, parser=parser)
     output_html = transform(content_doc)
-    output_html.write(options.output, encoding='UTF-8', pretty_print=options.pretty_print)
+    if isinstance(options.output, basestring):
+        out = open(options.output, 'wt')
+    else:
+        out = options.output
+    out.write(str(output_html))
     for msg in transform.error_log:
         logger.warn(msg)
 

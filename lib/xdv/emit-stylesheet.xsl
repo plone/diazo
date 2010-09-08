@@ -13,6 +13,7 @@
 
     <xsl:param name="defaultsurl">defaults.xsl</xsl:param>
     <xsl:param name="usebase"/>
+    <xsl:param name="indent"/>
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="inline-xsl" select="/dv:rules/xsl:*"/>
@@ -29,6 +30,17 @@
 
     <xsl:template match="/">
         <xsl:apply-templates select="$defaults/xsl:stylesheet"/>
+    </xsl:template>
+
+    <xsl:template match="xsl:output/@indent">
+        <xsl:choose>
+            <xsl:when test="$indent">
+                <xsl:attribute name="indent"><xsl:value-of select="$indent"/></xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <!--
