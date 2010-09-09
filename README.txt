@@ -916,12 +916,12 @@ An example buildout is available in ``varnish.cfg``.
 Apache
 ------
 
-XDV currently requires a version of mod_transform with html parsing support.
-The latest patched versions may be downloaded from the html-xslt_ project
+XDV requires a version of mod_transform with html parsing support.
+The latest compatible version may be downloaded from the html-xslt_ project
 page.
 
 As well as the libxml2 and libxslt development packages, you will require the
-appropriate Apache development pacakge::
+appropriate Apache development package::
 
     $ sudo apt-get install libxslt1-dev apache2-threaded-dev
 
@@ -942,17 +942,19 @@ An example virtual host configuration is shown below::
         FilterDeclare THEME
         FilterProvider THEME XSLT resp=Content-Type $text/html
 
-        TransformOptions ApacheFS HTML HideParseErrors
+        TransformOptions +ApacheFS +HTML +HideParseErrors
         TransformSet /theme.xsl
         TransformCache /theme.xsl /etc/apache2/theme.xsl
 
         <LocationMatch "/">
             FilterChain THEME
         </LocationMatch>
-        
+
     </VirtualHost>
 
-The ``ApacheFS`` directive enables XSLT ``document()`` inclusion.
+The ``ApacheFS`` directive enables XSLT ``document()`` inclusion, though
+beware that the includes documents are currently parsed using the XML rather
+than HTML parser.
 
 Unfortunately it is not possible to theme error responses (such as a 404 Not
 Found page) with Apache as these do not pass through the filter chain.
