@@ -11,7 +11,7 @@
     exclude-result-prefixes="exsl str css dv dyn xhtml">
 
     <xsl:param name="path"/>
-    <xsl:variable name="normalized_path" select="concat($path, '/')"/>
+    <xsl:variable name="normalized_path"><xsl:value-of select="$path"/><xsl:if test="substring($path, string-length($path)) != '/'">/</xsl:if></xsl:variable>
 
     <xsl:output method="xml" indent="no" omit-xml-declaration="yes"
         media-type="text/html" encoding="UTF-8"
