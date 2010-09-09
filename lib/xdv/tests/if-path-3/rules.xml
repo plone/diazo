@@ -1,0 +1,11 @@
+<rules
+    xmlns="http://namespaces.plone.org/xdv"
+    xmlns:css="http://namespaces.plone.org/xdv+css"
+    >
+    <!-- path ends with -->
+    <copy
+        if-path="another/"
+        css:theme="#content"
+        css:content="body > *"
+        />
+</rules>
