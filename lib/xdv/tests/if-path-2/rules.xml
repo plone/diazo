@@ -2,9 +2,9 @@
     xmlns="http://namespaces.plone.org/xdv"
     xmlns:css="http://namespaces.plone.org/xdv+css"
     >
-    <!-- path starts with -->
+    <!-- an exact path match -->
     <copy
-        if-path="/somewhere"
+        if-path="/somewhere/"
         css:theme="#content"
         css:content="body > *"
         />
