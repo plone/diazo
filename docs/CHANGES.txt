@@ -4,11 +4,9 @@ Changelog
 0.4b3 - unreleased
 ------------------
 
-* if-path support.
+* Path conditions with @if-path.
 
-* $path parameter. 
-
-* Serialize using XSLT method from xdvrun.
+* Serialize using XSLT method in xdvrun to respect <xsl:output method="html"/>
 
 * Fix for default theme.
 

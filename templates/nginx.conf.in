@@ -56,7 +56,9 @@ http {
         # Our styled location.
         location /styled {
             alias ${root};
-            xslt_stylesheet ${example.xsl};
+            xslt_stylesheet ${example.xsl}
+                path='$uri'
+                ;
             xslt_html_parser on;
             xslt_types text/html;
             # Switch on ssi here to enable external includes.
@@ -66,7 +68,9 @@ http {
         # Another styled location.
         location /styled/ploneorg {
             alias ${root}/ploneorg;
-            xslt_stylesheet ${ploneorg.xsl};
+            xslt_stylesheet ${ploneorg.xsl}
+                path='$uri'
+                ;
             xslt_html_parser on;
             xslt_types text/html;
         }

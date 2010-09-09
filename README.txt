@@ -286,7 +286,7 @@ Sometimes, it is useful to apply a rule only if a given element appears or
 does not appear in the markup. The ``if-content`` attribute can be used with
 any rule to make it conditional.
 
-``if-content`` should be set an XPath expression. You can also use
+``if-content`` should be set to an XPath expression. You can also use
 ``css:if-content`` with a CSS3 expression. If the expression matches a node
 in the content, the rule will be applied::
 
@@ -306,10 +306,9 @@ This will copy the children of the element with id ``header-box`` in the
 content into the element with id ``header`` in the theme, so long as an
 element with id ``personal-bar`` also appears somewhere in the content.
 
-Above, we also saw the special case of an empty ``if-content`` (which also
-works with an empty ``css:if-content``). This is a shortcut that means "use
-the expression in the ``content`` or ``css:content``` attribute as the
-condition". Hence the following two rules are equivalent::
+An empty ``if-content`` (or ``css:if-content``) is a shortcut meaning "use the
+expression in the ``content`` or ``css:content``` attribute as the condition".
+Hence the following two rules are equivalent::
 
     <copy css:theme="#header" css:content="#header-box > *"
           css:if-content="#header-box > *"/>
@@ -384,6 +383,48 @@ theme, use the condition grouping syntax::
         <theme href="news.html"/>
         <copy css:content="h2.articleheading" css:theme="h1"/>
     </rules>
+
+Path conditions
+~~~~~~~~~~~~~~~
+
+A path condition may be applied to a rule, theme or group with the ``if-path``
+attribute.
+
+A leading ``/`` indicates that a path should be matched at the start of the
+url::
+
+    <theme href="news.html" if-path="/news"/>
+
+matches pages with urls ``/news``, ``/news/`` and ``/news/page1.html`` but
+not ``/newspapers`` - only complete path segments are matched.
+
+A trailing ``/`` indicates that a path should be matched at the end of the
+url::
+
+    <theme href="news.html" if-path="news/"/>
+
+matches ``/mysite/news`` and ``/mysite/news/``.
+
+To match an exact url, use both leading and trailing ``/``::
+
+    <theme href="news.html" if-path="/news/"/>
+
+matches ``/news`` and ``/news/``.
+
+Without a leading or trailing ``/`` the path segment(s) may match anywhere in
+the url::
+
+    <theme href="news.html" if-path="news/space"/>
+
+matches ``/mysite/news/space/page1.html``.
+
+Multiple alternative path conditions may be included in the ``if-path``
+attribute as whitespace separated list::
+
+    <theme href="wide.html" if-path="/ /index.html/"/>
+
+matches ``/`` and ``/index.html``. ``if-path="/"`` is considered an exact
+match condition
 
 Including external content
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -800,7 +841,9 @@ For theming a static site, enable the XSLT transform in the Nginx
 configuration as follows::
 
     location / {
-        xslt_stylesheet /path/to/compiled-theme.xsl;
+        xslt_stylesheet /path/to/compiled-theme.xsl
+            path='$uri'
+            ;
         xslt_html_parser on;
         xslt_types text/html;
     }
@@ -808,7 +851,9 @@ configuration as follows::
 Nginx may also be configured as a transforming proxy server::
 
     location / {
-        xslt_stylesheet /path/to/compiled-theme.xsl;
+        xslt_stylesheet /path/to/compiled-theme.xsl
+            path='$uri'
+            ;
         xslt_html_parser on;
         xslt_types text/html;
         rewrite ^(.*)$ /VirtualHostBase/http/localhost/Plone/VirtualHostRoot$1 break;
@@ -828,8 +873,8 @@ details.
 In this example an X-XDV header was set so the backend server may choose to
 serve different different CSS resources.
 
-Including external content
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Including external content with SSI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As an event based server, it is not practical to add ``document()`` support to
 the Nginx XSLT module for in-transform inclusion. Instead, external content is
@@ -886,7 +931,9 @@ below uses this parameter to apply a filter::
             }
 
             location / {
-                xslt_stylesheet theme.xsl;
+                xslt_stylesheet theme.xsl
+                    path='$uri'
+                    ;
                 xslt_html_parser on;
                 xslt_types text/html;
                 ssi on; # Not required in ESI mode
@@ -958,6 +1005,8 @@ than HTML parser.
 
 Unfortunately it is not possible to theme error responses (such as a 404 Not
 Found page) with Apache as these do not pass through the filter chain.
+
+As parameters are not currently supported, path expression are unavailable.
 
 .. _Deliverance: http://deliveranceproject.org/
 .. _collective.xdv: http://pypi.python.org/pypi/collective.xdv
