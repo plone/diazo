@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.4b3 - unreleased
+0.4b3 - 2010-09-09
 ------------------
 
 * Path conditions with @if-path.
