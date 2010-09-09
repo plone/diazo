@@ -32,7 +32,7 @@ Nested conditions would be allowed and simply ANDed together.
 * Maybe this should be called ``rules`` instead.
 
 
-Path conditions
+Path conditions (implemented as a single if-path attribute)
 ---------------
 
 So far, XDV has taken the view that path configuration belongs in your
