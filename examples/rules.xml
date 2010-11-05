@@ -1,5 +1,5 @@
-<rules xmlns="http://namespaces.plone.org/xdv"
-    xmlns:css="http://namespaces.plone.org/xdv+css">
+<rules xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo+css">
     <drop css:content="#byline"/>
     <replace theme="/html/head/title" content="/html/head/title"/>
     <copy css:theme="#pageheading" content="/html/head/title/text()"/>

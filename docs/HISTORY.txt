@@ -4,7 +4,7 @@ History
 0.3 - 2010-05-29
 ----------------
 
-* Added access control defaults, xdv.utils.AC_READ_NET, xdv.utils.AC_READ_FILE
+* Added access control defaults, diazo.utils.AC_READ_NET, diazo.utils.AC_READ_FILE
 
 0.3rc2 - 2010-05-25
 -------------------
@@ -41,7 +41,7 @@ network.
   [elro]
 
 * A bug on namespace upgrade is fixed, but you should update your namespace to
-  http://namespaces.plone.org/xdv anyway.
+  http://namespaces.plone.org/diazo anyway.
   [elro]
 
 * First release candidate.

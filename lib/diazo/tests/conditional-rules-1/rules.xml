@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo">
+    <copy theme="//*[@id='portlets']" content="//*[@class='portlet']" if-content="//*[@id='aaa']"/>
+    <drop theme="//*[@id='portlet-wrapper']" if-content="not(//*[@class='portlet'])"/>
+    <before theme="//*[@id='portlet-wrapper']" content="//*[@id='aaa']" if-content="//*[@class='portlet']"/>
+    <after theme="//*[@id='portlet-wrapper']" content="//*[@id='bbb']" if-content="//*[@class='portlet']"/>
+    <append theme="//*[@id='portlet-wrapper']" content="//*[@id='manage-portlets-link']" if-content="//*[@class='portlet']"/>
+    <prepend theme="//*[@id='portlet-wrapper']" content="//*[@id='portlets-title']" if-content="//*[@class='portlet']"/>
+    <replace theme="//*[@id='footer']" content="//*[@id='footer']" if-content="//*[@class='portlet']"/>
+</rules>

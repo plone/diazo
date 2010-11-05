@@ -1,9 +1,0 @@
-<rules
-    xmlns="http://namespaces.plone.org/xdv"
-    xmlns:css="http://namespaces.plone.org/xdv+css"
-    >
-
-    <replace css:theme="#include" css:content="#something" href="extra.html" method="ssiwait"/>
-    <replace css:theme="#include-fragment" href="fragment.html" method="ssiwait"/>
-
-</rules>

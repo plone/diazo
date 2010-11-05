@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo">
+    <append theme="/html/head" content="/html/head/link"/>
+</rules>

@@ -1,0 +1,17 @@
+<rules xmlns="http://namespaces.plone.org/diazo"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:str="http://exslt.org/strings">
+
+
+    <copy theme="/html/head/title" content="/html/head/title/text()"/>
+
+    <xsl:template match="/html/head/title/text()">
+        <xsl:value-of select="str:replace(., '&#x2013;', ':')" />
+    </xsl:template>
+
+<!-- This is equivalent
+    <copy theme="/html/head/title">
+        <xsl:value-of select="str:replace(/html/head/title/text(), '&#x2013;', ':')" />
+    </copy>
+-->
+</rules>

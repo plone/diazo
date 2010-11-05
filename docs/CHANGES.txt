@@ -1,17 +1,17 @@
 Changelog
 =========
 
-0.4b4 - unreleased
+0.5 - unreleased
 ------------------
 
-
+* Renamed XDV to Diazo.
 
 0.4b3 - 2010-09-09
 ------------------
 
 * Path conditions with @if-path.
 
-* Serialize using XSLT method in xdvrun to respect <xsl:output method="html"/>
+* Serialize using XSLT method in diazorun to respect <xsl:output method="html"/>
 
 * Fix for default theme.
 
@@ -44,6 +44,6 @@ Changelog
   Nginx, but is available using the ``ssiwait`` includemode.
 
 * CSS expressions are now converted to relative rather than absolute xpaths.
-  While this makes no difference to their use in xdv directives (which are
+  While this makes no difference to their use in diazo directives (which are
   executed in the context of the root node), more flexibility is available
   when used with inline XSL.

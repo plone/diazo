@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo">
+    <replace theme="//h1" content="//h2"/>
+    <after theme="//h1" content="/html/body/p"/>
+    <replace theme="//*[@id='marker']" content="//*[@id='missing']"/>
+    <after theme="//*[@id='marker']" content="//*[@id='footer']"/>
+</rules>

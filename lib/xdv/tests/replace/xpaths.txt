@@ -1,3 +1,0 @@
-# XPaths that must be true to "validate" this test
-/html/head/title = 'A Deeper Look At xdv'
-not(/html/head/title/@id)

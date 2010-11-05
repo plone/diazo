@@ -1,0 +1,11 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo+css"
+    >
+    <!-- only complete path segments are matched -->
+    <copy
+        if-path="/somewhere"
+        css:theme="#content"
+        css:content="body > *"
+        />
+</rules>

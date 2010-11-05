@@ -1,0 +1,3 @@
+<rules xmlns="http://namespaces.plone.org/diazo">
+    <drop theme="/html/head/comment()" />
+</rules>

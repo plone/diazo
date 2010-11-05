@@ -1,9 +1,0 @@
-<rules
-    xmlns="http://namespaces.plone.org/xdv"
-    xmlns:css="http://namespaces.plone.org/xdv+css"
-    >
-    
-    <theme css:if-content="body.theme1" href="theme1.html"/>
-    <theme css:if-content="body.theme2" href="theme2.html"/>
-    <copy css:theme="#content" css:content="body > *"/>
-</rules>

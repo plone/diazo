@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 import os.path
 
 setup(
-    name='xdv',
+    name='diazo',
     version='0.4b4',
     description='''\
-XDV implements a subset of Deliverance using a pure XSLT engine. With XDV, you
+Diazo implements a subset of Deliverance using a pure XSLT engine. With Diazo, you
 "compile" your theme and ruleset in one step, then use a superfast/simple
 transform on each request thereafter. Alternatively, compile your theme during
-development, check it into Subversion, and not touch XDV during deployment.''',
+development, check it into Subversion, and not touch Diazo during deployment.''',
     long_description=open("README.txt").read() + "\n\n" +
                      open(os.path.join("docs", "CHANGES.txt")).read(),
     packages=find_packages('lib'),
@@ -24,8 +24,8 @@ development, check it into Subversion, and not touch XDV during deployment.''',
         ],
     entry_points = """
         [console_scripts]
-        xdvcompiler = xdv.compiler:main
-        xdvrun = xdv.run:main
-        xdvpreprocessor = xdv.rules:main
+        diazocompiler = diazo.compiler:main
+        diazorun = diazo.run:main
+        diazopreprocessor = diazo.rules:main
         """,
     )

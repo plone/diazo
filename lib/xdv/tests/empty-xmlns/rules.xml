@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rules xmlns="http://namespaces.plone.org/xdv">
-    <replace theme="/html/head/title" content="/html/head/title"/>
-    <copy theme="/html/body" content="//div[@id='wrapper']"/>
-</rules>
