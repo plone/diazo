@@ -29,14 +29,12 @@
             </xsl:message>
         </xsl:if>
         <xsl:copy>
-            <xsl:attribute name="xml:id">r<xsl:value-of select="position()"/></xsl:attribute>
             <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
 
     <xsl:template match="diazo:*[@theme]">
         <xsl:copy>
-            <xsl:attribute name="xml:id">r<xsl:value-of select="position()"/></xsl:attribute>
             <xsl:apply-templates select="@*"/>
             <diazo:synthetic>
                 <xsl:choose>
