@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Absolute prefix</title>
+    <!--[if lte IE 6]>
+    <style type="text/css">
+      @import "foo.css";      
+      @import url("foo.css");
+      @import url('./foo.css');
+      @import url('../foo.css');
+      @import url('/foo.css');
+      @import url('http://site.com/foo.css');
+    </style>
+    <![endif]-->
+    <!--[if IE]>
+    <link rel="stylesheet" href="foo.css" />
+    <link rel="stylesheet" href="./foo.css" />
+    <link rel="stylesheet" href="../foo.css" />
+    <link rel="stylesheet" href="/foo.css" />
+    <link rel="stylesheet" href="http://site.com/foo.css" />
+    <![endif]-->
+    <!--[if lte IE 6]>
+    <script type="text/javascript" src="foo.js"></script>
+    <script type="text/javascript" src="./foo.js"></script>
+    <script type="text/javascript" src="../foo.js"></script>
+    <script type="text/javascript" src="/foo.js"></script>
+    <script type="text/javascript" src="http://site.com/foo.js"></script>
+    <![endif]-->
+    <!--
+        <script type="text/javascript" src="not-this.js"></script>
+    -->
+  </head>
+</html>

@@ -18,7 +18,8 @@ from diazo.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE, pkg_xsl
 
 logger = logging.getLogger('diazo')
 
-IMPORT_STYLESHEET = re.compile(r'''(@import\s+(?:url\(['"]?|['"]))(.+)(['"]?\)|['"])''', re.IGNORECASE)
+IMPORT_STYLESHEET = re.compile(r'''(?P<before>@import[ \t]+(?P<paren>url\([ \t]?)?(?P<quote>['"]?))(?P<url>\S+)(?P<after>(?P=quote)(?(paren)\)))''', re.IGNORECASE)
+CONDITIONAL_SRC= re.compile(r'''(?P<before><[^>]*?(src|href)=(?P<quote>['"]?))(?P<url>[^ \t\n\r\f\v>]+)(?P<after>(?P=quote)[^>]*?>)''', re.IGNORECASE)
 
 
 update_transform = pkg_xsl('update-namespace.xsl')
@@ -69,11 +70,17 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
     for node in theme_doc.xpath('//*[@href]'):
         url = urljoin(absolute_prefix, node.get('href'))
         node.set('href', url)
-    for node in theme_doc.xpath('//comment() | //style'):
-        if node.tag == 'style' or node.tag == etree.Comment and node.text.startswith("[if IE"):
-            node.text = IMPORT_STYLESHEET.sub(
-                lambda match: match.group(1) + urljoin(absolute_prefix, match.group(2)) + match.group(3),
-                node.text)
+    for node in theme_doc.xpath('//style'):
+        node.text = IMPORT_STYLESHEET.sub(
+            lambda match: match.group('before') + urljoin(absolute_prefix, match.group('url')) + match.group('after'),
+            node.text)
+    for node in theme_doc.xpath('//comment()[starts-with(., "[if")]'):
+        node.text = IMPORT_STYLESHEET.sub(
+            lambda match: match.group('before') + urljoin(absolute_prefix, match.group('url')) + match.group('after'),
+            node.text)
+        node.text = CONDITIONAL_SRC.sub(
+            lambda match: match.group('before') + urljoin(absolute_prefix, match.group('url')) + match.group('after'),
+            node.text)
 
 def add_extra(rules_doc, extra):
     root = rules_doc.getroot()
