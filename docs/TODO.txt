@@ -35,6 +35,9 @@ Definitely
     - <drop css:theme-children="#foo" />
     - Ditto for other rules as applicable
 
+ [ ] Add namespace upgrade from XDV
+    - and also the "old" Diazo namespace?
+
  [ ] Put README.txt on diazo.org
 
 Maybe
