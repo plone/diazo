@@ -1,0 +1,10 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+    <xsl:variable name="use_theme1" css:select="body.theme1"/>
+    <theme if-content="$use_theme1" href="theme1.html"/>
+    <theme if-content="not($use_theme1)" href="theme2.html"/>
+    <copy css:theme="#content" css:content="body > *"/>
+</rules>
