@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rules xmlns="http://openplans.org/deliverance">
+<rules xmlns="http://namespaces.plone.org/diazo"
+       xmlns:css="http://namespaces.plone.org/diazo+css">
     <append css:theme="#primary" css:content="#content > *" />
     <rules css:if-content="body.specialview">
         <drop css:content="h1.title" />
