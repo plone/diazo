@@ -13,7 +13,7 @@ usage = __doc__
 
 from optparse import OptionParser
 from lxml import etree
-from lxml.cssselect import css_to_xpath
+from experimental.cssselect import css_to_xpath
 
 import utils
 
@@ -32,7 +32,7 @@ def convert_css_selectors(rules):
                 if not value:
                     element.attrib[localname] = ""
                     continue
-                if localname == 'content' and element.tag == '{%s}drop' % utils.namespaces['diazo']:
+                if localname == 'content' and element.tag == '{%s}drop' % utils.namespaces['diazo'] or localname == 'match':
                     prefix = '//'
                 else:
                     prefix = 'descendant-or-self::'                    

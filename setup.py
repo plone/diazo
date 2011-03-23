@@ -21,6 +21,7 @@ development, check it into Subversion, and not touch Diazo during deployment.'''
     install_requires=[
         'setuptools',
         'lxml',
+        'experimental.cssselect',
         ],
     entry_points = """
         [console_scripts]
