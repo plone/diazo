@@ -170,95 +170,14 @@
                 <xsl:text>&#10;</xsl:text>
                 <!-- If there are any <drop @content> rules, put it in 
                 here. -->
-                <xsl:for-each select="$drop-content-rules">
-                    <xsl:text>&#10;    </xsl:text>
-                    <xsl:element name="xsl:template">
-                        <xsl:attribute name="match">
-                            <xsl:value-of select="@content"/>
-                        </xsl:attribute>
-                        <xsl:attribute name="mode">
-                            <xsl:value-of select="$themeid"/>
-                        </xsl:attribute>
-                        <xsl:if test="@merged-condition">
-                            <xsl:text>&#10;        </xsl:text>
-                            <xsl:element name="xsl:if">
-                                <xsl:attribute name="test">not(<xsl:value-of select="@merged-condition"/>)</xsl:attribute>
-                                <xsl:text>&#10;            </xsl:text>
-                                <xsl:element name="xsl:copy">
-                                    <xsl:text>&#10;                </xsl:text>
-                                    <xsl:element name="xsl:apply-templates">
-                                        <xsl:attribute name="select">@*|node()</xsl:attribute>
-                                        <xsl:attribute name="mode">
-                                            <xsl:value-of select="$themeid"/>
-                                        </xsl:attribute>
-                                    </xsl:element>
-                                    <xsl:text>&#10;            </xsl:text>
-                                </xsl:element>
-                                <xsl:text>&#10;        </xsl:text>
-                            </xsl:element>
-                        </xsl:if>
-                        <xsl:text>&#10;    </xsl:text>
-                    </xsl:element>
-                    <xsl:text>&#10;</xsl:text>
-                </xsl:for-each>
+                <xsl:call-template name="drop-content">
+                    <xsl:with-param name="themeid" select="$themeid"/>
+                </xsl:call-template>
                 <!-- If there are any <strip @content> rules, put it in 
                 here. -->
-                <xsl:for-each select="$strip-content-rules">
-                    <xsl:text>&#10;    </xsl:text>
-                    <xsl:element name="xsl:template">
-                        <xsl:attribute name="match">
-                            <xsl:value-of select="@content"/>
-                        </xsl:attribute>
-                        <xsl:attribute name="mode">
-                            <xsl:value-of select="$themeid"/>
-                        </xsl:attribute>
-                        <xsl:choose>
-                            <xsl:when test="@merged-condition">
-                                <xsl:text>&#10;        </xsl:text>
-                                <xsl:element name="xsl:choose">
-                                    <xsl:text>&#10;            </xsl:text>
-                                    <xsl:element name="xsl:when">
-                                        <xsl:attribute name="test"><xsl:value-of select="@merged-condition"/></xsl:attribute>
-                                        <xsl:text>&#10;                </xsl:text>
-                                        <xsl:element name="xsl:apply-templates">
-                                            <xsl:attribute name="select">node()</xsl:attribute>
-                                            <xsl:attribute name="mode">
-                                                <xsl:value-of select="$themeid"/>
-                                            </xsl:attribute>
-                                        </xsl:element>
-                                        <xsl:text>&#10;            </xsl:text>
-                                    </xsl:element>
-                                    <xsl:text>&#10;            </xsl:text>
-                                    <xsl:element name="xsl:otherwise">
-                                        <xsl:text>&#10;                </xsl:text>
-                                        <xsl:element name="xsl:copy">
-                                            <xsl:text>&#10;                    </xsl:text>
-                                            <xsl:element name="xsl:apply-templates">
-                                                <xsl:attribute name="select">@*|node()</xsl:attribute>
-                                                <xsl:attribute name="mode">
-                                                    <xsl:value-of select="$themeid"/>
-                                                </xsl:attribute>
-                                            </xsl:element>
-                                            <xsl:text>&#10;                </xsl:text>
-                                        </xsl:element>
-                                        <xsl:text>&#10;            </xsl:text>
-                                    </xsl:element>
-                                    <xsl:text>&#10;        </xsl:text>
-                                </xsl:element>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:element name="xsl:apply-templates">
-                                    <xsl:attribute name="select">node()</xsl:attribute>
-                                    <xsl:attribute name="mode">
-                                        <xsl:value-of select="$themeid"/>
-                                    </xsl:attribute>
-                                </xsl:element>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    <xsl:text>&#10;    </xsl:text>
-                    </xsl:element>
-                    <xsl:text>&#10;</xsl:text>
-                </xsl:for-each>
+                <xsl:call-template name="strip-content">
+                    <xsl:with-param name="themeid" select="$themeid"/>
+                </xsl:call-template>
                 <!-- template for this theme -->
                 <xsl:text>&#10;    </xsl:text>
                 <xsl:element name="xsl:template">
@@ -327,6 +246,104 @@
                 <xsl:attribute name="exclude-result-prefixes"><xsl:value-of select="."/> esi</xsl:attribute>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+
+    <xsl:template name="drop-content">
+        <xsl:param name="themeid"/>
+        <xsl:for-each select="$drop-content-rules">
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:template">
+                <xsl:attribute name="match">
+                    <xsl:value-of select="@content"/>
+                </xsl:attribute>
+                <xsl:attribute name="mode">
+                    <xsl:value-of select="$themeid"/>
+                </xsl:attribute>
+                <xsl:if test="@merged-condition">
+                    <xsl:text>&#10;        </xsl:text>
+                    <xsl:element name="xsl:if">
+                        <xsl:attribute name="test">not(<xsl:value-of select="@merged-condition"/>)</xsl:attribute>
+                        <!-- Condition was false, so include normally -->
+                        <xsl:call-template name="include-content">
+                            <xsl:with-param name="themeid" select="$themeid"/>
+                        </xsl:call-template>
+
+                        <xsl:text>&#10;        </xsl:text>
+                    </xsl:element>
+                </xsl:if>
+                <xsl:text>&#10;    </xsl:text>
+            </xsl:element>
+            <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template name="strip-content">
+        <xsl:param name="themeid"/>
+        <xsl:for-each select="$strip-content-rules">
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:template">
+                <xsl:attribute name="match">
+                    <xsl:value-of select="@content"/>
+                </xsl:attribute>
+                <xsl:attribute name="mode">
+                    <xsl:value-of select="$themeid"/>
+                </xsl:attribute>
+                <xsl:choose>
+                    <xsl:when test="@merged-condition">
+                        <xsl:text>&#10;        </xsl:text>
+                        <xsl:element name="xsl:choose">
+                            <xsl:text>&#10;            </xsl:text>
+                            <xsl:element name="xsl:when">
+                                <xsl:attribute name="test"><xsl:value-of select="@merged-condition"/></xsl:attribute>
+                                <xsl:text>&#10;                </xsl:text>
+                                <xsl:element name="xsl:apply-templates">
+                                    <xsl:attribute name="select">node()</xsl:attribute>
+                                    <xsl:attribute name="mode">
+                                        <xsl:value-of select="$themeid"/>
+                                    </xsl:attribute>
+                                </xsl:element>
+                                <xsl:text>&#10;            </xsl:text>
+                            </xsl:element>
+                            <xsl:text>&#10;            </xsl:text>
+                            <xsl:element name="xsl:otherwise">
+                                <!-- Condition was false, so include normally -->
+                                <xsl:call-template name="include-content">
+                                    <xsl:with-param name="themeid" select="$themeid"/>
+                                </xsl:call-template>
+
+                                <xsl:text>&#10;            </xsl:text>
+                            </xsl:element>
+                            <xsl:text>&#10;        </xsl:text>
+                        </xsl:element>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:element name="xsl:apply-templates">
+                            <xsl:attribute name="select">node()</xsl:attribute>
+                            <xsl:attribute name="mode">
+                                <xsl:value-of select="$themeid"/>
+                            </xsl:attribute>
+                        </xsl:element>
+                    </xsl:otherwise>
+                </xsl:choose>
+            <xsl:text>&#10;    </xsl:text>
+            </xsl:element>
+            <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template name="include-content">
+        <xsl:param name="themeid"/>
+        <xsl:text>&#10;            </xsl:text>
+        <xsl:element name="xsl:copy">
+            <xsl:text>&#10;                </xsl:text>
+            <xsl:element name="xsl:apply-templates">
+                <xsl:attribute name="select">@*|node()</xsl:attribute>
+                <xsl:attribute name="mode">
+                    <xsl:value-of select="$themeid"/>
+                </xsl:attribute>
+            </xsl:element>
+            <xsl:text>&#10;            </xsl:text>
+        </xsl:element>
     </xsl:template>
 
 </xsl:stylesheet>
