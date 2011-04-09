@@ -14,7 +14,7 @@
             <xsl:attribute name="xml:id">
                 <xsl:value-of select="generate-id()"/>
             </xsl:attribute>
-            <xsl:apply-templates select="node()|@*"/>
+            <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
     </xsl:template>   
 
@@ -23,13 +23,13 @@
             <xsl:attribute name="xml:id">
                 <xsl:value-of select="generate-id()"/>-<xsl:value-of select="ancestor::diazo:theme/@href"/>
             </xsl:attribute>
-            <xsl:apply-templates select="node()|@*"/>
+            <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="node()|@*">
+    <xsl:template match="@*|node()">
         <xsl:copy>
-            <xsl:apply-templates select="node()|@*"/>
+            <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
 
