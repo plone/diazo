@@ -26,13 +26,13 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="pre/text()">
+    <xsl:template match="text()">
         <!-- Filter out quoted &#13; -->
         <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')"/>
     </xsl:template>
 
     <xsl:template match="style/text()|script/text()">
-        <xsl:value-of select="." disable-output-escaping="yes"/>
+        <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')" disable-output-escaping="yes"/>
     </xsl:template>
 
 </xsl:stylesheet>
