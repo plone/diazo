@@ -36,12 +36,17 @@ def set_parser(stylesheet, parser, compiler_parser=None):
 def build_xsl_params_document(xsl_params):
     if xsl_params is None:
         xsl_params = {}
-    
+    if not 'path' in xsl_params:
+        xsl_params['path'] = ''
     known_params = etree.XML('<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" />')
     for param_name, param_value in xsl_params.items():
         param_element = etree.SubElement(known_params, "{http://www.w3.org/1999/XSL/Transform}param")
         param_element.attrib['name'] = param_name
-        param_element.attrib['select'] = str(quote_param(param_value))
+        if isinstance(param_value, basestring):
+            param_element.text = param_value
+        else:
+            param_element.attrib['select'] = str(quote_param(param_value))
+        param_element.tail = '\n'
     
     return known_params    
 

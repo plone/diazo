@@ -56,7 +56,8 @@
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
             
-            <xsl:copy-of select="document($known_params_url)/xsl:stylesheet/xsl:param" />
+            <xsl:text>&#10;&#10;</xsl:text>
+            <xsl:apply-templates select="document($known_params_url)/xsl:stylesheet/node()" />
             
             <xsl:if test="$rules[@method='document']">
                 <xsl:choose>
