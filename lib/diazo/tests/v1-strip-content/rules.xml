@@ -4,14 +4,13 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
     
-    <strip
+    <replace
         css:theme="#alpha"
-        css:if-content="#one"
+        css:content="#one"
         />
     
     <strip
-        css:theme="#beta"
-        css:if-content="#three"
-        />    
+        css:content="#one"
+        />
     
 </rules>
