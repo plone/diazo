@@ -115,7 +115,7 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
     params = {}
     if indent is not None:
         params['indent'] = indent and "'yes'" or "'no'"
-        params['known_params_url'] = quote_param(known_params_url)
+    params['known_params_url'] = quote_param(known_params_url)
     
     # Run the final stage compiler
     emit_stylesheet = pkg_xsl('emit-stylesheet.xsl', parser=emit_stylesheet_parser)
