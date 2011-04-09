@@ -32,10 +32,10 @@ def convert_css_selectors(rules):
                 if not value:
                     element.attrib[localname] = ""
                     continue
-                if localname == 'content' and (
-                    element.tag == '{%s}drop' % utils.namespaces['diazo'] or
-                    element.tag == '{%s}strip' % utils.namespaces['diazo'] or
-                    localname == 'match'
+                tag_localname = utils.localname(element.tag)
+                tag_namespace = utils.namespace(element.tag)
+                if (tag_namespace == utils.namespaces['diazo'] and localname in ('content', 'if-content') or
+                    element.tag == utils.fullname(utils.namespaces['xsl'], 'match')
                     ):
                     prefix = '//'
                 else:

@@ -19,6 +19,9 @@ namespaces = dict(
 def localname(name):
     return name.rsplit('}', 1)[1]
 
+def namespace(name):
+    return name.rsplit('}', 1)[0][1:]
+
 def fullname(namespace, name):
     return '{%s}%s' % (namespace, name)
 

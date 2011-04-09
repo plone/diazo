@@ -179,7 +179,25 @@
                         <xsl:attribute name="mode">
                             <xsl:value-of select="$themeid"/>
                         </xsl:attribute>
-                        <xsl:comment>Do nothing, skip these nodes</xsl:comment>
+                        <xsl:if test="@merged-condition">
+                            <xsl:text>&#10;        </xsl:text>
+                            <xsl:element name="xsl:if">
+                                <xsl:attribute name="test">not(<xsl:value-of select="@merged-condition"/>)</xsl:attribute>
+                                <xsl:text>&#10;            </xsl:text>
+                                <xsl:element name="xsl:copy">
+                                    <xsl:text>&#10;                </xsl:text>
+                                    <xsl:element name="xsl:apply-templates">
+                                        <xsl:attribute name="select">@*|node()</xsl:attribute>
+                                        <xsl:attribute name="mode">
+                                            <xsl:value-of select="$themeid"/>
+                                        </xsl:attribute>
+                                    </xsl:element>
+                                    <xsl:text>&#10;            </xsl:text>
+                                </xsl:element>
+                                <xsl:text>&#10;        </xsl:text>
+                            </xsl:element>
+                        </xsl:if>
+                        <xsl:text>&#10;    </xsl:text>
                     </xsl:element>
                     <xsl:text>&#10;</xsl:text>
                 </xsl:for-each>
@@ -194,12 +212,50 @@
                         <xsl:attribute name="mode">
                             <xsl:value-of select="$themeid"/>
                         </xsl:attribute>
-                        <xsl:element name="xsl:apply-templates">
-                            <xsl:attribute name="select">node()</xsl:attribute>
-                            <xsl:attribute name="mode">
-                                  <xsl:value-of select="$themeid"/>
-                            </xsl:attribute>
-                        </xsl:element>
+                        <xsl:choose>
+                            <xsl:when test="@merged-condition">
+                                <xsl:text>&#10;        </xsl:text>
+                                <xsl:element name="xsl:choose">
+                                    <xsl:text>&#10;            </xsl:text>
+                                    <xsl:element name="xsl:when">
+                                        <xsl:attribute name="test"><xsl:value-of select="@merged-condition"/></xsl:attribute>
+                                        <xsl:text>&#10;                </xsl:text>
+                                        <xsl:element name="xsl:apply-templates">
+                                            <xsl:attribute name="select">node()</xsl:attribute>
+                                            <xsl:attribute name="mode">
+                                                <xsl:value-of select="$themeid"/>
+                                            </xsl:attribute>
+                                        </xsl:element>
+                                        <xsl:text>&#10;            </xsl:text>
+                                    </xsl:element>
+                                    <xsl:text>&#10;            </xsl:text>
+                                    <xsl:element name="xsl:otherwise">
+                                        <xsl:text>&#10;                </xsl:text>
+                                        <xsl:element name="xsl:copy">
+                                            <xsl:text>&#10;                    </xsl:text>
+                                            <xsl:element name="xsl:apply-templates">
+                                                <xsl:attribute name="select">@*|node()</xsl:attribute>
+                                                <xsl:attribute name="mode">
+                                                    <xsl:value-of select="$themeid"/>
+                                                </xsl:attribute>
+                                            </xsl:element>
+                                            <xsl:text>&#10;                </xsl:text>
+                                        </xsl:element>
+                                        <xsl:text>&#10;            </xsl:text>
+                                    </xsl:element>
+                                    <xsl:text>&#10;        </xsl:text>
+                                </xsl:element>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:element name="xsl:apply-templates">
+                                    <xsl:attribute name="select">node()</xsl:attribute>
+                                    <xsl:attribute name="mode">
+                                        <xsl:value-of select="$themeid"/>
+                                    </xsl:attribute>
+                                </xsl:element>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    <xsl:text>&#10;    </xsl:text>
                     </xsl:element>
                     <xsl:text>&#10;</xsl:text>
                 </xsl:for-each>
