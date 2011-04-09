@@ -33,6 +33,17 @@
         </xsl:copy>
     </xsl:template>
 
+    <xsl:template match="diazo:strip[@content]">
+        <xsl:if test="@theme">
+            <xsl:message terminate="yes">
+                ERROR: @theme and @content attributes not allowed in same strip rule
+            </xsl:message>
+        </xsl:if>
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:copy>
+    </xsl:template>
+
     <xsl:template match="diazo:*[@theme]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>

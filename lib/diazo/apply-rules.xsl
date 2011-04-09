@@ -161,7 +161,7 @@
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:element name="xsl:otherwise">
-                                <xsl:call-template name="prepend-copy-append">
+                                <xsl:call-template name="strip">
                                     <xsl:with-param name="matching-rules" select="$matching-other"/>
                                     
                                 </xsl:call-template>
@@ -176,10 +176,80 @@
                 <xsl:apply-templates select="$unconditional" mode="include"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:call-template name="prepend-copy-append">
+                <xsl:call-template name="strip">
                     <xsl:with-param name="matching-rules" select="$matching-other"/>
                     
                 </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template name="strip">
+        <xsl:param name="matching-rules"/>
+        <xsl:param name="rules"/>
+        <xsl:variable name="rule-name">strip</xsl:variable>
+        <xsl:variable name="matching-this" select="$matching-rules[local-name()=$rule-name]"/>
+        <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
+        <xsl:choose>
+            <xsl:when test="$matching-this[not(@merged-condition)]">
+                <!--
+                    Don't copy
+                -->
+                <xsl:call-template name="prepend-copy-append">
+                    <xsl:with-param name="matching-rules" select="$matching-other"/>
+
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:when test="$matching-this/@merged-condition">
+                <!--
+                    <drop condition="content" ...
+                    When the rule matches, strip the theme node and attributes
+                    Otherwise keep theme node.
+                -->
+                <xsl:element name="xsl:choose">
+                    <xsl:element name="xsl:when">
+                        <xsl:attribute name="test">
+                            <xsl:for-each select="$matching-this/@merged-condition">
+                                <xsl:text>(</xsl:text><xsl:value-of select="."/><xsl:text>)</xsl:text>
+                                <xsl:if test="position() != last()">
+                                    <xsl:text> or </xsl:text>
+                                </xsl:if>
+                            </xsl:for-each>
+                        </xsl:attribute>
+                        <!--
+                            Don't copy
+                        -->
+                        <xsl:call-template name="prepend-copy-append">
+                            <xsl:with-param name="matching-rules" select="$matching-other"/>
+
+                        </xsl:call-template>
+                    </xsl:element>
+                    <xsl:element name="xsl:otherwise">
+                        <xsl:copy>
+                            <!-- Theme attributes -->
+                            <xsl:apply-templates select="@*">
+
+                            </xsl:apply-templates>
+                            <xsl:call-template name="prepend-copy-append">
+                                <xsl:with-param name="matching-rules" select="$matching-other"/>
+
+                            </xsl:call-template>
+                        </xsl:copy>
+                    </xsl:element>
+                </xsl:element>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy>
+                    <!-- Theme attributes -->
+                    <xsl:apply-templates select="@*">
+                        
+                    </xsl:apply-templates>
+                    <xsl:call-template name="prepend-copy-append">
+                        <xsl:with-param name="matching-rules" select="$matching-other"/>
+                    
+                    </xsl:call-template>
+                </xsl:copy>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -191,12 +261,6 @@
         <xsl:variable name="matching-this" select="$matching-rules[local-name()='prepend' or local-name()='copy' or local-name()='append']"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
-
-                <xsl:copy>
-                    <!-- Theme attributes -->
-                    <xsl:apply-templates select="@*">
-                        
-                    </xsl:apply-templates>
 
                     <!-- Prepend -->
                     <xsl:apply-templates select="$matching-this[local-name()='prepend']" mode="conditional-include"/>
@@ -260,8 +324,6 @@
 
                     <!-- Append -->
                     <xsl:apply-templates select="$matching-rules[local-name()='append']" mode="conditional-include"/>
-
-                </xsl:copy>
 
     </xsl:template>
 
