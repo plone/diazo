@@ -32,7 +32,7 @@
         <!-- Filter it out, rely on lang attribute -->
     </xsl:template>
 
-    <xsl:template match="pre/text()">
+    <xsl:template match="text()">
         <!-- Filter out quoted &#13; -->
         <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')"/>
     </xsl:template>
@@ -40,7 +40,7 @@
     <xsl:template match="style/text()|script/text()">
         <xsl:element name="xsl:variable">
             <xsl:attribute name="name">tag_text</xsl:attribute>
-            <xsl:value-of select="."/>
+            <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')"/>
         </xsl:element>
         <xsl:element name="xsl:value-of">
             <xsl:attribute name="select">$tag_text</xsl:attribute>
