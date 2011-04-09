@@ -6,7 +6,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
-    <xsl:template match="diazo:*[@if-content or @if-path]">
+    <xsl:template match="diazo:*[@if-content or @if-path or @if]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
             <xsl:attribute name="condition">
@@ -34,6 +34,8 @@
                     </xsl:for-each>
                     <xsl:if test="count($paths) > 1">)</xsl:if>
                 </xsl:if>
+                <xsl:if test="@if and (@if-content or @if-path)"> and </xsl:if>
+                <xsl:if test="@if">(<xsl:value-of select="@if"/>)</xsl:if>
             </xsl:attribute>
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
