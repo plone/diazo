@@ -5,7 +5,6 @@
 from lxml import etree
 import os
 import sys
-import traceback
 import difflib
 from StringIO import StringIO
 import unittest
@@ -14,6 +13,8 @@ import pkg_resources
 
 import diazo.compiler
 import diazo.run
+
+from diazo.utils import quote_param
 
 if __name__ == '__main__':
     __file__ = sys.argv[0]
@@ -43,6 +44,13 @@ class DiazoTestCase(unittest.TestCase):
         xslfn = os.path.join(self.testdir, "compiled.xsl")
         outputfn = os.path.join(self.testdir, "output.html")
         
+        xsl_params = {}
+        extra_params = config.get('diazotest', 'extra-params')
+        if extra_params:
+            for token in extra_params.split(' '):
+                token_split = token.split(':')
+                xsl_params[token_split[0]] = len(token_split) > 1 and token_split[1] or None
+        
         if not os.path.exists(rulesfn):
             return
         
@@ -56,7 +64,8 @@ class DiazoTestCase(unittest.TestCase):
             theme=themefn,
             parser=theme_parser,
             absolute_prefix=config.get('diazotest', 'absolute-prefix'),
-            indent=config.getboolean('diazotest', 'pretty-print')
+            indent=config.getboolean('diazotest', 'pretty-print'),
+            xsl_params=xsl_params,
             )
         
         # Serialize / parse the theme - this can catch problems with escaping.
@@ -85,6 +94,13 @@ class DiazoTestCase(unittest.TestCase):
         processor = etree.XSLT(ct)
         params = {}
         params['path'] = "'%s'" % config.get('diazotest', 'path')
+        
+        for key in xsl_params:
+            try:
+                params[key] = quote_param(config.get('diazotest', key))
+            except ConfigParser.NoOptionError:
+                pass
+        
         result = processor(contentdoc, **params)
 
         # Read the whole thing to strip off xhtml namespace.

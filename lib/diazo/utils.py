@@ -5,6 +5,8 @@ import sys
 from lxml import etree
 from optparse import OptionParser
 
+strparam = etree.XSLT.strparam
+
 logger=logging.getLogger('diazo')
 
 namespaces = dict(
@@ -50,6 +52,25 @@ class LoggingXSLTWrapper:
 def pkg_xsl(name, parser=None):
     return LoggingXSLTWrapper(etree.XSLT(etree.parse(open(pkg_resources.resource_filename('diazo', name)), parser=parser)), logger)
 
+def quote_param(value, raw_strings=False):
+    """Quote for passing as an XSL parameter.
+    
+    Works with strings, booleans, numbers and None.
+    """
+    
+    if isinstance(value, basestring):
+        if raw_strings:
+            return strparam(value)
+        else:
+            return "'%s'" % value.replace("'", "''")
+    elif isinstance(value, bool):
+        return value and 'true()' or 'false()'
+    elif isinstance(value, (int, long, float)):
+        value = repr(value)
+    elif value is None:
+        return '/..'
+    else:
+        raise TypeError("Cannot convert %s", value)
 
 def _createOptionParser(usage):
     parser = OptionParser(usage=usage)

@@ -13,16 +13,13 @@ usage = __doc__
 
 import logging
 import pkg_resources
-import sys
 
 from lxml import etree
 
 from diazo.rules import process_rules
-from diazo.utils import namespaces, AC_READ_NET, AC_READ_FILE, pkg_xsl, _createOptionParser, CustomResolver
+from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver, quote_param
 
 logger = logging.getLogger('diazo')
-
-emit_stylesheet = pkg_xsl('emit-stylesheet.xsl')
 
 def set_parser(stylesheet, parser, compiler_parser=None):
     dummy_doc = etree.parse(open(pkg_resources.resource_filename('diazo', 'dummy.html')), parser=parser)
@@ -36,7 +33,24 @@ def set_parser(stylesheet, parser, compiler_parser=None):
     compiler_parser.resolvers.remove(resolver)
     return output_doc
 
-def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True, absolute_prefix=None, update=True, trace=False, includemode=None, parser=None, compiler_parser=None, rules_parser=None, access_control=None, read_network=False, indent=None):
+def build_xsl_params_document(xsl_params):
+    if xsl_params is None:
+        xsl_params = {}
+    
+    known_params = etree.XML('<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" />')
+    for param_name, param_value in xsl_params.items():
+        param_element = etree.SubElement(known_params, "{http://www.w3.org/1999/XSL/Transform}param")
+        param_element.attrib['name'] = param_name
+        param_element.attrib['select'] = str(quote_param(param_value))
+    
+    return known_params    
+
+def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
+    absolute_prefix=None, update=True, trace=False, includemode=None,
+    parser=None, compiler_parser=None, rules_parser=None,
+    access_control=None, read_network=False, indent=None,
+    xsl_params=None
+):
     """Invoke the diazo compiler.
     
     * ``rules`` is the rules file
@@ -66,6 +80,9 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True, absolu
       XMLParser
     * ``rules_parser`` can be set to an lxml parser instance; the default is a
       XMLParser.
+    * ``xsl_params`` can be set to a dictionary of parameters that will be
+      known to the compiled theme transform. The keys should be the parameter
+      names. Values are default values.
     """
     if access_control is not None:
         read_network = access_control.options['read_network']
@@ -83,11 +100,28 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True, absolu
         rules_parser=rules_parser,
         read_network=read_network,
         )
+    
+    # Build a document with all the <xsl:param /> values to set the defaults
+    # for every value passed in as xsl_params
+    known_params = build_xsl_params_document(xsl_params)
+    
+    # Create a pseudo resolver for this
+    known_params_url = 'file:///__diazo_known_params__'
+    emit_stylesheet_resolver = CustomResolver({known_params_url: etree.tostring(known_params)})
+    emit_stylesheet_parser = etree.XMLParser()
+    emit_stylesheet_parser.resolvers.add(emit_stylesheet_resolver)
+    
+    # Set up parameters
     params = {}
     if indent is not None:
         params['indent'] = indent and "'yes'" or "'no'"
+        params['known_params_url'] = quote_param(known_params_url)
+    
+    # Run the final stage compiler
+    emit_stylesheet = pkg_xsl('emit-stylesheet.xsl', parser=emit_stylesheet_parser)
     compiled_doc = emit_stylesheet(rules_doc, **params)
     compiled_doc = set_parser(etree.tostring(compiled_doc), parser, compiler_parser)
+    
     return compiled_doc
 
 

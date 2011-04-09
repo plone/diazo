@@ -14,6 +14,8 @@
     <xsl:param name="defaultsurl">defaults.xsl</xsl:param>
     <xsl:param name="usebase"/>
     <xsl:param name="indent"/>
+    <xsl:param name="known_params_url"/>
+    
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
@@ -53,6 +55,9 @@
     <xsl:template match="xsl:stylesheet">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
+            
+            <xsl:copy-of select="document($known_params_url)/xsl:stylesheet/xsl:param" />
+            
             <xsl:if test="$rules[@method='document']">
                 <xsl:choose>
                     <xsl:when test="$usebase">
