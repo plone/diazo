@@ -32,7 +32,11 @@ def convert_css_selectors(rules):
                 if not value:
                     element.attrib[localname] = ""
                     continue
-                if localname == 'content' and element.tag == '{%s}drop' % utils.namespaces['diazo'] or localname == 'match':
+                if localname == 'content' and (
+                    element.tag == '{%s}drop' % utils.namespaces['diazo'] or
+                    element.tag == '{%s}strip' % utils.namespaces['diazo'] or
+                    localname == 'match'
+                    ):
                     prefix = '//'
                 else:
                     prefix = 'descendant-or-self::'                    

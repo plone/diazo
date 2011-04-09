@@ -16,6 +16,7 @@
     <xsl:param name="indent"/>
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
+    <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
     <xsl:variable name="inline-xsl" select="/dv:rules/xsl:*"/>
     <xsl:variable name="themes" select="//dv:theme"/>
     <xsl:variable name="conditional-theme" select="//dv:theme[@merged-condition]"/>
@@ -174,6 +175,26 @@
                             <xsl:value-of select="$themeid"/>
                         </xsl:attribute>
                         <xsl:comment>Do nothing, skip these nodes</xsl:comment>
+                    </xsl:element>
+                    <xsl:text>&#10;</xsl:text>
+                </xsl:for-each>
+                <!-- If there are any <strip @content> rules, put it in 
+                here. -->
+                <xsl:for-each select="$strip-content-rules">
+                    <xsl:text>&#10;    </xsl:text>
+                    <xsl:element name="xsl:template">
+                        <xsl:attribute name="match">
+                            <xsl:value-of select="@content"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="mode">
+                            <xsl:value-of select="$themeid"/>
+                        </xsl:attribute>
+                        <xsl:element name="xsl:apply-templates">
+                            <xsl:attribute name="select">node()</xsl:attribute>
+                            <xsl:attribute name="mode">
+                                  <xsl:value-of select="$themeid"/>
+                            </xsl:attribute>
+                        </xsl:element>
                     </xsl:element>
                     <xsl:text>&#10;</xsl:text>
                 </xsl:for-each>
