@@ -204,6 +204,14 @@
                 <xsl:copy-of select="."/>
                 <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
+            <!-- Make a copy of default templates for raw mode. -->
+            <xsl:for-each select="$defaults/xsl:stylesheet/xsl:template[not(@mode)]">
+                <xsl:text>&#10;    </xsl:text>
+                <xsl:apply-templates select="." mode="rewrite-mode">
+                    <xsl:with-param name="mode" select="'raw'"/>
+                </xsl:apply-templates>
+                <xsl:text>&#10;</xsl:text>
+            </xsl:for-each>
         </xsl:copy>
     </xsl:template>
 

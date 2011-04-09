@@ -7,7 +7,7 @@
     <replace
         css:theme="#messages"
         css:content=".message"
-        raw="true"
+        method="raw"
         />
     
     <drop

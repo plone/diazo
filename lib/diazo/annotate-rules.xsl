@@ -90,6 +90,9 @@
             <xsl:attribute name="select">
                 <xsl:value-of select="@content"/>
             </xsl:attribute>
+            <xsl:if test="@method = 'raw'">
+                <xsl:attribute name="mode">raw</xsl:attribute>
+            </xsl:if>
         </xsl:element>
     </xsl:template>
     
