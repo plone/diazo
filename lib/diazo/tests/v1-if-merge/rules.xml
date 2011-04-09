@@ -4,8 +4,6 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
     
-    <xsl:variable name="foo">bar</xsl:variable>
-    
     <replace
         if="$foo = 'bar'"
         css:if-content="#two"
