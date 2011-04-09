@@ -23,6 +23,13 @@
         </xsl:element>
     </xsl:template>
 
+    <xsl:template match="/diazo:rules">
+        <xsl:element name="diazo:{local-name()}">
+            <xsl:attribute name="css:dummy"/>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:element>
+    </xsl:template>
+
     <xsl:template match="xhtml:* | diazo:*">
         <xsl:element name="{local-name()}">
             <xsl:apply-templates select="@*|node()"/>
