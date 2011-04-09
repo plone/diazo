@@ -361,7 +361,7 @@
         <!-- Emit xsl that avoids escaping -->
         <xsl:element name="xsl:variable">
             <xsl:attribute name="name">tag_text</xsl:attribute>
-            <xsl:value-of select="."/>
+            <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')"/>
         </xsl:element>
         <xsl:element name="xsl:value-of">
             <xsl:attribute name="select">$tag_text</xsl:attribute>
