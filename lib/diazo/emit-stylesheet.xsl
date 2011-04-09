@@ -240,6 +240,8 @@
     <xsl:template name="drop-content">
         <xsl:for-each select="$drop-content-rules">
             <xsl:text>&#10;    </xsl:text>
+            <xsl:call-template name="debug-comment" select="."/>
+            <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">
                     <xsl:value-of select="@content"/>
@@ -261,6 +263,8 @@
 
     <xsl:template name="strip-content">
         <xsl:for-each select="$strip-content-rules">
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:call-template name="debug-comment" select="."/>
             <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">
@@ -310,5 +314,16 @@
             <xsl:text>&#10;            </xsl:text>
         </xsl:element>
     </xsl:template>
+
+
+    <!--
+        Debugging support
+    -->
+
+    <xsl:template name="debug-comment">
+        <xsl:comment>RULE: &lt;<xsl:value-of select="name()"/><xsl:for-each select="@*">
+            <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:comment>
+    </xsl:template>
+
 
 </xsl:stylesheet>
