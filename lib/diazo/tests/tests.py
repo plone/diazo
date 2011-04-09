@@ -43,6 +43,9 @@ class DiazoTestCase(unittest.TestCase):
         xslfn = os.path.join(self.testdir, "compiled.xsl")
         outputfn = os.path.join(self.testdir, "output.html")
         
+        if not os.path.exists(rulesfn):
+            return
+        
         contentdoc = etree.parse(source=contentfn, base_url=contentfn,
                                        parser=etree.HTMLParser())
 
