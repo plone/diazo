@@ -14,7 +14,6 @@
     <xsl:param name="defaultsurl">defaults.xsl</xsl:param>
     <xsl:param name="usebase"/>
     <xsl:param name="indent"/>
-    <xsl:param name="known_params_url"/>
     
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
