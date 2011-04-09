@@ -1,0 +1,23 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+    
+    <after
+        css:theme-children="#alpha"
+        css:content="#one"
+        />
+
+    <after
+        css:theme-children="#beta"
+        css:content="#two"
+        />
+
+    <after
+        css:theme-children="#delta"
+        css:content="#three"
+        />
+    
+    
+</rules>
