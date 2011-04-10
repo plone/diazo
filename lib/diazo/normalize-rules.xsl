@@ -19,7 +19,11 @@
             <xsl:if test="@href and not(@method) and local-name() != 'theme'">
                 <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>
             </xsl:if>
-            <xsl:apply-templates select="@*|node()"/>
+            <xsl:apply-templates select="@*"/>
+            <xsl:if test="@content-children">
+                <xsl:attribute name="content"><xsl:value-of select="@content-children"/>/node()</xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="node()"/>
         </xsl:element>
     </xsl:template>
 
@@ -35,5 +39,48 @@
             <xsl:apply-templates select="@*|node()"/>
         </xsl:element>
     </xsl:template>
+
+    <xsl:template match="//diazo:rules/diazo:before[@theme-children]">
+        <xsl:element name="diazo:prepend">
+            <xsl:if test="@href and not(@method)">
+                <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="@*"/>
+            <xsl:attribute name="theme"><xsl:value-of select="@theme-children"/></xsl:attribute>
+            <xsl:if test="@content-children">
+                <xsl:attribute name="content"><xsl:value-of select="@content-children"/>/node()</xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="node()"/>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="//diazo:rules/diazo:after[@theme-children]">
+        <xsl:element name="diazo:append">
+            <xsl:if test="@href and not(@method)">
+                <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="@*"/>
+            <xsl:attribute name="theme"><xsl:value-of select="@theme-children"/></xsl:attribute>
+            <xsl:if test="@content-children">
+                <xsl:attribute name="content"><xsl:value-of select="@content-children"/>/node()</xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="node()"/>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="//diazo:rules/diazo:replace[@theme-children]">
+        <xsl:element name="diazo:copy">
+            <xsl:if test="@href and not(@method)">
+                <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="@*"/>
+            <xsl:attribute name="theme"><xsl:value-of select="@theme-children"/></xsl:attribute>
+            <xsl:if test="@content-children">
+                <xsl:attribute name="content"><xsl:value-of select="@content-children"/>/node()</xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="node()"/>
+        </xsl:element>
+    </xsl:template>
+
 
 </xsl:stylesheet>

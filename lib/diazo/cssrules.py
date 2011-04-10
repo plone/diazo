@@ -34,7 +34,7 @@ def convert_css_selectors(rules):
                     continue
                 tag_localname = utils.localname(element.tag)
                 tag_namespace = utils.namespace(element.tag)
-                if (tag_namespace == utils.namespaces['diazo'] and localname in ('content', 'if-content') or
+                if (tag_namespace == utils.namespaces['diazo'] and localname in ('content', 'content-children', 'if-content') or
                     element.tag == utils.fullname(utils.namespaces['xsl'], 'match')
                     ):
                     prefix = '//'
