@@ -87,6 +87,7 @@
         <xsl:element name="diazo:attributes">
             <xsl:apply-templates select="@*"/>
             <xsl:attribute name="action"><xsl:value-of select="local-name()"/></xsl:attribute>
+            <xsl:attribute name="attributes"><xsl:value-of select="concat(' ', normalize-space(@attributes), ' ')"/></xsl:attribute>
             <xsl:apply-templates select="node()"/>
         </xsl:element>
     </xsl:template>

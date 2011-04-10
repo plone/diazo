@@ -252,7 +252,97 @@
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
         
-        <xsl:apply-templates select="@*" />
+        <xsl:variable name="context-attrs" select="@*[not(name()='xml:id')]"/>
+        <xsl:variable name="drop-theme" select="$matching-this[@action='drop']"/>
+        <xsl:variable name="drop-all" select="$drop-theme[contains(@attributes, ' * ')]"/>    
+        <xsl:variable name="unconditional-drop-all" select="$drop-all[not(@merged-condition)]"/>
+        <xsl:variable name="drop-some" select="$drop-theme[not(contains(@attributes, ' * '))]"/>    
+        <xsl:variable name="conditional-drop-all" select="$drop-all[@merged-condition]"/>
+        <xsl:variable name="conditional-drop-some" select="$drop-some[@merged-condition]"/>
+        <xsl:variable name="conditional-drop-some-list" select="str:concat($conditional-drop-some/@attributes)"/>
+        <xsl:variable name="drop-some-list" select="str:concat($drop-some/@attributes)"/>
+        <xsl:variable name="no-drop-attrs" select="$context-attrs[not(contains($drop-some-list, concat(' ', name(), ' ')))]"/>
+        <xsl:variable name="conditional-drop-some-attrs" select="$context-attrs[contains($conditional-drop-some-list, concat(' ', name(), ' '))]"/>
+
+        <xsl:choose>
+            <xsl:when test="$unconditional-drop-all">
+                <!-- no theme attributes -->
+            </xsl:when>
+
+            <xsl:when test="not($conditional-drop-all)">
+                <!-- all theme attributes except filtered-->
+                <xsl:apply-templates select="$no-drop-attrs" />
+                <!-- conditional theme attributes -->
+                <xsl:for-each select="$conditional-drop-some-attrs">
+                    <xsl:variable name="current-attr" select="."/>
+                    <xsl:element name="xsl:if">
+                        <xsl:attribute name="test">
+                            <xsl:text>not(</xsl:text>
+                            <xsl:for-each select="$conditional-drop-some[contains(@attributes, concat(' ', name($current-attr), ' '))]/@merged-condition">
+                                <xsl:text>(</xsl:text><xsl:value-of select="."/><xsl:text>)</xsl:text>
+                                <xsl:if test="position() != last()">
+                                    <xsl:text> or </xsl:text>
+                                </xsl:if>
+                            </xsl:for-each>
+                            <xsl:text>)</xsl:text>
+                        </xsl:attribute>
+                        <xsl:element name="xsl:attribute">
+                            <xsl:attribute name="name"><xsl:value-of select="name($current-attr)"></xsl:value-of></xsl:attribute>
+                            <xsl:value-of select="$current-attr"/>
+                        </xsl:element>
+                    </xsl:element>
+                </xsl:for-each>
+            </xsl:when>
+
+            <xsl:when test="$conditional-drop-all">
+                <xsl:element name="xsl:if">
+                    <xsl:attribute name="test">
+                        <xsl:text>not(</xsl:text>
+                        <xsl:for-each select="$conditional-drop-all/@merged-condition">
+                            <xsl:text>(</xsl:text><xsl:value-of select="."/><xsl:text>)</xsl:text>
+                            <xsl:if test="position() != last()">
+                                <xsl:text> or </xsl:text>
+                            </xsl:if>
+                        </xsl:for-each>
+                        <xsl:text>)</xsl:text>
+                    </xsl:attribute>
+                    <!-- all theme attributes except filtered-->
+                    <xsl:for-each select="$no-drop-attrs">
+                        <xsl:element name="xsl:attribute">
+                            <xsl:attribute name="name"><xsl:value-of select="name(.)"></xsl:value-of></xsl:attribute>
+                            <xsl:value-of select="."/>
+                        </xsl:element>
+                    </xsl:for-each>
+                    <!-- conditional theme attributes -->
+                    <xsl:for-each select="$conditional-drop-some-attrs">
+                        <xsl:variable name="current-attr" select="."/>
+                        <xsl:element name="xsl:if">
+                            <xsl:attribute name="test">
+                                <xsl:text>not(</xsl:text>
+                                <xsl:for-each select="$conditional-drop-some[contains(@attributes, concat(' ', name($current-attr), ' '))]/@merged-condition">
+                                    <xsl:text>(</xsl:text><xsl:value-of select="."/><xsl:text>)</xsl:text>
+                                    <xsl:if test="position() != last()">
+                                        <xsl:text> or </xsl:text>
+                                    </xsl:if>
+                                </xsl:for-each>
+                                <xsl:text>)</xsl:text>
+                            </xsl:attribute>
+                            <xsl:element name="xsl:attribute">
+                                <xsl:attribute name="name"><xsl:value-of select="name($current-attr)"></xsl:value-of></xsl:attribute>
+                                <xsl:value-of select="$current-attr"/>
+                            </xsl:element>
+                        </xsl:element>
+                    </xsl:for-each>
+                </xsl:element>
+            </xsl:when>
+
+            <xsl:otherwise>
+                <xsl:message terminate="yes">
+                    ERROR: Assert should never reach here (drop theme attributes).
+                </xsl:message>
+            </xsl:otherwise>
+        </xsl:choose>
+
         
         <xsl:for-each select="$matching-this[@action='copy']">
             <xsl:variable name="attributes" select="concat(' ', normalize-space(@attributes), ' ')"/>
