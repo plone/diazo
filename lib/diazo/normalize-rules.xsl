@@ -4,6 +4,7 @@
     xmlns:diazo="http://namespaces.plone.org/diazo"
     xmlns:css="http://namespaces.plone.org/diazo+css"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:str="http://exslt.org/strings"
     >
 
     <xsl:param name="includemode">document</xsl:param>
@@ -89,5 +90,21 @@
             <xsl:apply-templates select="node()"/>
         </xsl:element>
     </xsl:template>
+
+    <xsl:template match="//diazo:rules/diazo:drop[@attributes and @content]">
+        <xsl:variable name="attributes" select="concat(' ', normalize-space(@attributes), ' ')"/>
+        <xsl:variable name="content" select="@content"/>
+        <xsl:for-each select="str:tokenize(normalize-space(@attributes), ' ')">
+            <xsl:element name="diazo:drop">
+                <xsl:apply-templates select="@*"/>
+                <xsl:attribute name="content"><xsl:value-of select="$content"/><xsl:choose>
+                    <xsl:when test="contains($attributes, ' * ')">/@*</xsl:when>
+                    <xsl:otherwise>/@*[contains('<xsl:value-of select="$attributes"/>', concat(' ', name(), ' '))]</xsl:otherwise>
+                </xsl:choose></xsl:attribute>
+                <xsl:apply-templates select="node()"/>
+            </xsl:element>
+        </xsl:for-each>
+    </xsl:template>
+
 
 </xsl:stylesheet>
