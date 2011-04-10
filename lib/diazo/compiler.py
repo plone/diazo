@@ -164,6 +164,7 @@ def main():
         xsl_params=xsl_params
         )
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
+    options.output.write('\n')
 
 if __name__ == '__main__':
     main()

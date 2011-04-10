@@ -4,7 +4,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
-    <diazo:before theme="/html/body/h1">
+    <diazo:before theme="/html/body/div/h1">
         <div id="from-rules">From the rules</div>
         <!-- A comment from the rules -->
         <p xmlns="http://www.w3.org/1999/xhtml">

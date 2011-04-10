@@ -176,7 +176,8 @@
                     <xsl:attribute name="mode">
                         <xsl:value-of select="$themeid"/>
                     </xsl:attribute>
-                    <xsl:apply-templates select="./*" />
+                    <xsl:apply-templates select="./*" mode="include-template" />
+                    <xsl:text>&#10;</xsl:text>
                 </xsl:element>
                 <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
@@ -198,7 +199,6 @@
                 <xsl:apply-templates select="." mode="rewrite-mode">
                     <xsl:with-param name="mode" select="'raw'"/>
                 </xsl:apply-templates>
-                <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
         </xsl:copy>
     </xsl:template>
@@ -233,6 +233,24 @@
                 <xsl:attribute name="exclude-result-prefixes"><xsl:value-of select="."/> esi</xsl:attribute>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="@*|node()" mode="include-template">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" mode="include-template"/>
+        </xsl:copy>
+    </xsl:template>
+
+    <xsl:template match="xsl:*/text() | body/text()" mode="include-template" priority="5">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" mode="include-template"/>
+        </xsl:copy>
+    </xsl:template>
+
+    <xsl:template
+        match="text()[. and not(normalize-space(substring(., 1, 1))) and not(normalize-space(substring(., string-length(.))))]"
+        mode="include-template">
+            <xsl:element name="xsl:text"><xsl:value-of select="."/></xsl:element>
     </xsl:template>
 
     <!-- Rule templates -->
