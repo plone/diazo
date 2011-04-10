@@ -73,7 +73,7 @@ def quote_param(value, raw_strings=False):
     elif value is None:
         return '/..'
     else:
-        raise TypeError("Cannot convert %s", value)
+        raise ValueError("Cannot convert %s", value)
 
 def split_params(s):
     """Turn foo,bar=baz into {'foo': None, 'bar': 'baz'}
