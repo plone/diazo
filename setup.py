@@ -23,6 +23,10 @@ development, check it into Subversion, and not touch Diazo during deployment.'''
         'lxml',
         'experimental.cssselect',
         ],
+    extras_require={
+        'wsgi': ['repoze.xmliter'],
+        'test': ['repoze.xmliter'],
+    },
     entry_points = """
         [console_scripts]
         diazocompiler = diazo.compiler:main

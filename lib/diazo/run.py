@@ -16,7 +16,7 @@ import os.path
 from lxml import etree
 
 from diazo.compiler import compile_theme
-from diazo.utils import AC_READ_NET, AC_READ_FILE, _createOptionParser
+from diazo.utils import AC_READ_NET, AC_READ_FILE, _createOptionParser, split_params, quote_param
 
 logger = logging.getLogger('diazo')
 
@@ -43,6 +43,9 @@ def main():
     op.add_option("--path", metavar="PATH",
                       help="URI path", 
                       dest="path", default=None)
+    op.add_option("--parameters", metavar="param1=val1,param2=val2",
+                      help="Set the values of arbitrary parameters",
+                      dest="parameters", default=None)
     (options, args) = op.parse_args()
 
     if len(args) > 2:
@@ -71,6 +74,11 @@ def main():
     if options.xsl is not None:
         output_xslt = etree.parse(options.xsl)
     else:
+        
+        xsl_params=None
+        if options.xsl_params:
+            xsl_params = split_params(options.xsl_params)
+        
         output_xslt = compile_theme(
             rules=options.rules,
             theme=options.theme,
@@ -80,6 +88,7 @@ def main():
             absolute_prefix=options.absolute_prefix,
             includemode=options.includemode,
             indent=options.pretty_print,
+            xsl_params=xsl_params,
             )
 
     if content == '-':
@@ -95,6 +104,11 @@ def main():
     params = {}
     if options.path is not None:
         params['path'] = "'%s'" % options.path
+    
+    if options.parameters:
+        for key, value in split_params(options.parameters).items():
+            params[key] = quote_param(value)
+    
     output_html = transform(content_doc, **params)
     if isinstance(options.output, basestring):
         out = open(options.output, 'wt')

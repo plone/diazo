@@ -4,6 +4,20 @@ Changelog
 0.5 - unreleased
 ------------------
 
+* Moved documentation from the README to the diazo.org website. See
+  http://svn.plone.org/svn/plone/plone.org/diazo-docs/trunk.
+
+* Added ``<merge />`` directive
+
+* Added ``<notheme />`` directive
+
+* Added ``<strip />`` directive
+
+* Revised rule set to be based on ``theme-children`` and ``content-children``
+  and an explicit ``attributes`` parameter. ``<copy />`` is now only used for
+  copying of attributes. ``<prepend />`` and ``<append />`` are deprecated
+  in favour of ``<before />`` and ``<after />`` using ``theme-children``.
+
 * Use experimental.cssselect to better work with location paths.
 
 * Renamed XDV to Diazo.

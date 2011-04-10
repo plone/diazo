@@ -17,7 +17,7 @@ import pkg_resources
 from lxml import etree
 
 from diazo.rules import process_rules
-from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver, quote_param
+from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver, quote_param, split_params
 
 logger = logging.getLogger('diazo')
 
@@ -148,7 +148,11 @@ def main():
 
     if options.trace:
         logger.setLevel(logging.DEBUG)
-
+    
+    xsl_params=None
+    if options.xsl_params:
+        xsl_params = split_params(options.xsl_params)
+    
     output_xslt = compile_theme(
         rules=options.rules,
         theme=options.theme,
@@ -157,6 +161,7 @@ def main():
         absolute_prefix=options.absolute_prefix,
         includemode=options.includemode,
         read_network=options.read_network,
+        xsl_params=xsl_params
         )
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
 

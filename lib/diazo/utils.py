@@ -75,6 +75,16 @@ def quote_param(value, raw_strings=False):
     else:
         raise TypeError("Cannot convert %s", value)
 
+def split_params(s):
+    """Turn foo,bar=baz into {'foo': None, 'bar': 'baz'}
+    """
+    
+    xsl_params = {}
+    for param in s.split(','):
+        tokens = [t.strip() for t in param.split('=')]
+        xsl_params[tokens[0]] = len(tokens) > 1 and tokens[1] or None
+    return xsl_params
+
 def _createOptionParser(usage):
     parser = OptionParser(usage=usage)
     parser.add_option("-o", "--output", metavar="output.xsl",
@@ -101,6 +111,9 @@ def _createOptionParser(usage):
     parser.add_option("-r", "--rules", metavar="rules.xml",
                       help="Diazo rules file", 
                       dest="rules", default=None)
+    parser.add_option("-c", "--custom-parameters", metavar="param1,param2=defaultval",
+                      help="Comma-separated list of custom parameter names with optional default values that the compiled theme will be able accept when run",
+                      dest="xsl_params", default=None)
     parser.add_option("-e", "--extra", metavar="extra.xsl",
                       help="Extra XSL to be included in the transform (depracated, use inline xsl in the rules instead)",
                       dest="extra", default=None)
