@@ -82,5 +82,12 @@
         </xsl:element>
     </xsl:template>
 
+    <xsl:template match="//diazo:rules/diazo:*[@attributes]">
+        <xsl:element name="diazo:attributes">
+            <xsl:apply-templates select="@*"/>
+            <xsl:attribute name="action"><xsl:value-of select="local-name()"/></xsl:attribute>
+            <xsl:apply-templates select="node()"/>
+        </xsl:element>
+    </xsl:template>
 
 </xsl:stylesheet>
