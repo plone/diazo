@@ -1,9 +1,16 @@
-<rules xmlns="http://namespaces.plone.org/diazo"
-    xmlns:css="http://namespaces.plone.org/diazo+css">
-    <drop css:content="#byline"/>
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+    <drop css:content="#byline" if="$mode = 'live'"/>
+    
     <replace theme="/html/head/title" content="/html/head/title"/>
-    <copy css:theme="#pageheading" content="/html/head/title/text()"/>
-    <copy css:theme="#pagecontent" css:content="body > pre" if-content=""/>
-    <copy css:theme="#pagecontent" css:content="#content > *"/>
-    <append css:theme="#left-column" css:content="#portlet" href="/extra.html"/>
+    
+    <replace css:theme-content="#pageheading" content="/html/head/title/text()"/>
+    <replace css:theme-content="#pagecontent" css:content="body > pre" if-content=""/>
+    <replace css:theme-content="#pagecontent" css:content-children="#content"/>
+    
+    <before css:theme-children="#left-column" css:content="#portlet" href="/extra.html" if='not($offline)' />
+
 </rules>
