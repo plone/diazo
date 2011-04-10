@@ -194,11 +194,10 @@
         <xsl:choose>
             <xsl:when test="$matching-this[not(@merged-condition)]">
                 <!--
-                    Don't copy
+                    Don't copy tag / attributes
                 -->
                 <xsl:call-template name="prepend-copy-append">
                     <xsl:with-param name="matching-rules" select="$matching-other"/>
-
                 </xsl:call-template>
             </xsl:when>
             <xsl:when test="$matching-this/@merged-condition">
@@ -218,22 +217,17 @@
                             </xsl:for-each>
                         </xsl:attribute>
                         <!--
-                            Don't copy
+                            Don't copy tag / attributes
                         -->
                         <xsl:call-template name="prepend-copy-append">
                             <xsl:with-param name="matching-rules" select="$matching-other"/>
-
                         </xsl:call-template>
                     </xsl:element>
                     <xsl:element name="xsl:otherwise">
                         <xsl:copy>
                             <!-- Theme attributes -->
-                            <xsl:apply-templates select="@*">
-
-                            </xsl:apply-templates>
-                            <xsl:call-template name="prepend-copy-append">
+                            <xsl:call-template name="attributes">
                                 <xsl:with-param name="matching-rules" select="$matching-other"/>
-
                             </xsl:call-template>
                         </xsl:copy>
                     </xsl:element>
@@ -242,17 +236,55 @@
             <xsl:otherwise>
                 <xsl:copy>
                     <!-- Theme attributes -->
-                    <xsl:apply-templates select="@*">
-                        
-                    </xsl:apply-templates>
-                    <xsl:call-template name="prepend-copy-append">
+                    <xsl:call-template name="attributes">
                         <xsl:with-param name="matching-rules" select="$matching-other"/>
-                    
                     </xsl:call-template>
                 </xsl:copy>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
+    <xsl:template name="attributes">
+        <xsl:param name="matching-rules"/>
+        <xsl:param name="rules"/>
+        <xsl:variable name="rule-name">attributes</xsl:variable>
+        <xsl:variable name="matching-this" select="$matching-rules[local-name()=$rule-name]"/>
+        <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
+        <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
+        
+        <xsl:apply-templates select="@*" />
+        
+        <xsl:for-each select="$matching-this[@action='copy']">
+            <xsl:variable name="attributes" select="concat(' ', normalize-space(@attributes), ' ')"/>
+            <xsl:choose>
+                <xsl:when test="@merged-condition">
+                    <xsl:element name="xsl:if">
+                        <xsl:attribute name="test"><xsl:value-of select="@merged-condition"/></xsl:attribute>
+                        <xsl:element name="xsl:apply-templates">
+                            <xsl:attribute name="select"><xsl:value-of select="@theme"/><xsl:choose>
+                                <xsl:when test="contains($attributes, ' * ')">/@*</xsl:when>
+                                <xsl:otherwise>/@*[contains('<xsl:value-of select="$attributes"/>', concat(' ', name(), ' '))]</xsl:otherwise>
+                            </xsl:choose></xsl:attribute>
+                        </xsl:element>
+                    </xsl:element>
+                </xsl:when>                
+                <xsl:otherwise>
+                    <xsl:element name="xsl:apply-templates">
+                        <xsl:attribute name="select"><xsl:value-of select="@theme"/><xsl:choose>
+                            <xsl:when test="contains($attributes, ' * ')">/@*</xsl:when>
+                            <xsl:otherwise>/@*[contains('<xsl:value-of select="$attributes"/>', concat(' ', name(), ' '))]</xsl:otherwise>
+                        </xsl:choose></xsl:attribute>
+                    </xsl:element>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
+
+        <!-- Content -->
+        <xsl:call-template name="prepend-copy-append">
+            <xsl:with-param name="matching-rules" select="$matching-other"/>
+        </xsl:call-template>
+    </xsl:template>
+
 
     <xsl:template name="prepend-copy-append">
         <xsl:param name="matching-rules"/>
