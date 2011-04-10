@@ -176,7 +176,7 @@
                     <xsl:attribute name="mode">
                         <xsl:value-of select="$themeid"/>
                     </xsl:attribute>
-                    <xsl:copy-of select="./*" />
+                    <xsl:apply-templates select="./*" />
                 </xsl:element>
                 <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
