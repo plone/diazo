@@ -26,21 +26,27 @@ def convert_css_selectors(rules):
     #XXX: There is a :root pseudo-class - http://www.w3.org/TR/css3-selectors/#root-pseudo
     # We may wish to add support to lxml.cssselect for it some day.
     for element in rules.xpath("//@*[namespace-uri()='%s']/.." % utils.namespaces['css']):
+        tag_localname = utils.localname(element.tag)
+        tag_namespace = utils.namespace(element.tag)        
+        css_prefix = element.attrib.get(utils.fullname(utils.namespaces['css'], 'prefix'), None)
         for name, value in element.attrib.items():
-            if name.startswith('{%s}' % utils.namespaces['css']):
-                localname = utils.localname(name)
-                if not value:
-                    element.attrib[localname] = ""
-                    continue
-                tag_localname = utils.localname(element.tag)
-                tag_namespace = utils.namespace(element.tag)
-                if (tag_namespace == utils.namespaces['diazo'] and localname in ('content', 'content-children', 'if-content') or
-                    element.tag == utils.fullname(utils.namespaces['xsl'], 'match')
-                    ):
-                    prefix = '//'
-                else:
-                    prefix = 'descendant-or-self::'                    
-                element.attrib[localname] = css_to_xpath(value, prefix=prefix)
+            if not name.startswith('{%s}' % utils.namespaces['css']):
+                continue
+            localname = utils.localname(name)
+            if localname == 'prefix':
+                continue
+            if not value:
+                element.attrib[localname] = ""
+                continue
+            if css_prefix is not None:
+                prefix = css_prefix
+            elif (tag_namespace == utils.namespaces['diazo'] and localname in ('content', 'content-children', 'if-content') or
+                (tag_namespace == utils.namespaces['xsl'] and localname in ('match',))
+                ):
+                prefix = '//'
+            else:
+                prefix = 'descendant-or-self::'                    
+            element.attrib[localname] = css_to_xpath(value, prefix=prefix)
 
     return rules
 
