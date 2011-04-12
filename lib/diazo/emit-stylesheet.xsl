@@ -65,7 +65,7 @@
                         <!-- When usebase is true, document() includes are resolved internally using the base tag -->
                         <xsl:text>&#10;    </xsl:text>
                         <xsl:element name="xsl:variable">
-                            <xsl:attribute name="name">base</xsl:attribute>
+                            <xsl:attribute name="name">diazo-base-document</xsl:attribute>
                             <xsl:text>/</xsl:text>
                         </xsl:element>
                         <xsl:text>&#10;</xsl:text>
@@ -74,13 +74,13 @@
                         <!-- otherwise use a hack to ensure the relative path is used -->
                         <xsl:text>&#10;    </xsl:text>
                         <xsl:element name="xsl:variable">
-                            <xsl:attribute name="name">base-rtf</xsl:attribute>
+                            <xsl:attribute name="name">diazo-base-document-rtf</xsl:attribute>
                         </xsl:element>
                         <xsl:text>&#10;</xsl:text>
                         <xsl:text>&#10;    </xsl:text>
                         <xsl:element name="xsl:variable">
-                            <xsl:attribute name="name">base</xsl:attribute>
-                            <xsl:attribute name="select">exsl:node-set($base-rtf)</xsl:attribute>
+                            <xsl:attribute name="name">diazo-base-document</xsl:attribute>
+                            <xsl:attribute name="select">exsl:node-set($diazo-base-document-rtf)</xsl:attribute>
                         </xsl:element>
                         <xsl:text>&#10;</xsl:text>
                     </xsl:otherwise>

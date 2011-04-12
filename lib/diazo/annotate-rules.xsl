@@ -109,7 +109,7 @@
     
     <xsl:template match="*[@method = 'document']" mode="include">
         <xsl:element name="xsl:copy-of">
-            <xsl:attribute name="select">document('<xsl:value-of select="@href"/>', $base)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
+            <xsl:attribute name="select">document('<xsl:value-of select="@href"/>', $diazo-base-document)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
         </xsl:element>
     </xsl:template>
     
