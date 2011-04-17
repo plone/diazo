@@ -1,0 +1,13 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    
+    <theme href="static/theme/index.html" />
+    
+    <replace content="/html/head/title" theme="/html/head/title" />
+    
+    <replace css:content="#content" css:theme="#content" if="$foo = 'bar'" />
+    <replace css:content="#extra" css:theme="#extra" href="/inc.html" />
+
+</rules>

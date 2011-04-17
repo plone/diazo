@@ -149,6 +149,11 @@ def test_suite():
         path = os.path.join(HERE, name)
         if not os.path.isdir(path):
             continue
+        
+        contentpath = os.path.join(path, 'content.html')
+        if not os.path.isfile(contentpath):
+            continue
+        
         cls = type('Test-%s'%name, (DiazoTestCase,), dict(testdir=path))
         suite.addTest(unittest.makeSuite(cls))
     return suite
