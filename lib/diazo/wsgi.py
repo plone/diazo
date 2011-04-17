@@ -26,7 +26,6 @@ def asbool(value):
     else:
         return bool(value)
 
-
 class FilesystemResolver(etree.Resolver):
     """Resolver for filesystem paths
     """
