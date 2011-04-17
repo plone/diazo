@@ -4,6 +4,10 @@ Changelog
 0.5 - unreleased
 ------------------
 
+* Added the ``wsgi`` module, which contains a WSGI middleware filter for
+  applying a Diazo themes, as well as a lower level one for applying an
+  XSLT transformation to HTML output.
+
 * Moved documentation from the README to the diazo.org website. See
   http://svn.plone.org/svn/plone/plone.org/diazo-docs/trunk.
 
