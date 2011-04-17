@@ -232,7 +232,7 @@ class DiazoMiddleware(object):
                  theme=None,
                  prefix=None,
                  includemode='document',
-                 debug=True,
+                 debug=False,
                  read_network=False,
                  update_content_length=True,
                  ignored_extensions=(
@@ -256,8 +256,8 @@ class DiazoMiddleware(object):
           standalone on the filesystem, even if at runtime its static
           resources are going to be served from some other location. For
           example, an ``<img src="images/foo.jpg" />`` can be turned into 
-          ``<img src="/static/images/foo.jpg" />`` with an ``absolute_prefix``
-          of "/static".
+          ``<img src="/static/images/foo.jpg" />`` with a ``prefix`` of
+          "/static".
         * ``includemode`` can be set to 'document', 'esi' or 'ssi' to change
           the way in which includes are processed
         * ``read_network``, should be set to True to allow resolving resources
