@@ -351,7 +351,7 @@
                     <xsl:element name="xsl:if">
                         <xsl:attribute name="test"><xsl:value-of select="@merged-condition"/></xsl:attribute>
                         <xsl:element name="xsl:apply-templates">
-                            <xsl:attribute name="select"><xsl:value-of select="@theme"/><xsl:choose>
+                            <xsl:attribute name="select"><xsl:value-of select="@content"/><xsl:choose>
                                 <xsl:when test="contains($attributes, ' * ')">/@*</xsl:when>
                                 <xsl:otherwise>/@*[contains('<xsl:value-of select="$attributes"/>', concat(' ', name(), ' '))]</xsl:otherwise>
                             </xsl:choose></xsl:attribute>
@@ -360,7 +360,7 @@
                 </xsl:when>                
                 <xsl:otherwise>
                     <xsl:element name="xsl:apply-templates">
-                        <xsl:attribute name="select"><xsl:value-of select="@theme"/><xsl:choose>
+                        <xsl:attribute name="select"><xsl:value-of select="@content"/><xsl:choose>
                             <xsl:when test="contains($attributes, ' * ')">/@*</xsl:when>
                             <xsl:otherwise>/@*[contains('<xsl:value-of select="$attributes"/>', concat(' ', name(), ' '))]</xsl:otherwise>
                         </xsl:choose></xsl:attribute>

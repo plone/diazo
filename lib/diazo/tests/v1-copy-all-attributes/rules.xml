@@ -6,7 +6,7 @@
     
     <copy
         attributes="*"
-        css:theme="body"
+        css:theme="div#wrapper"
         css:content="body"
         />
     
