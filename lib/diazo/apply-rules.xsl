@@ -357,7 +357,7 @@
                             </xsl:choose></xsl:attribute>
                         </xsl:element>
                     </xsl:element>
-                </xsl:when>                
+                </xsl:when>
                 <xsl:otherwise>
                     <xsl:element name="xsl:apply-templates">
                         <xsl:attribute name="select"><xsl:value-of select="@content"/><xsl:choose>
