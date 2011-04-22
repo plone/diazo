@@ -1,8 +1,12 @@
 Changelog
 =========
 
-0.5 - unreleased
+1.0b1 - 2011-04-22
 ------------------
+
+* Updated css namespace url to http://namespaces.plone.org/diazo/css
+
+* Added <replace content="...">...</replace> directive.
 
 * Added the ``wsgi`` module, which contains a WSGI middleware filter for
   applying a Diazo themes, as well as a lower level one for applying an

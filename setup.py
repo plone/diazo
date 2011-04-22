@@ -3,9 +3,9 @@ import os.path
 
 setup(
     name='diazo',
-    version='0.4b4',
+    version='1.0b1',
     description='''\
-Diazo implements a subset of Deliverance using a pure XSLT engine. With Diazo, you
+Diazo implements a Deliverance like language using a pure XSLT engine. With Diazo, you
 "compile" your theme and ruleset in one step, then use a superfast/simple
 transform on each request thereafter. Alternatively, compile your theme during
 development, check it into Subversion, and not touch Diazo during deployment.''',
