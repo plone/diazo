@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rules xmlns="http://namespaces.plone.org/diazo"
-       xmlns:css="http://namespaces.plone.org/diazo+css">
+       xmlns:css="http://namespaces.plone.org/diazo/css">
     <replace theme="/html/head/title" content="/html/head/title" />
     <copy css:theme="body div:nth-child(2) ul li:nth-child(3)" 
           css:content="body div:nth-child(2) > h2 ~ span[class='replace']" />

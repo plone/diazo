@@ -1,6 +1,6 @@
 <rules
     xmlns="http://namespaces.plone.org/diazo"
-    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
     >
     <!-- an exact path match where the supplied path has a trailing slash -->
     <copy

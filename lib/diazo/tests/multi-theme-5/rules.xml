@@ -1,6 +1,6 @@
 <rules
     xmlns="http://namespaces.plone.org/diazo"
-    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
     >
     
     <theme css:if-content="body.theme1" href="theme1.html"/>

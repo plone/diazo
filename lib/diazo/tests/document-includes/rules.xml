@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rules xmlns="http://namespaces.plone.org/diazo"
-       xmlns:css="http://namespaces.plone.org/diazo+css">
+       xmlns:css="http://namespaces.plone.org/diazo/css">
     <before theme="//*[@id='marker1']" content="//*[@id='external1']" href="extra.html"/>
     <replace theme="//*[@id='marker1']" content="//*[@id='external2']" href="extra.html"/>
     <after theme="//*[@id='marker1']" content="//*[@id='external3']" href="extra.html"/>
