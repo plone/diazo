@@ -88,6 +88,9 @@
             <xsl:apply-templates select="@*"/>
             <xsl:attribute name="action"><xsl:value-of select="local-name()"/></xsl:attribute>
             <xsl:attribute name="attributes"><xsl:value-of select="concat(' ', normalize-space(@attributes), ' ')"/></xsl:attribute>
+            <xsl:if test="local-name() = 'merge' and not(@separator)">
+              <xsl:attribute name="separator"><xsl:text> </xsl:text></xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates select="node()"/>
         </xsl:element>
     </xsl:template>

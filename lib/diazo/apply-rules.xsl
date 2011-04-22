@@ -343,7 +343,6 @@
             </xsl:otherwise>
         </xsl:choose>
 
-        
         <xsl:for-each select="$matching-this[@action='copy']">
             <xsl:variable name="attributes" select="concat(' ', normalize-space(@attributes), ' ')"/>
             <xsl:choose>
@@ -367,6 +366,37 @@
                     </xsl:element>
                 </xsl:otherwise>
             </xsl:choose>
+        </xsl:for-each>
+
+        <xsl:for-each select="$matching-this[@action='merge']">
+            <xsl:variable name="merged-condition" select="@merged-condition"/>
+            <xsl:variable name="content" select="@content"/>
+            <xsl:variable name="separator" select="@separator"/>
+            <xsl:variable name="attributes" select="str:tokenize(@attributes)"/>
+            <xsl:for-each select="$attributes">
+                <xsl:variable name="attribute" select="."/>
+                <xsl:variable name="context-attr" select="$context-attrs[name() = $attribute]"/>
+                <xsl:choose>
+                    <xsl:when test="$merged-condition">
+                        <xsl:element name="xsl:if">
+                            <xsl:attribute name="test"><xsl:value-of select="$merged-condition"/></xsl:attribute>
+                            <xsl:element name="xsl:attribute">
+                                <xsl:attribute name="name"><xsl:value-of select="."/></xsl:attribute><xsl:if test="$context-attr"><xsl:value-of select="$context-attr"/><xsl:value-of select="$separator"/></xsl:if><xsl:element name="xsl:value-of">
+                                    <xsl:attribute name="select"><xsl:value-of select="$content"/>/@<xsl:value-of select="."/></xsl:attribute>
+                                    </xsl:element>
+                            </xsl:element>
+                        </xsl:element>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:element name="xsl:attribute">
+                            <xsl:attribute name="name"><xsl:value-of select="."/></xsl:attribute>
+                            <xsl:if test="$context-attr"><xsl:value-of select="$context-attr"/><xsl:value-of select="$separator"/></xsl:if><xsl:element name="xsl:value-of">
+                                <xsl:attribute name="select"><xsl:value-of select="$content"/>/@<xsl:value-of select="."/></xsl:attribute>
+                              </xsl:element>
+                        </xsl:element>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
         </xsl:for-each>
 
         <!-- Content -->
