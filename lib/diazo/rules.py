@@ -35,8 +35,12 @@ fixup_themes     = pkg_xsl('fixup-themes.xsl')
 def update_namespace(rules_doc):
     """Convert old namespace to new namespace in place
     """
-    if rules_doc.xpath("//*[namespace-uri()='%s']" % namespaces['old']):
-        logger.warning('The %s namespace is deprecated, use %s instead.' % (namespaces['old'], namespaces['diazo']))
+    update = False
+    for ns in (namespaces['old1'], namespaces['old2'], namespaces['oldcss']):
+        if rules_doc.xpath("//*[namespace-uri()='%s'] | //@*[namespace-uri()='%s']" % (ns, ns)):
+            logger.warning('The %s namespace is deprecated, use %s instead.' % (ns, namespaces['diazo']))
+            update = True
+    if update:
         return update_transform(rules_doc)
     else:
         return rules_doc

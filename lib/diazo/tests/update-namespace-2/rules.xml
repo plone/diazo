@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules
+    xmlns="http://namespaces.plone.org/xdv"
+    xmlns:css="http://namespaces.plone.org/xdv+css">
+    <replace css:theme="#core" css:content="#core"/>
+    <copy css:theme="#portlet-wrapper" css:content="#portlet"/>
+</rules>
