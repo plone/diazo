@@ -5,7 +5,7 @@ Usage: %prog RULES
 RULES is a file defining a set of diazo rules in css syntax, e.g:
 
 <rules xmlns="http://namespaces.plone.org/diazo"
-       xmlns:css="http://namespaces.plone.org/diazo+css">
+       xmlns:css="http://namespaces.plone.org/diazo/css">
        <copy css:content="#content-wrapper" css:theme="#page-content"/>
 </rules>\
 """

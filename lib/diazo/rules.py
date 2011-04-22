@@ -36,9 +36,13 @@ def update_namespace(rules_doc):
     """Convert old namespace to new namespace in place
     """
     update = False
-    for ns in (namespaces['old1'], namespaces['old2'], namespaces['oldcss']):
-        if rules_doc.xpath("//*[namespace-uri()='%s'] | //@*[namespace-uri()='%s']" % (ns, ns)):
+    for ns in (namespaces['old1'], namespaces['old2']):
+        if rules_doc.xpath("//*[namespace-uri()='%s']" % ns):
             logger.warning('The %s namespace is deprecated, use %s instead.' % (ns, namespaces['diazo']))
+            update = True
+    for ns in (namespaces['oldcss1'], namespaces['oldcss2']):
+        if rules_doc.xpath("//@*[namespace-uri()='%s']" % ns):
+            logger.warning('The %s namespace is deprecated, use %s instead.' % (ns, namespaces['css']))
             update = True
     if update:
         return update_transform(rules_doc)

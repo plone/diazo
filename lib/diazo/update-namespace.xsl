@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:diazo="http://namespaces.plone.org/diazo"
-    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
     >
 
     <!-- Update from old to new namespace -->
@@ -27,6 +27,10 @@
     </xsl:template>
 
     <xsl:template match="@*[namespace-uri() = 'http://namespaces.plone.org/xdv+css']">
+        <xsl:attribute name="css:{local-name()}"><xsl:value-of select="."/></xsl:attribute>
+    </xsl:template>
+
+    <xsl:template match="@*[namespace-uri() = 'http://namespaces.plone.org/diazo+css']">
         <xsl:attribute name="css:{local-name()}"><xsl:value-of select="."/></xsl:attribute>
     </xsl:template>
 

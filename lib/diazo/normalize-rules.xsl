@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:diazo="http://namespaces.plone.org/diazo"
-    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:str="http://exslt.org/strings"
     >

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:css="http://namespaces.plone.org/diazo+css"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:dv="http://namespaces.plone.org/diazo"
     xmlns:dyn="http://exslt.org/dynamic"
     xmlns:esi="http://www.edge-delivery.org/esi/1.0"
