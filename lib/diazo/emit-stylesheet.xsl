@@ -19,6 +19,8 @@
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
+    <xsl:variable name="replace-content-rules" select="//dv:replace[@content and not(@theme)]"/>
+    <xsl:variable name="replace-content-children-rules" select="//dv:replace[@content-children and not(@theme)]"/>
     <xsl:variable name="inline-xsl" select="/dv:rules/xsl:*"/>
     <xsl:variable name="themes" select="//dv:theme"/>
     <xsl:variable name="conditional-theme" select="//dv:theme[@merged-condition]"/>
@@ -187,6 +189,12 @@
             <!-- If there are any <strip @content> rules, put it in 
             here. -->
             <xsl:call-template name="strip-content"/>
+            <!-- If there are any <replace @content> rules, put it in 
+            here. -->
+            <xsl:call-template name="replace-content"/>
+            <!-- If there are any <replace @content-children> rules, put it in 
+            here. -->
+            <xsl:call-template name="replace-content-children"/>
             <!-- Copy the inline xsl from rules (usually xsl:output) -->
             <xsl:for-each select="$inline-xsl">
                 <xsl:text>&#10;    </xsl:text>
@@ -317,6 +325,88 @@
                     </xsl:otherwise>
                 </xsl:choose>
             <xsl:text>&#10;    </xsl:text>
+            </xsl:element>
+            <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template name="replace-content">
+        <xsl:for-each select="$replace-content-rules">
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:call-template name="debug-comment" select="."/>
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:template">
+                <xsl:attribute name="match">
+                    <xsl:value-of select="@content"/>
+                </xsl:attribute>
+                <xsl:choose>
+                    <xsl:when test="@merged-condition">
+                        <xsl:text>&#10;        </xsl:text>
+                        <xsl:element name="xsl:choose">
+                            <xsl:text>&#10;            </xsl:text>
+                            <xsl:element name="xsl:when">
+                                <xsl:attribute name="test"><xsl:value-of select="@merged-condition"/></xsl:attribute>
+                                <xsl:copy-of select="node()"/>
+                            </xsl:element>
+                            <xsl:text>&#10;            </xsl:text>
+                            <xsl:element name="xsl:otherwise">
+                                <!-- Condition was false, so include normally -->
+                                <xsl:call-template name="include-content"/>
+                                <xsl:text>&#10;            </xsl:text>
+                            </xsl:element>
+                            <xsl:text>&#10;        </xsl:text>
+                        </xsl:element>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy-of select="node()"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:element>
+            <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template name="replace-content-children">
+        <xsl:for-each select="$replace-content-children-rules">
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:call-template name="debug-comment" select="."/>
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:template">
+                <xsl:attribute name="match">
+                    <xsl:value-of select="@content-children"/>
+                </xsl:attribute>
+                <xsl:choose>
+                    <xsl:when test="@merged-condition">
+                        <xsl:text>&#10;        </xsl:text>
+                        <xsl:element name="xsl:choose">
+                            <xsl:text>&#10;            </xsl:text>
+                            <xsl:element name="xsl:when">
+                                <xsl:attribute name="test"><xsl:value-of select="@merged-condition"/></xsl:attribute>
+                                <xsl:element name="xsl:copy">
+                                    <xsl:element name="xsl:apply-templates">
+                                        <xsl:attribute name="select">@*</xsl:attribute>
+                                    </xsl:element>
+                                    <xsl:copy-of select="node()"/>
+                                </xsl:element>
+                            </xsl:element>
+                            <xsl:text>&#10;            </xsl:text>
+                            <xsl:element name="xsl:otherwise">
+                                <!-- Condition was false, so include normally -->
+                                <xsl:call-template name="include-content"/>
+                                <xsl:text>&#10;            </xsl:text>
+                            </xsl:element>
+                            <xsl:text>&#10;        </xsl:text>
+                        </xsl:element>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:element name="xsl:copy">
+                            <xsl:element name="xsl:apply-templates">
+                                <xsl:attribute name="select">@*</xsl:attribute>
+                            </xsl:element>
+                            <xsl:copy-of select="node()"/>
+                        </xsl:element>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:element>
             <xsl:text>&#10;</xsl:text>
         </xsl:for-each>

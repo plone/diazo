@@ -4,9 +4,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
     
-    <replace css:content="#you-are-here">
-        <span id="prompt">Location:</span>
-    </replace>
+    <replace css:content-children="#you-are-here">Location:</replace>
     
     <replace
         css:theme="#breadcrumbs"

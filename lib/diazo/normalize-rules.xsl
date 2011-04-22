@@ -21,7 +21,7 @@
                 <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="@*"/>
-            <xsl:if test="@content-children">
+            <xsl:if test="@content-children and not(local-name() = 'replace' and not(@theme))">
                 <xsl:attribute name="content"><xsl:value-of select="@content-children"/>/node()</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="node()"/>
