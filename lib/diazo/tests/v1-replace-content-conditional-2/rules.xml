@@ -1,0 +1,21 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+    
+    <replace css:content="#you-are-here" css:if-content="body #not-a-match">
+        <span id="prompt">Location:</span>
+    </replace>
+    
+    <replace
+        css:theme="#breadcrumbs"
+        css:content="#breadcrumbs"
+        />
+    
+    <replace
+        css:theme="#target-content"
+        css:content="#source-content"
+        />
+    
+</rules>
