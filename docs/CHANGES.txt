@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0b2
+-----
+
+* Fix a bug whereby a theme could not be loaded from a network location
+  even if read_network was enabled.
+
 1.0b1 - 2011-04-22
 ------------------
 
