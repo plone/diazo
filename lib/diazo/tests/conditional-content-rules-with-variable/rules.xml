@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+    <xsl:variable name="test" select="false()"/>
+    <drop content="//p" if="$test"/>
+    <strip content="//p" if="$test"/>
+    <replace content="//p" if="$test"/>
+    <replace content-children="//p" if="$test"/>
+
+</rules>

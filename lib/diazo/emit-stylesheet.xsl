@@ -9,7 +9,7 @@
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    exclude-result-prefixes="dv dyn exsl xml">
+    exclude-result-prefixes="dv exsl xml">
 
     <xsl:param name="defaultsurl">defaults.xsl</xsl:param>
     <xsl:param name="usebase"/>
@@ -270,7 +270,22 @@
             <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">
-                    <xsl:value-of select="@content"/><xsl:if test="@merged-condition">[<xsl:value-of select="@merged-condition"/>]</xsl:if>
+                    <xsl:value-of select="@content"/>
+                    <xsl:if test="@merged-condition">
+                        <xsl:text>[</xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="contains(@merged-condition, '$')">
+                                <!-- variable references are not allowed in template match patterns -->
+                                <xsl:text>dyn:evaluate(</xsl:text>
+                                <xsl:call-template name="escape-string">
+                                    <xsl:with-param name="string" select="@merged-condition"/>
+                                </xsl:call-template>
+                                <xsl:text>)</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise><xsl:value-of select="@merged-condition"/></xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:text>]</xsl:text>
+                    </xsl:if>
                 </xsl:attribute>
                 <xsl:text>&#10;    </xsl:text>
             </xsl:element>
@@ -285,7 +300,22 @@
             <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">
-                    <xsl:value-of select="@content"/><xsl:if test="@merged-condition">[<xsl:value-of select="@merged-condition"/>]</xsl:if>
+                    <xsl:value-of select="@content"/>
+                    <xsl:if test="@merged-condition">
+                        <xsl:text>[</xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="contains(@merged-condition, '$')">
+                                <!-- variable references are not allowed in template match patterns -->
+                                <xsl:text>dyn:evaluate(</xsl:text>
+                                <xsl:call-template name="escape-string">
+                                    <xsl:with-param name="string" select="@merged-condition"/>
+                                </xsl:call-template>
+                                <xsl:text>)</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise><xsl:value-of select="@merged-condition"/></xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:text>]</xsl:text>
+                    </xsl:if>
                 </xsl:attribute>
                 <xsl:text>&#10;        </xsl:text>
                 <xsl:element name="xsl:apply-templates">
@@ -304,7 +334,22 @@
             <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">
-                    <xsl:value-of select="@content"/><xsl:if test="@merged-condition">[<xsl:value-of select="@merged-condition"/>]</xsl:if>
+                    <xsl:value-of select="@content"/>
+                    <xsl:if test="@merged-condition">
+                        <xsl:text>[</xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="contains(@merged-condition, '$')">
+                                <!-- variable references are not allowed in template match patterns -->
+                                <xsl:text>dyn:evaluate(</xsl:text>
+                                <xsl:call-template name="escape-string">
+                                    <xsl:with-param name="string" select="@merged-condition"/>
+                                </xsl:call-template>
+                                <xsl:text>)</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise><xsl:value-of select="@merged-condition"/></xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:text>]</xsl:text>
+                    </xsl:if>
                 </xsl:attribute>
                 <xsl:copy-of select="node()"/>
             </xsl:element>
@@ -319,7 +364,22 @@
             <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match">
-                    <xsl:value-of select="@content-children"/><xsl:if test="@merged-condition">[<xsl:value-of select="@merged-condition"/>]</xsl:if>
+                    <xsl:value-of select="@content-children"/>
+                    <xsl:if test="@merged-condition">
+                        <xsl:text>[</xsl:text>
+                        <xsl:choose>
+                            <!-- variable references are not allowed in template match patterns -->
+                            <xsl:when test="contains(@merged-condition, '$')">
+                                <xsl:text>dyn:evaluate(</xsl:text>
+                                <xsl:call-template name="escape-string">
+                                    <xsl:with-param name="string" select="@merged-condition"/>
+                                </xsl:call-template>
+                                <xsl:text>)</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise><xsl:value-of select="@merged-condition"/></xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:text>]</xsl:text>
+                    </xsl:if>
                 </xsl:attribute>
                 <xsl:element name="xsl:copy">
                     <xsl:element name="xsl:apply-templates">
@@ -343,6 +403,29 @@
         </xsl:element>
     </xsl:template>
 
+    <xsl:template name="escape-string">
+        <xsl:param name="string"/>
+        <xsl:param name="concat" select="true()"/>
+        <xsl:variable name="quote">"</xsl:variable>
+        <xsl:variable name="apos">'</xsl:variable>
+        <xsl:choose>
+            <xsl:when test="not(contains($string, $apos))">'<xsl:value-of select="$string"/>'</xsl:when>
+            <xsl:when test="not(contains($string, $quote))">"<xsl:value-of select="$string"/>"</xsl:when>
+            <xsl:otherwise>
+                <xsl:if test="$concat">concat(</xsl:if>
+                <xsl:call-template name="escape-string">
+                    <xsl:with-param name="string" select="substring-before($string, $apos)"/>
+                    <xsl:with-param name="concat" select="false()"/>
+                </xsl:call-template>
+                <xsl:text>, "'", </xsl:text>
+                <xsl:call-template name="escape-string">
+                    <xsl:with-param name="string" select="substring-after($string, $apos)"/>
+                    <xsl:with-param name="concat" select="false()"/>
+                </xsl:call-template>
+                <xsl:if test="$concat">)</xsl:if>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
     <!--
         Debugging support

@@ -4,6 +4,9 @@ Changelog
 1.0b2
 -----
 
+* Enable use of variables/parameters in drop/strip/replace content rule
+  conditions.
+
 * Fix a bug whereby a theme could not be loaded from a network location
   even if read_network was enabled.
 
