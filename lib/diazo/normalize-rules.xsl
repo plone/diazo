@@ -91,6 +91,9 @@
             <xsl:if test="local-name() = 'merge' and not(@separator)">
               <xsl:attribute name="separator"><xsl:text> </xsl:text></xsl:attribute>
             </xsl:if>
+            <xsl:if test="@href and not(@method)">
+                <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates select="node()"/>
         </xsl:element>
     </xsl:template>

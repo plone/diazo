@@ -47,7 +47,6 @@
     <xsl:template match="diazo:*[@theme]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
-            <diazo:synthetic>
                 <xsl:choose>
                     <xsl:when test="node()">
                         <xsl:if test="@content">
@@ -60,13 +59,14 @@
                                 <xsl:with-param name="message">@href attribute and inline content not allowed in same rule</xsl:with-param>
                             </xsl:call-template>
                         </xsl:if>
-                        <xsl:copy-of select="node()"/>
+                        <diazo:synthetic>
+                            <xsl:copy-of select="node()"/>
+                        </diazo:synthetic>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:apply-templates select="." mode="include"/>
                     </xsl:otherwise>
                 </xsl:choose>
-            </diazo:synthetic>
             <diazo:matches>
                 <xsl:variable name="themexpath" select="@theme"/>
                 <xsl:for-each select="//diazo:theme">
@@ -97,6 +97,7 @@
     </xsl:template>        
 
     <xsl:template match="*[not(@href)]" mode="include" priority="5">
+      <diazo:synthetic>
         <xsl:element name="xsl:apply-templates">
             <xsl:attribute name="select">
                 <xsl:value-of select="@content"/>
@@ -105,36 +106,52 @@
                 <xsl:attribute name="mode">raw</xsl:attribute>
             </xsl:if>
         </xsl:element>
+      </diazo:synthetic>
     </xsl:template>
     
     <xsl:template match="*[@method = 'document']" mode="include">
+      <diazo:synthetic>
         <xsl:element name="xsl:copy-of">
             <xsl:attribute name="select">document('<xsl:value-of select="@href"/>', $diazo-base-document)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
         </xsl:element>
+      </diazo:synthetic>
     </xsl:template>
     
     <xsl:template match="*[@method = 'ssi' or @method = 'ssiwait']" mode="include">
         <!-- Assumptions:
             * When using ssiprefix, @href should be an absolute local path (i.e.  /foo/bar)
         -->
+      <diazo:synthetic>
         <xsl:variable name="content_quoted" select="str:encode-uri(@content, false())"/>
         <xsl:element name="xsl:comment">#include  virtual="<xsl:value-of select="$ssiprefix"/><xsl:choose>
             <xsl:when test="not(@content)"><xsl:value-of select="@href"/></xsl:when>
             <xsl:when test="contains(@href, '?')"><xsl:value-of select="concat(str:replace(@href, '?', concat($ssisuffix, '?')), $ssiquerysuffix, $content_quoted)"/></xsl:when>
             <xsl:otherwise><xsl:value-of select="concat(@href, $ssisuffix, '?', $ssiquerysuffix, $content_quoted)"/></xsl:otherwise>
             </xsl:choose>"<xsl:if test="@method = 'ssiwait'"> wait="yes"</xsl:if></xsl:element>
+      </diazo:synthetic>
     </xsl:template>
     
     <xsl:template match="*[@method = 'esi']" mode="include">
         <!-- Assumptions:
             * When using esiprefix, @href should be an absolute local path (i.e.  /foo/bar)
         -->
+      <diazo:synthetic>
         <xsl:variable name="content_quoted" select="str:encode-uri(@content, false())"/>
         <esi:include><xsl:attribute name="src"><xsl:choose>
             <xsl:when test="not(@content)"><xsl:value-of select="@href"/></xsl:when>
             <xsl:when test="contains(@href, '?')"><xsl:value-of select="concat(str:replace(@href, '?', concat($esisuffix, '?')), $esiquerysuffix, $content_quoted)"/></xsl:when>
             <xsl:otherwise><xsl:value-of select="concat(@href, $esisuffix, '?', $esiquerysuffix, $content_quoted)"/></xsl:otherwise>
             </xsl:choose></xsl:attribute></esi:include>
+      </diazo:synthetic>
+    </xsl:template>
+    
+    <xsl:template match="diazo:attributes[@href]" mode="include">
+        <xsl:if test="@method != 'document'">
+            <xsl:call-template name="error-message" select=".">
+                <xsl:with-param name="message">Attributes may only be included from external documents with 'document' include mode.</xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
+        <xsl:attribute name="content">document('<xsl:value-of select="@href"/>', $diazo-base-document)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
     </xsl:template>
     
     <xsl:template match="*" mode="include">

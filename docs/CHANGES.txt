@@ -4,6 +4,8 @@ Changelog
 1.0b2
 -----
 
+* Enable attribute to be included from external documents.
+
 * Enable use of variables/parameters in drop/strip/replace content rule
   conditions.
 
