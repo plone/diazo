@@ -24,9 +24,9 @@
 
     <xsl:template match="diazo:drop[@content]">
         <xsl:if test="@theme">
-            <xsl:message terminate="yes">
-                ERROR: @theme and @content attributes not allowed in same drop rule
-            </xsl:message>
+            <xsl:call-template name="error-message" select=".">
+                <xsl:with-param name="message">@theme and @content attributes not allowed in same drop rule</xsl:with-param>
+            </xsl:call-template>
         </xsl:if>
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
@@ -35,9 +35,9 @@
 
     <xsl:template match="diazo:strip[@content]">
         <xsl:if test="@theme">
-            <xsl:message terminate="yes">
-                ERROR: @theme and @content attributes not allowed in same strip rule
-            </xsl:message>
+            <xsl:call-template name="error-message" select=".">
+                <xsl:with-param name="message">@theme and @content attributes not allowed in same strip rule</xsl:with-param>
+            </xsl:call-template>
         </xsl:if>
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
@@ -51,14 +51,14 @@
                 <xsl:choose>
                     <xsl:when test="node()">
                         <xsl:if test="@content">
-                            <xsl:message terminate="yes">
-                                ERROR: @content attribute and inline content not allowed in same rule
-                            </xsl:message>
+                            <xsl:call-template name="error-message" select=".">
+                                <xsl:with-param name="message">@content attribute and inline content not allowed in same rule</xsl:with-param>
+                            </xsl:call-template>
                         </xsl:if>
                         <xsl:if test="@href">
-                            <xsl:message terminate="yes">
-                                ERROR: @href attribute and inline content not allowed in same rule
-                            </xsl:message>
+                            <xsl:call-template name="error-message" select=".">
+                                <xsl:with-param name="message">@href attribute and inline content not allowed in same rule</xsl:with-param>
+                            </xsl:call-template>
                         </xsl:if>
                         <xsl:copy-of select="node()"/>
                     </xsl:when>
@@ -138,9 +138,21 @@
     </xsl:template>
     
     <xsl:template match="*" mode="include">
-        <xsl:message terminate="yes">
-            ERROR: Unknown includemode or @method attribute
+        <xsl:call-template name="error-message" select=".">
+            <xsl:with-param name="message">Unknown includemode or @method attribute</xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+
+    <!--
+        Debugging support
+    -->
+
+    <xsl:template name="error-message">
+        <xsl:param name="message"/>
+        <xsl:message terminate="yes">ERROR: <xsl:value-of select="$message"/>&#10;    RULE: &lt;<xsl:value-of select="name()"/><xsl:for-each select="@*">
+            <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;
         </xsl:message>
     </xsl:template>
+
 
 </xsl:stylesheet>
