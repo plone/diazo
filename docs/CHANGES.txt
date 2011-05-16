@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b3 - unreleased
+1.0b3 - 2011-05-16
 ------------------
 
 * Filter out additional xmlns with notheme.
