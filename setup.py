@@ -17,6 +17,7 @@ development, check it into Subversion, and not touch Diazo during deployment.'''
     zip_safe=False,
     author='Paul Everitt, Laurence Rowe and Martin Aspeli.',
     author_email='laurence@lrowe.co.uk',
+    url="http://diazo.org",
     license='New BSD',
     install_requires=[
         'setuptools',
