@@ -1,0 +1,18 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+    
+    <xsl:variable name="foo">bar</xsl:variable>
+    
+    <theme href="theme.html" />
+    
+    <notheme if="$foo = 'bar'" />
+    
+    <replace
+        css:theme="#alpha"
+        css:content="#one"
+        />
+    
+</rules>

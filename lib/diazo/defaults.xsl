@@ -33,4 +33,8 @@
         <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')" disable-output-escaping="yes"/>
     </xsl:template>
 
+    <xsl:template match="/html/@xmlns">
+        <!-- Filter out -->
+    </xsl:template>
+
 </xsl:stylesheet>
