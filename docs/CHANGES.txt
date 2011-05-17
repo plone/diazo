@@ -4,6 +4,8 @@ Changelog
 1.0b4 - unreleased
 ------------------
 
+* Implement drop theme-children.
+
 1.0b3 - 2011-05-16
 ------------------
 

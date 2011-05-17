@@ -63,6 +63,9 @@
                             <xsl:copy-of select="node()"/>
                         </diazo:synthetic>
                     </xsl:when>
+                    <xsl:when test="@action='drop-theme-children'">
+                        <diazo:synthetic/>
+                    </xsl:when>
                     <xsl:otherwise>
                         <xsl:apply-templates select="." mode="include"/>
                     </xsl:otherwise>

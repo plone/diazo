@@ -69,7 +69,7 @@
         </xsl:element>
     </xsl:template>
 
-    <xsl:template match="//diazo:rules/diazo:replace[@theme-children]">
+    <xsl:template match="//diazo:rules/diazo:replace[@theme-children]|//diazo:rules/diazo:drop[@theme-children]">
         <xsl:element name="diazo:copy">
             <xsl:if test="@href and not(@method)">
                 <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>
@@ -80,6 +80,14 @@
                 <xsl:attribute name="content"><xsl:value-of select="@content-children"/>/node()</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="node()"/>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="//diazo:rules/diazo:drop[@theme-children]">
+        <xsl:element name="diazo:copy">
+            <xsl:apply-templates select="@*"/>
+            <xsl:attribute name="action">drop-theme-children</xsl:attribute>
+            <xsl:attribute name="theme"><xsl:value-of select="@theme-children"/></xsl:attribute>
         </xsl:element>
     </xsl:template>
 
