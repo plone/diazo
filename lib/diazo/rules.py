@@ -199,6 +199,9 @@ def main():
         read_network=options.read_network,
         stop=options.stop,
         )
+    root = rules_doc.getroot()
+    if not root.tail:
+        root.tail = '\n'
     rules_doc.write(options.output, pretty_print=options.pretty_print)
 
 if __name__ == '__main__':

@@ -163,8 +163,10 @@ def main():
         read_network=options.read_network,
         xsl_params=xsl_params
         )
+    root = output_xslt.getroot()
+    if not root.tail:
+        root.tail = '\n'
     output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
-    options.output.write('\n')
 
 if __name__ == '__main__':
     main()
