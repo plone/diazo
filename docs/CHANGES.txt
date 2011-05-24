@@ -1,10 +1,10 @@
 Changelog
 =========
 
-1.0b5 - unreleased
-------------------
+1.0rc1 - 2011-05-24
+-------------------
 
-* Fix diazocompiler -o option.
+* Fix diazocompiler --output option.
 
 1.0b4 - 2011-05-17
 ------------------
