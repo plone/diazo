@@ -4,6 +4,8 @@ Changelog
 1.0rc2 - unreleased
 -------------------
 
+* Add doctype option to wsgi middleware to support HTML5 output.
+
 * Fix line endings for included external content.
 
 1.0rc1 - 2011-05-24

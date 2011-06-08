@@ -88,6 +88,9 @@ XSLT_HTML = """\
 </xsl:stylesheet>
 """
 
+# Note that this can only work with an html output method. Setting the doctype
+# on the middleware along with the xml output method and an XHTML 1.0 doctype
+# in the stylesheet is required for XHTML compatible output.
 XSLT_HTML5 = """\
 <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
@@ -279,6 +282,26 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
         
         self.assertEqual(response.headers['Content-Type'], 'application/xhtml+xml')
+    
+    def test_doctype_html5(self):
+        from lxml import etree
+        
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+        
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html')]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT_XHTML),
+                             doctype="<!DOCTYPE html>")
+        
+        request = Request.blank('/')
+        response = request.get_response(app)
+        
+        self.assertTrue(response.body.startswith("<!DOCTYPE html>\n<html")) 
     
     def test_ignored_extension(self):
         from lxml import etree
@@ -706,6 +729,23 @@ class TestDiazoMiddleware(unittest.TestCase):
         self.assertTrue('<div id="content">Content content</div>' in response.body)
         self.assertFalse('<div id="content">Theme content</div>' in response.body)
         self.assertTrue('<title>Transformed</title>' in response.body)
+    
+    def test_doctype_html5(self):
+        from diazo.wsgi import DiazoMiddleware
+        from webob import Request
+        
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html')]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = DiazoMiddleware(application, {}, testfile('simple_transform.xml'),
+                              doctype="<!DOCTYPE html>")
+        request = Request.blank('/')
+        response = request.get_response(app)
+        
+        self.assertTrue(response.body.startswith("<!DOCTYPE html>\n<html")) 
     
     def test_with_theme(self):
         from diazo.wsgi import DiazoMiddleware

@@ -98,6 +98,7 @@ class XSLTMiddleware(object):
                      'jar', 'xls', 'bmp', 'tif', 'tga', 'hqx', 'avi',
                     ),
                  environ_param_map=None,
+                 doctype=None,
                  **params
     ):
         """Initialise, giving a filename or parsed XSLT tree.
@@ -120,6 +121,8 @@ class XSLTMiddleware(object):
         * ``environ_param_map`` can be set to a dict of environ keys to
           parameter names. The corresponding values will then be sent to the
           transformation as parameters.
+        * ``doctype``, can be set to a string which will replace that set in
+          the XSLT, for example, "<!DOCTYPE html>".
          
         Additional keyword arguments will be passed to the transformation as
         parameters.
@@ -144,6 +147,7 @@ class XSLTMiddleware(object):
         
         self.environ_param_map = environ_param_map or {}
         self.params = params
+        self.doctype = doctype
     
     def __call__(self, environ, start_response):
         request = Request(environ)
@@ -175,7 +179,7 @@ class XSLTMiddleware(object):
             serializer = etree.tostring
             response.headers['Content-Type'] = 'application/xhtml+xml'
         
-        app_iter = XMLSerializer(tree, serializer=serializer)
+        app_iter = XMLSerializer(tree, serializer=serializer, doctype=self.doctype)
         
         # Calculate the content length - we still return the parsed tree
         # so that other middleware could avoid having to re-parse, even if
@@ -242,6 +246,7 @@ class DiazoMiddleware(object):
                      'jar', 'xls', 'bmp', 'tif', 'tga', 'hqx', 'avi',
                     ),
                 environ_param_map=None,
+                doctype=None,
                 **params
     ):
         """Create the middleware. The parameters are:
@@ -268,6 +273,9 @@ class DiazoMiddleware(object):
           is going to set the content length instead.
         * ``ignored_extensions`` can be set to a list of filename extensions
           for which the transformation should never be applied
+        * ``doctype``, can be set to a string which will replace the default
+          XHTML 1.0 transitional Doctype or that set in the Diazo theme. For
+          example, "<!DOCTYPE html>".
         
         Additional keyword arguments will be passed to the theme
         transformation as parameters.
@@ -284,6 +292,7 @@ class DiazoMiddleware(object):
         self.read_network = asbool(read_network)
         self.update_content_length = asbool(update_content_length)
         self.ignored_extensions = ignored_extensions
+        self.doctype = doctype
         
         self.access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=read_network, write_network=False)
         self.transform_middleware = None
@@ -344,6 +353,7 @@ class DiazoMiddleware(object):
                 update_content_length=self.update_content_length,
                 ignored_extensions=self.ignored_extensions,
                 environ_param_map=self.environ_param_map,
+                doctype=self.doctype,
                 **self.params
             )
     
