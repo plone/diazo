@@ -52,7 +52,7 @@ XSLT_XHTML = """\
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     version="1.0"
     exclude-result-prefixes="xhtml">
-    <xsl:output method="xml" indent="no" omit-xml-declaration="yes" media-type="text/html" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
+    <xsl:output method="xml" indent="no" omit-xml-declaration="yes" media-type="application/xhtml+xml" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
     <xsl:template match="/">
     <html>
         <head>
@@ -158,7 +158,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
         
-        self.assertEqual(response.headers['Content-Type'], 'text/html')
+        self.assertEqual(response.headers['Content-Type'], 'text/html; charset=UTF-8')
         self.assertTrue('<div id="content">Content content</div>' in response.body)
         self.assertTrue('<title>Transformed</title>' in response.body)
     
@@ -179,7 +179,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
         
-        self.assertEqual(response.headers['Content-Type'], 'text/html')
+        self.assertEqual(response.headers['Content-Type'], 'text/html; charset=UTF-8')
         self.assertTrue('<div id="content">Content content</div>' in response.body)
         self.assertTrue('<title>Transformed</title>' in response.body)
     
@@ -262,7 +262,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
         
-        self.assertEqual(response.headers['Content-Type'], 'text/html')
+        self.assertEqual(response.headers['Content-Type'], 'text/html; charset=UTF-8')
     
     def test_doctype_xhtml(self):
         from lxml import etree
@@ -281,7 +281,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
         
-        self.assertEqual(response.headers['Content-Type'], 'application/xhtml+xml')
+        self.assertEqual(response.headers['Content-Type'], 'application/xhtml+xml; charset=UTF-8')
     
     def test_doctype_html5(self):
         from lxml import etree

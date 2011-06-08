@@ -99,6 +99,7 @@ class XSLTMiddleware(object):
                     ),
                  environ_param_map=None,
                  doctype=None,
+                 content_type=None,
                  **params
     ):
         """Initialise, giving a filename or parsed XSLT tree.
@@ -123,6 +124,8 @@ class XSLTMiddleware(object):
           transformation as parameters.
         * ``doctype``, can be set to a string which will replace that set in
           the XSLT, for example, "<!DOCTYPE html>".
+        * ``content_type``, can be set to a string which will be set in the
+          Content-Type header. By default it is inferred from the stylesheet.
          
         Additional keyword arguments will be passed to the transformation as
         parameters.
@@ -136,6 +139,24 @@ class XSLTMiddleware(object):
             source = xslt_file.read()
             tree = etree.fromstring(source)
             xslt_file.close()
+        
+        if content_type is None:
+            mediatype = tree.xpath('/xsl:stylesheet/xsl:output/@media-type',
+                                   namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"))
+            if mediatype:
+                content_type = mediatype[-1]
+            else:
+                method = tree.xpath('/xsl:stylesheet/xsl:output/@method',
+                                    namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"))
+                if method:
+                    method = method[-1]
+                    if method.lower() == 'html':
+                        content_type = 'text/html'
+                    elif method.lower() == 'text':
+                        content_type = 'text/plain'
+                    elif method.lower() == 'xml':
+                        content_type = 'text/xml'
+        self.content_type = content_type
         
         self.read_network = asbool(read_network)
         self.access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=read_network, write_network=False)
@@ -171,15 +192,20 @@ class XSLTMiddleware(object):
         app_iter = getHTMLSerializer(app_iter)
         tree = self.transform(app_iter.tree, **params)
         
-        # Set content type and choose XHTML or HTML serializer
-        serializer = html.tostring
-        response.headers['Content-Type'] = 'text/html'
+        # Set content type
+        # Unfortunately lxml does not expose docinfo.mediaType
+        content_type = self.content_type
+        if content_type is None:
+            if tree.getroot().tag == 'html':
+                content_type = 'text/html'
+            else:
+                content_type = 'text/xml'
+        encoding = tree.docinfo.encoding
+        if not encoding:
+            encoding = "UTF-8"
+        response.headers['Content-Type'] = '%s; charset=%s' % (content_type, encoding)
         
-        if tree.docinfo.doctype and 'XHTML' in tree.docinfo.doctype:
-            serializer = etree.tostring
-            response.headers['Content-Type'] = 'application/xhtml+xml'
-        
-        app_iter = XMLSerializer(tree, serializer=serializer, doctype=self.doctype)
+        app_iter = XMLSerializer(tree, doctype=self.doctype)
         
         # Calculate the content length - we still return the parsed tree
         # so that other middleware could avoid having to re-parse, even if
@@ -247,6 +273,7 @@ class DiazoMiddleware(object):
                     ),
                 environ_param_map=None,
                 doctype=None,
+                content_type=None,
                 **params
     ):
         """Create the middleware. The parameters are:
@@ -276,6 +303,8 @@ class DiazoMiddleware(object):
         * ``doctype``, can be set to a string which will replace the default
           XHTML 1.0 transitional Doctype or that set in the Diazo theme. For
           example, "<!DOCTYPE html>".
+        * ``content_type``, can be set to a string which will be set in the
+          Content-Type header. By default it is inferred from the stylesheet.
         
         Additional keyword arguments will be passed to the theme
         transformation as parameters.
@@ -293,6 +322,7 @@ class DiazoMiddleware(object):
         self.update_content_length = asbool(update_content_length)
         self.ignored_extensions = ignored_extensions
         self.doctype = doctype
+        self.content_type = content_type
         
         self.access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=read_network, write_network=False)
         self.transform_middleware = None
@@ -354,6 +384,7 @@ class DiazoMiddleware(object):
                 ignored_extensions=self.ignored_extensions,
                 environ_param_map=self.environ_param_map,
                 doctype=self.doctype,
+                content_type=self.content_type,
                 **self.params
             )
     
