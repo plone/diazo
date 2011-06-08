@@ -2,4 +2,6 @@
 <rules xmlns="http://namespaces.plone.org/diazo"
        xmlns:css="http://namespaces.plone.org/diazo/css">
     <copy css:theme="#target" css:content="body > *"/>
+    <copy css:theme="#extra" css:content="body > *" href="extra.html"/>
+
 </rules>

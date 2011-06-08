@@ -114,8 +114,9 @@
     
     <xsl:template match="*[@method = 'document']" mode="include">
       <diazo:synthetic>
-        <xsl:element name="xsl:copy-of">
+        <xsl:element name="xsl:apply-templates">
             <xsl:attribute name="select">document('<xsl:value-of select="@href"/>', $diazo-base-document)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
+            <xsl:attribute name="mode">raw</xsl:attribute>
         </xsl:element>
       </diazo:synthetic>
     </xsl:template>
