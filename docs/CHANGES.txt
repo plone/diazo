@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0rc2 - unreleased
+1.0rc2 - 2011-06-08
 -------------------
 
 * Fix detection of Content-Type.
