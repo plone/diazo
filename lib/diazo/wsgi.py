@@ -224,6 +224,10 @@ class XSLTMiddleware(object):
         if asbool(request.headers.get(DIAZO_OFF_HEADER, 'no')):
             return True
         
+        if request.method == 'HEAD':
+            # response will have no content
+            return True
+
         path = request.path_info
         if self.ignored_pattern.search(path) is not None:
             return True

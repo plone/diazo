@@ -183,6 +183,28 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue('<div id="content">Content content</div>' in response.body)
         self.assertTrue('<title>Transformed</title>' in response.body)
     
+    def test_head_request(self):
+        from lxml import etree
+        
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+        
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html')]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
+        
+        env = dict(REQUEST_METHOD='HEAD')
+        request = Request.blank('/', environ=env)
+        # The *real* test is whether or not an exception is raised here.
+        response = request.get_response(app)
+        
+        self.assertEqual(response.headers['Content-Type'], 'text/html')
+        self.assertFalse(response.body)
+    
     def test_update_content_length(self):
         from lxml import etree
         
