@@ -2,6 +2,8 @@ import re
 import pkg_resources
 import os.path
 
+from urllib import unquote_plus
+
 from webob import Request
 
 from lxml import etree, html
@@ -10,6 +12,7 @@ from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 
 from diazo.compiler import compile_theme
+from diazo.utils import pkg_parse
 from diazo.utils import quote_param
 
 DIAZO_OFF_HEADER = 'X-Diazo-Off'
@@ -90,6 +93,7 @@ class XSLTMiddleware(object):
     def __init__(self, app, global_conf,
                  filename=None, tree=None,
                  read_network=False,
+                 read_file=True,
                  update_content_length=True,
                  ignored_extensions=(
                      'js', 'css', 'gif', 'jpg', 'jpeg', 'pdf', 'ps', 'doc',
@@ -98,6 +102,7 @@ class XSLTMiddleware(object):
                      'jar', 'xls', 'bmp', 'tif', 'tga', 'hqx', 'avi',
                     ),
                  environ_param_map=None,
+                 unquoted_params=None,
                  doctype=None,
                  content_type=None,
                  **params
@@ -113,6 +118,8 @@ class XSLTMiddleware(object):
         
         * ``read_network``, should be set to True to allow resolving resources
           from the network.
+        * ``read_file``, should be set to False to disallow resolving resources
+          from the filesystem.
         * ``update_content_length``, can be set to False to avoid calculating
           an updated Content-Length header when applying the transformation.
           This is only a good idea if some middleware higher up the chain
@@ -122,6 +129,8 @@ class XSLTMiddleware(object):
         * ``environ_param_map`` can be set to a dict of environ keys to
           parameter names. The corresponding values will then be sent to the
           transformation as parameters.
+        * ``unquoted_params``, can be set to a list of parameter names which
+          will not be quoted.
         * ``doctype``, can be set to a string which will replace that set in
           the XSLT, for example, "<!DOCTYPE html>".
         * ``content_type``, can be set to a string which will be set in the
@@ -159,7 +168,8 @@ class XSLTMiddleware(object):
         self.content_type = content_type
         
         self.read_network = asbool(read_network)
-        self.access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=read_network, write_network=False)
+        self.read_file = asbool(read_file)
+        self.access_control = etree.XSLTAccessControl(read_file=self.read_file, write_file=False, create_dir=False, read_network=self.read_network, write_network=False)
         self.transform = etree.XSLT(tree, access_control=self.access_control)
         self.update_content_length = asbool(update_content_length)
         self.ignored_extensions = ignored_extensions
@@ -167,6 +177,9 @@ class XSLTMiddleware(object):
         self.ignored_pattern = re.compile("^.*\.(%s)$" % '|'.join(ignored_extensions))
         
         self.environ_param_map = environ_param_map or {}
+        if isinstance(unquoted_params, basestring):
+            unquoted_params = unquoted_params.split()
+        self.unquoted_params = unquoted_params and frozenset(unquoted_params) or ()
         self.params = params
         self.doctype = doctype
     
@@ -184,9 +197,15 @@ class XSLTMiddleware(object):
         params = {}
         for key, value in self.environ_param_map.items():
             if key in environ:
-                params[value] = quote_param(environ[key])
+                if value in self.unquoted_params:
+                    params[value] = environ[key]
+                else:
+                    params[value] = quote_param(environ[key])
         for key, value in self.params.items():
-            params[key] = quote_param(value)
+            if key in self.unquoted_params:
+                params[key] = value
+            else:
+                params[key] = quote_param(value)
         
         # Apply the transformation
         app_iter = getHTMLSerializer(app_iter)
@@ -268,6 +287,7 @@ class DiazoMiddleware(object):
                  includemode='document',
                  debug=False,
                  read_network=False,
+                 read_file=True,
                  update_content_length=True,
                  ignored_extensions=(
                      'js', 'css', 'gif', 'jpg', 'jpeg', 'pdf', 'ps', 'doc',
@@ -276,8 +296,10 @@ class DiazoMiddleware(object):
                      'jar', 'xls', 'bmp', 'tif', 'tga', 'hqx', 'avi',
                     ),
                 environ_param_map=None,
+                unquoted_params=None,
                 doctype=None,
                 content_type=None,
+                filter_xpath=False,
                 **params
     ):
         """Create the middleware. The parameters are:
@@ -298,17 +320,26 @@ class DiazoMiddleware(object):
           the way in which includes are processed
         * ``read_network``, should be set to True to allow resolving resources
           from the network.
+        * ``read_file``, should be set to False to disallow resolving resources
+          from the filesystem.
         * ``update_content_length``, can be set to False to avoid calculating
           an updated Content-Length header when applying the transformation.
           This is only a good idea if some middleware higher up the chain
           is going to set the content length instead.
         * ``ignored_extensions`` can be set to a list of filename extensions
           for which the transformation should never be applied
+        * ``environ_param_map`` can be set to a dict of environ keys to
+          parameter names. The corresponding values will then be sent to the
+          transformation as parameters.
+        * ``unquoted_params``, can be set to a list of parameter names which
+          will not be quoted.
         * ``doctype``, can be set to a string which will replace the default
           XHTML 1.0 transitional Doctype or that set in the Diazo theme. For
           example, "<!DOCTYPE html>".
         * ``content_type``, can be set to a string which will be set in the
           Content-Type header. By default it is inferred from the stylesheet.
+        * ``filter_xpath``, should be set to True to enable filter_xpath support
+          for external includes.
         
         Additional keyword arguments will be passed to the theme
         transformation as parameters.
@@ -323,13 +354,17 @@ class DiazoMiddleware(object):
         self.includemode = includemode
         self.debug = asbool(debug)
         self.read_network = asbool(read_network)
+        self.read_file = asbool(read_file)
         self.update_content_length = asbool(update_content_length)
         self.ignored_extensions = ignored_extensions
         self.doctype = doctype
         self.content_type = content_type
+        self.unquoted_params = unquoted_params
+        self.filter_xpath = asbool(filter_xpath)
         
-        self.access_control = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=read_network, write_network=False)
+        self.access_control = etree.XSLTAccessControl(read_file=self.read_file, write_file=False, create_dir=False, read_network=self.read_network, write_network=False)
         self.transform_middleware = None
+        self.filter_middleware = self.get_filter_middleware()
         
         self.environ_param_map = environ_param_map or {}
         self.environ_param_map.update({
@@ -384,15 +419,39 @@ class DiazoMiddleware(object):
         return XSLTMiddleware(self.app, self.global_conf,
                 tree=self.compile_theme(),
                 read_network=self.read_network,
+                read_file=self.read_file,
                 update_content_length=self.update_content_length,
                 ignored_extensions=self.ignored_extensions,
                 environ_param_map=self.environ_param_map,
                 doctype=self.doctype,
                 content_type=self.content_type,
+                unquoted_params=self.unquoted_params,
                 **self.params
             )
-    
+
+    def get_filter_middleware(self):
+        tree = pkg_parse('filter_xhtml.xsl')
+        return XSLTMiddleware(self.app, self.global_conf,
+                tree=tree,
+                read_network=False,
+                read_file=False,
+                update_content_length=self.update_content_length,
+                ignored_extensions=self.ignored_extensions,
+                environ_param_map={'diazo.filter_xpath': 'xpath'},
+                doctype='',
+                content_type=self.content_type,
+                unquoted_params=['xpath'],
+            )
+
     def __call__(self, environ, start_response):
+        if self.filter_xpath:
+            filter_xpath = ';filter_xpath='
+            query_string = environ.get('QUERY_STRING', '')
+            if filter_xpath in query_string:
+                environ['QUERY_STRING'], xpath = query_string.rsplit(filter_xpath, 1)
+                environ['diazo.filter_xpath'] = unquote_plus(xpath)
+                return self.filter_middleware(environ, start_response)
+        
         transform_middleware = self.transform_middleware
         if transform_middleware is None or self.debug:
             transform_middleware = self.get_transform_middleware()

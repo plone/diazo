@@ -929,5 +929,34 @@ class TestDiazoMiddleware(unittest.TestCase):
         self.assertFalse('<div id="content">Theme content</div>' in response.body)
         self.assertTrue('<title>Transformed</title>' in response.body)
 
+    def test_esi(self):
+        from diazo.wsgi import DiazoMiddleware
+        from webob import Request
+        
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html')]
+            start_response(status, response_headers)
+            
+            request = Request(environ)
+            if request.path.endswith('/other.html'):
+                return [HTML_ALTERNATIVE]
+            else:
+                return [HTML]
+        
+        app = DiazoMiddleware(application, {}, testfile('esi.xml'), filter_xpath=True)
+        request = Request.blank('/')
+        response = request.get_response(app)
+        
+        self.assertTrue('''<esi:include src="/other.html?;filter_xpath=//*[@id%20=%20'content']"></esi:include>''' in response.body)
+        self.assertFalse('<div id="content">Theme content</div>' in response.body)
+        self.assertTrue('<title>Transformed</title>' in response.body)
+
+        request = Request.blank('''/other.html?;filter_xpath=//*[@id%20=%20'content']''')
+        response = request.get_response(app)
+        # Strip response body in this test due to https://bugzilla.gnome.org/show_bug.cgi?id=652766
+        self.assertEqual('<div id="content">Alternative content</div>', response.body.strip())
+
+
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)

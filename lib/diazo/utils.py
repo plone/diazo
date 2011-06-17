@@ -54,9 +54,11 @@ class LoggingXSLTWrapper:
                 self.logger.debug(msg)
         return result
 
+def pkg_parse(name, parser=None):
+    return etree.parse(open(pkg_resources.resource_filename('diazo', name)), parser=parser)
 
 def pkg_xsl(name, parser=None):
-    return LoggingXSLTWrapper(etree.XSLT(etree.parse(open(pkg_resources.resource_filename('diazo', name)), parser=parser)), logger)
+    return LoggingXSLTWrapper(etree.XSLT(pkg_parse(name, parser)), logger)
 
 def quote_param(value, raw_strings=False):
     """Quote for passing as an XSL parameter.
