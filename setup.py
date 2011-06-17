@@ -3,7 +3,7 @@ import os.path
 
 setup(
     name='diazo',
-    version='1.0rc2',
+    version='1.0rc3',
     description='''\
 Diazo implements a Deliverance like language using a pure XSLT engine. With Diazo, you
 "compile" your theme and ruleset in one step, then use a superfast/simple
