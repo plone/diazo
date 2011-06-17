@@ -4,10 +4,9 @@ Changelog
 1.0rc3 - Unreleased
 -------------------
 
-- Do not try to transform HEAD requests, otherwise you get:
+* Do not try to transform HEAD requests, otherwise you get:
   ``XMLSyntaxError: no element found``.
   [maurits]
-
 
 1.0rc2 - 2011-06-08
 -------------------
