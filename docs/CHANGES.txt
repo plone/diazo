@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0rc3 - Unreleased
+1.0rc3 - 2011-07-04
 -------------------
 
 * Support for ``filter_xpath`` requests for ESI/SSI includes.
