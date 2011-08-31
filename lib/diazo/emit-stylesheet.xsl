@@ -89,78 +89,80 @@
                 </xsl:choose>
             </xsl:if>
             <xsl:apply-templates select="node()"/>
-            <xsl:text>&#10;    </xsl:text>
-            <xsl:element name="xsl:template">
-                <xsl:attribute name="match">/</xsl:attribute>
-                <xsl:choose>
-                    <xsl:when test="$conditional">
-                        <xsl:element name="xsl:choose">
-                            <xsl:for-each select="$conditional-notheme">
-                                <xsl:variable name="themeid" select="@xml:id"/>
-                                <xsl:text>&#10;</xsl:text>
-                                <xsl:element name="xsl:when">
-                                    <xsl:attribute name="test">
-                                        <xsl:value-of select="@merged-condition"/>
-                                    </xsl:attribute>
-                                    <xsl:element name="xsl:apply-templates">
-                                        <xsl:attribute name="select">@*|node()</xsl:attribute>
-                                    </xsl:element>
-                                </xsl:element>
-                                <xsl:text>&#10;</xsl:text>
-                            </xsl:for-each>
-                            <xsl:for-each select="$conditional-theme">
-                                <xsl:variable name="themeid" select="@xml:id"/>
-                                <xsl:text>&#10;</xsl:text>
-                                <xsl:element name="xsl:when">
-                                    <xsl:attribute name="test">
-                                        <xsl:value-of select="@merged-condition"/>
-                                    </xsl:attribute>
-                                    <xsl:element name="xsl:apply-templates">
-                                        <xsl:attribute name="select">.</xsl:attribute>
-                                        <xsl:attribute name="mode">
-                                            <xsl:value-of select="$themeid"/>
+            <xsl:if test="$themes">
+                <xsl:text>&#10;    </xsl:text>
+                <xsl:element name="xsl:template">
+                    <xsl:attribute name="match">/</xsl:attribute>
+                    <xsl:choose>
+                        <xsl:when test="$conditional">
+                            <xsl:element name="xsl:choose">
+                                <xsl:for-each select="$conditional-notheme">
+                                    <xsl:variable name="themeid" select="@xml:id"/>
+                                    <xsl:text>&#10;</xsl:text>
+                                    <xsl:element name="xsl:when">
+                                        <xsl:attribute name="test">
+                                            <xsl:value-of select="@merged-condition"/>
                                         </xsl:attribute>
-                                    </xsl:element>
-                                </xsl:element>
-                                <xsl:text>&#10;</xsl:text>
-                            </xsl:for-each>
-                            <xsl:text>&#10;</xsl:text>
-                            <xsl:element name="xsl:otherwise">
-                                <xsl:choose>
-                                    <xsl:when test="$unconditional-theme">
-                                        <xsl:for-each select="$unconditional-theme">
-                                            <xsl:variable name="themeid" select="@xml:id"/>
-                                            <xsl:element name="xsl:apply-templates">
-                                                <xsl:attribute name="select">.</xsl:attribute>
-                                                <xsl:attribute name="mode">
-                                                    <xsl:value-of select="$themeid"/>
-                                                </xsl:attribute>
-                                            </xsl:element>
-                                        </xsl:for-each>
-                                    </xsl:when>
-                                    <xsl:otherwise>
                                         <xsl:element name="xsl:apply-templates">
                                             <xsl:attribute name="select">@*|node()</xsl:attribute>
                                         </xsl:element>
-                                    </xsl:otherwise>
-                                </xsl:choose>
+                                    </xsl:element>
+                                    <xsl:text>&#10;</xsl:text>
+                                </xsl:for-each>
+                                <xsl:for-each select="$conditional-theme">
+                                    <xsl:variable name="themeid" select="@xml:id"/>
+                                    <xsl:text>&#10;</xsl:text>
+                                    <xsl:element name="xsl:when">
+                                        <xsl:attribute name="test">
+                                            <xsl:value-of select="@merged-condition"/>
+                                        </xsl:attribute>
+                                        <xsl:element name="xsl:apply-templates">
+                                            <xsl:attribute name="select">.</xsl:attribute>
+                                            <xsl:attribute name="mode">
+                                                <xsl:value-of select="$themeid"/>
+                                            </xsl:attribute>
+                                        </xsl:element>
+                                    </xsl:element>
+                                    <xsl:text>&#10;</xsl:text>
+                                </xsl:for-each>
+                                <xsl:text>&#10;</xsl:text>
+                                <xsl:element name="xsl:otherwise">
+                                    <xsl:choose>
+                                        <xsl:when test="$unconditional-theme">
+                                            <xsl:for-each select="$unconditional-theme">
+                                                <xsl:variable name="themeid" select="@xml:id"/>
+                                                <xsl:element name="xsl:apply-templates">
+                                                    <xsl:attribute name="select">.</xsl:attribute>
+                                                    <xsl:attribute name="mode">
+                                                        <xsl:value-of select="$themeid"/>
+                                                    </xsl:attribute>
+                                                </xsl:element>
+                                            </xsl:for-each>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:element name="xsl:apply-templates">
+                                                <xsl:attribute name="select">@*|node()</xsl:attribute>
+                                            </xsl:element>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:element>
+                                <xsl:text>&#10;</xsl:text>
                             </xsl:element>
-                            <xsl:text>&#10;</xsl:text>
-                        </xsl:element>
-                    </xsl:when>
-                    <xsl:when test="$unconditional-theme"> <!-- assert length unconditional-theme = 1 -->
-                        <xsl:for-each select="$unconditional-theme">
-                            <xsl:variable name="themeid" select="@xml:id"/>
-                            <xsl:element name="xsl:apply-templates">
-                                <xsl:attribute name="select">.</xsl:attribute>
-                                <xsl:attribute name="mode">
-                                    <xsl:value-of select="$themeid"/>
-                                </xsl:attribute>
-                            </xsl:element>
-                        </xsl:for-each>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:element>
+                        </xsl:when>
+                        <xsl:when test="$unconditional-theme"> <!-- assert length unconditional-theme = 1 -->
+                            <xsl:for-each select="$unconditional-theme">
+                                <xsl:variable name="themeid" select="@xml:id"/>
+                                <xsl:element name="xsl:apply-templates">
+                                    <xsl:attribute name="select">.</xsl:attribute>
+                                    <xsl:attribute name="mode">
+                                        <xsl:value-of select="$themeid"/>
+                                    </xsl:attribute>
+                                </xsl:element>
+                            </xsl:for-each>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:element>
+            </xsl:if>
             <xsl:text>&#10;</xsl:text>
             <xsl:for-each select="$themes">
                 <xsl:variable name="themeid" select="@xml:id"/>
