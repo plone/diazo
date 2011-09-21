@@ -60,17 +60,14 @@ def pkg_parse(name, parser=None):
 def pkg_xsl(name, parser=None):
     return LoggingXSLTWrapper(etree.XSLT(pkg_parse(name, parser)), logger)
 
-def quote_param(value, raw_strings=False):
+def quote_param(value):
     """Quote for passing as an XSL parameter.
     
     Works with strings, booleans, numbers and None.
     """
     
     if isinstance(value, basestring):
-        if raw_strings:
-            return strparam(value)
-        else:
-            return "'%s'" % value.replace("'", "''")
+        return strparam(value)
     elif isinstance(value, bool):
         return value and 'true()' or 'false()'
     elif isinstance(value, (int, long, float)):
