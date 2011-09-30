@@ -49,6 +49,17 @@ def update_namespace(rules_doc):
     else:
         return rules_doc
 
+def expand_theme(element, theme_doc, absolute_prefix):
+    prefix = urljoin(absolute_prefix, element.get('prefix', ''))
+    apply_absolute_prefix(theme_doc, prefix)
+    theme_root = theme_doc.getroot()
+    preceding = list(theme_root.itersiblings(preceding=True))
+    preceding.reverse()
+    following = list(theme_root.itersiblings(preceding=False))
+    element.extend(preceding)
+    element.append(theme_root)
+    element.extend(following)
+
 def expand_themes(rules_doc, parser=None, absolute_prefix=None, read_network=False):
     """Expand <theme href='...'/> nodes with the theme html.
     """
@@ -62,9 +73,7 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None, read_network=Fal
         if not read_network and url[:6] in ('ftp://', 'http:/', 'https:'):
             raise ValueError("Supplied theme '%s', but network access denied." % url)
         theme_doc = etree.parse(url, parser=parser)
-        prefix = urljoin(absolute_prefix, element.get('prefix', ''))
-        apply_absolute_prefix(theme_doc, prefix)
-        element.append(theme_doc.getroot())
+        expand_theme(element, theme_doc, absolute_prefix)
     return rules_doc
 
 def apply_absolute_prefix(theme_doc, absolute_prefix):
@@ -105,11 +114,9 @@ def add_theme(rules_doc, theme, parser=None, absolute_prefix=None, read_network=
         parser = etree.HTMLParser()
     root = rules_doc.getroot()
     element = root.makeelement(fullname(namespaces['diazo'], 'theme'))
-    theme_doc = etree.parse(theme, parser=parser)
-    prefix = urljoin(absolute_prefix, element.get('prefix', ''))
-    apply_absolute_prefix(theme_doc, prefix)
-    element.append(theme_doc.getroot())   
     root.append(element)
+    theme_doc = etree.parse(theme, parser=parser)
+    expand_theme(element, theme_doc, absolute_prefix)
     return rules_doc
 
 def fixup_theme_comment_selectors(rules):
