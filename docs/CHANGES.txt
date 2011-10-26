@@ -4,6 +4,8 @@ Changelog
 1.0rc4 - unreleased
 -------------------
 
+* Add support for specifying mode on inclusion rules.
+
 * Preserve comments preceding/following html tag in theme. Closes #12249.
 
 * Fix quote_param to always use lxml.etree.XSLT.strparam.

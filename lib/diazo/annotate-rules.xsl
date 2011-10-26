@@ -105,8 +105,8 @@
             <xsl:attribute name="select">
                 <xsl:value-of select="@content"/>
             </xsl:attribute>
-            <xsl:if test="@method = 'raw'">
-                <xsl:attribute name="mode">raw</xsl:attribute>
+            <xsl:if test="@mode">
+                <xsl:attribute name="mode"><xsl:value-of select="@mode"/></xsl:attribute>
             </xsl:if>
         </xsl:element>
       </diazo:synthetic>
@@ -116,7 +116,22 @@
       <diazo:synthetic>
         <xsl:element name="xsl:apply-templates">
             <xsl:attribute name="select">document('<xsl:value-of select="@href"/>', $diazo-base-document)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
-            <xsl:attribute name="mode">raw</xsl:attribute>
+            <xsl:choose>
+                <xsl:when test="@mode">
+                    <xsl:attribute name="mode"><xsl:value-of select="@mode"/></xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="mode">raw</xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:element>
+      </diazo:synthetic>
+    </xsl:template>
+    
+    <xsl:template match="*[@method = 'transform']" mode="include">
+      <diazo:synthetic>
+        <xsl:element name="xsl:apply-templates">
+            <xsl:attribute name="select">document('<xsl:value-of select="@href"/>', $diazo-base-document)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
         </xsl:element>
       </diazo:synthetic>
     </xsl:template>

@@ -121,5 +121,24 @@
         </xsl:for-each>
     </xsl:template>
 
+    <xsl:template match="//diazo:rules/diazo:*[not(@href) and @method = 'raw']/@method">
+        <xsl:if test="../@mode">
+            <xsl:call-template name="error-message" select="..">
+                <xsl:with-param name="message">@mode and @method="raw" not allowed in same rule.</xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
+        <xsl:attribute name="mode">raw</xsl:attribute>
+    </xsl:template>
+
+    <!--
+        Debugging support
+    -->
+
+    <xsl:template name="error-message">
+        <xsl:param name="message"/>
+        <xsl:message terminate="yes">ERROR: <xsl:value-of select="$message"/>&#10;    RULE: &lt;<xsl:value-of select="name()"/><xsl:for-each select="@*">
+            <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;
+        </xsl:message>
+    </xsl:template>
 
 </xsl:stylesheet>
