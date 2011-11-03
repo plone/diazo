@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0rc4 - unreleased
+1.0rc4 - 2011-11-02
 -------------------
 
 * Add support for @if-not and @if-not-content.
