@@ -6,7 +6,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
-    <xsl:template match="diazo:*[@if-content or @if-path or @if]">
+    <xsl:template match="diazo:*[@if-content or @if-path or @if or @if-not or @if-not-content]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
             <xsl:attribute name="condition">
@@ -36,6 +36,13 @@
                 </xsl:if>
                 <xsl:if test="@if and (@if-content or @if-path)"> and </xsl:if>
                 <xsl:if test="@if">(<xsl:value-of select="@if"/>)</xsl:if>
+                <xsl:if test="@if-not and (@if-content or @if-path or @if)"> and </xsl:if>
+                <xsl:if test="@if-not">not(<xsl:value-of select="@if-not"/>)</xsl:if>
+                <xsl:if test="@if-not-content and (@if-content or @if-path or @if or @if-not)"> and </xsl:if>
+                <xsl:choose>
+                    <xsl:when test="@if-not-content = ''">not(<xsl:value-of select="@content"/>)</xsl:when>
+                    <xsl:when test="@if-not-content">not(<xsl:value-of select="@if-not-content"/>)</xsl:when>
+                </xsl:choose>
             </xsl:attribute>
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
