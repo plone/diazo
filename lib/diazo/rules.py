@@ -30,7 +30,7 @@ annotate_themes  = pkg_xsl('annotate-themes.xsl')
 annotate_rules   = pkg_xsl('annotate-rules.xsl')
 apply_rules      = pkg_xsl('apply-rules.xsl')
 fixup_themes     = pkg_xsl('fixup-themes.xsl')
-
+create_runtrace  = pkg_xsl('create-runtrace.xsl')
 
 def update_namespace(rules_doc):
     """Convert old namespace to new namespace in place
@@ -150,6 +150,8 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
         rules_doc = convert_css_selectors(rules_doc)
     if stop == 3: return rules_doc
     rules_doc = fixup_theme_comment_selectors(rules_doc)
+    if True: #TODO: Boring
+        runtrace_doc = create_runtrace(rules_doc)
     if stop == 4: return rules_doc
     rules_doc = expand_themes(rules_doc, parser, absolute_prefix, read_network)
     if theme is not None:
@@ -171,6 +173,8 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
     rules_doc = annotate_rules(rules_doc)
     if stop == 11: return rules_doc
     rules_doc = apply_rules(rules_doc, trace=trace)
+    if True: #TODO: Boring
+        rules_doc.getroot().append(runtrace_doc.getroot())
     return rules_doc
 
 
