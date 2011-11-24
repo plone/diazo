@@ -103,7 +103,6 @@
                                         <xsl:attribute name="test">
                                             <xsl:value-of select="@merged-condition"/>
                                         </xsl:attribute>
-                                        <xsl:call-template name="runtime-trace" select="."><xsl:with-param name="state">match</xsl:with-param></xsl:call-template>
                                         <xsl:element name="xsl:apply-templates">
                                             <xsl:attribute name="select">@*|node()</xsl:attribute>
                                         </xsl:element>
@@ -117,7 +116,6 @@
                                         <xsl:attribute name="test">
                                             <xsl:value-of select="@merged-condition"/>
                                         </xsl:attribute>
-                                        <xsl:call-template name="runtime-trace" select="."><xsl:with-param name="state">match</xsl:with-param></xsl:call-template>
                                         <xsl:element name="xsl:apply-templates">
                                             <xsl:attribute name="select">.</xsl:attribute>
                                             <xsl:attribute name="mode">
@@ -133,7 +131,6 @@
                                         <xsl:when test="$unconditional-theme">
                                             <xsl:for-each select="$unconditional-theme">
                                                 <xsl:variable name="themeid" select="@xml:id"/>
-                                                <xsl:call-template name="runtime-trace" select="."><xsl:with-param name="state">match</xsl:with-param></xsl:call-template>
                                                 <xsl:element name="xsl:apply-templates">
                                                     <xsl:attribute name="select">.</xsl:attribute>
                                                     <xsl:attribute name="mode">
@@ -155,7 +152,6 @@
                         <xsl:when test="$unconditional-theme"> <!-- assert length unconditional-theme = 1 -->
                             <xsl:for-each select="$unconditional-theme">
                                 <xsl:variable name="themeid" select="@xml:id"/>
-                                <xsl:call-template name="runtime-trace" select="."><xsl:with-param name="state">match</xsl:with-param></xsl:call-template>
                                 <xsl:element name="xsl:apply-templates">
                                     <xsl:attribute name="select">.</xsl:attribute>
                                     <xsl:attribute name="mode">
@@ -185,8 +181,6 @@
                     </xsl:attribute>
                     <xsl:apply-templates select="./*" mode="include-template" />
                     <xsl:text>&#10;</xsl:text>
-                    <xsl:element name="xsl:message">THEME: <xsl:apply-templates select="./*" mode="include-template" /></xsl:element>
-                    <xsl:element name="xsl:message">RUNTRACE: <xsl:copy-of select="/dv:rules/dv:runtrace"/></xsl:element>
                 </xsl:element>
                 <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
@@ -444,8 +438,6 @@
             <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:comment>
     </xsl:template>
 
-    <xsl:template name="runtime-trace"><xsl:param name="state"/>
-        <xsl:element name="xsl:message">DZTRACE [<xsl:value-of select="@xml:id"/> <xsl:value-of select="name()"/>]: <xsl:value-of select="$state"/> <xsl:value-of select="@merged-condition"/></xsl:element>
     </xsl:template>
 
 
