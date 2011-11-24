@@ -54,7 +54,7 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
     absolute_prefix=None, update=True, trace=False, includemode=None,
     parser=None, compiler_parser=None, rules_parser=None,
     access_control=None, read_network=False, indent=None,
-    xsl_params=None
+    xsl_params=None, runtrace=False
 ):
     """Invoke the diazo compiler.
     
@@ -78,6 +78,7 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
     * ``update`` can be set to False to disable the automatic update support for
       the old Deliverance 0.2 namespace (for a moderate speed gain)
     * ``trace`` can be set to True to enable compiler trace information
+    * ``runtrace`` can be set to True to add tracing into the XSL output
     * ``includemode`` can be set to 'document', 'esi' or 'ssi' to change the
       way in which includes are processed
     * ``parser`` can be set to an lxml parser instance; the default is an HTMLParser
@@ -121,6 +122,7 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
     if indent is not None:
         params['indent'] = indent and "'yes'" or "'no'"
     params['known_params_url'] = quote_param(known_params_url)
+    params['runtrace'] = '1' if runtrace else '0'
     
     # Run the final stage compiler
     emit_stylesheet = pkg_xsl('emit-stylesheet.xsl', parser=emit_stylesheet_parser)

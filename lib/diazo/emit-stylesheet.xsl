@@ -15,6 +15,7 @@
     <xsl:param name="usebase"/>
     <xsl:param name="indent"/>
     <xsl:param name="known_params_url">file:///__diazo_known_params__</xsl:param>
+    <xsl:param name="runtrace">0</xsl:param>
     
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
@@ -181,6 +182,11 @@
                     </xsl:attribute>
                     <xsl:apply-templates select="./*" mode="include-template" />
                     <xsl:text>&#10;</xsl:text>
+                    <xsl:if test="$runtrace">
+                        <xsl:apply-templates mode="generate-runtrace" select="/dv:rules">
+                            <xsl:with-param name="theme" value="."/>
+                        </xsl:apply-templates>
+                    </xsl:if>
                 </xsl:element>
                 <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
@@ -438,7 +444,47 @@
             <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:comment>
     </xsl:template>
 
+    <xsl:template match="*" mode="generate-runtrace"><xsl:param name="theme"/>
+        <xsl:for-each select="@if-content|@content|@content-children">
+           <xsl:variable name="attr" select="."/>
+           <xsl:element name="xsl:message">
+             <xsl:text>&lt;runtrace</xsl:text>
+             <xsl:for-each select=".|../@*[namespace-uri() = 'http://namespaces.plone.org/diazo/css' and local-name() = name($attr)]">
+                 <xsl:value-of select="concat(' ',name(),'=&quot;')"/>
+                 <xsl:call-template name="replace-string"><xsl:with-param name="string" select="."/></xsl:call-template>
+                 <xsl:text>&quot;</xsl:text>
+             </xsl:for-each>
+             <xsl:text>&gt;</xsl:text>
+             <xsl:element name="xsl:value-of"><xsl:attribute name="select">count(<xsl:value-of select="$attr"/>)</xsl:attribute></xsl:element>
+             <xsl:text>&lt;/runtrace&gt;</xsl:text>
+           </xsl:element>
+        </xsl:for-each>
+        <!--TODO: Look for theme attributes and run against these too? -->
+        <xsl:apply-templates select="./*" mode="generate-runtrace">
+            <xsl:with-param name="theme" select="$theme"/>
+        </xsl:apply-templates>
     </xsl:template>
 
+    <xsl:template name="replace-string">
+        <xsl:param name="string"/>
+        <xsl:param name="from">"</xsl:param>
+        <xsl:param name="to">&amp;&quot;</xsl:param>
+        <xsl:choose>
+            <xsl:when test="contains($string,$from)">
+              <xsl:call-template name="replace-string">
+                  <xsl:with-param name="string" select="substring-before($string,$from)"/>
+                  <xsl:with-param name="from" select="$from" />
+                  <xsl:with-param name="to" select="$to" />
+              </xsl:call-template>
+              <xsl:value-of select="$to"/>
+              <xsl:call-template name="replace-string">
+                  <xsl:with-param name="string" select="substring-after($string,$from)"/>
+                  <xsl:with-param name="from" select="$from" />
+                  <xsl:with-param name="to" select="$to" />
+              </xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="$string"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
 </xsl:stylesheet>

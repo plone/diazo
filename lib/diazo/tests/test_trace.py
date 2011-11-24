@@ -3,6 +3,7 @@ import sys
 import os.path
 from lxml import etree
 
+import diazo.runtrace
 import diazo.compiler
 import diazo.run
 
@@ -15,48 +16,85 @@ def testfile(filename):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), 'test_wsgi_files', filename)
 
 class TestDebug(unittest.TestCase):
-    
-    def test_camels(self):
-        content_str = """\
-<html><body id="theme-on" class="external">
-  <h1>Content</h1>
-  <div class="cow" id="#cow-daisy">I am daisy the cow</div>
-  <div class="pig" id="#pig-george">I am daisy the pig</div>
-</body></html>
-        """
-        rules_str = """\
+    rules_str = """\
 <rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo/css" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <!--TODO: proper path -->
   <theme href="/srv/work/diazo.debugger-buildout/src/diazo/lib/diazo/tests/external_theme.html" css:if-content="body.external" />
   <rules if-content="/html/body[@id = 'theme-on']" useless="I need to be put before if-content processing">
-      <replace css:content="div.cow" css:theme="div.cow" />
+      <replace css:content="div.bovine" css:theme="div.cow" css:if-content="body.female" />
+      <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
       <replace css:content="div.pig" css:theme="div.pig" />
       <replace css:content="div.antelope" css:theme="div.antelope" />
   </rules>
 </rules>
-        """
-        theme_str = """\
+    """
+    theme_str = """\
 <html><body>
   <h1>Theme</h1>
-  <div class="cow">I am daisy the cow</div>
+  <div class="cow">I am a template cow</div>
+  <div class="bull">I am a template bull</div>
   <div class="pig">I am daisy the pig</div>
 </body></html>
-        """
-        # Make a compiled version
-        ct = diazo.compiler.compile_theme(
-            rules=StringIO(rules_str),
-            theme=StringIO(theme_str),
+    """
+    def compile(self):
+        # Compile default rule and themes
+        return etree.XSLT(diazo.compiler.compile_theme(
+            rules=StringIO(self.rules_str),
+            theme=StringIO(self.theme_str),
             indent=True,
-            )
-        print etree.tostring(ct,pretty_print=True)
-        processor = etree.XSLT(ct)
-        result = processor(etree.fromstring(content_str))
-        print processor.error_log
-        runtraces = [line.message.replace("RUNTRACE: ","<?xml version=\"1.0\"?>",1) for line in processor.error_log if line.message.startswith('RUNTRACE: ')]
-        self.assertEqual(len(runtraces),1)
-        runtrace = etree.fromstring(runtraces[0])
-        print "----------"
-        print etree.tostring(runtrace,pretty_print=True)
+            runtrace=True,
+            ))
+    
+    def test_internal(self):
+        processor = self.compile()
+        result = processor(etree.fromstring("""\
+<html><body id="theme-on" class="male">
+  <h1>Content</h1>
+  <div class="bovine" id="#cow-daisy">I am frank the bull</div>
+  <div class="pig" id="#pig-george">I am daisy the pig</div>
+</body></html>
+        """))
+        runtrace_doc = diazo.runtrace.generate_runtrace(
+            rules=StringIO(self.rules_str),
+            error_log = processor.error_log,
+        )
+        self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "0")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "0")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[3]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[4]/@runtrace-content", "0")
+    
+    def test_external(self):
+        processor = self.compile()
+        result = processor(etree.fromstring("""\
+<html><body id="theme-on" class="female external">
+  <h1>Content</h1>
+  <div class="bovine" id="#cow-daisy">I am daisy the cow</div>
+  <div class="pig" id="#pig-george">I am daisy the pig</div>
+</body></html>
+        """))
+        runtrace_doc = diazo.runtrace.generate_runtrace(
+            rules=StringIO(self.rules_str),
+            error_log = processor.error_log,
+        )
+        print etree.tostring(runtrace_doc,pretty_print=True)
+        self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "0")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[3]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[4]/@runtrace-content", "0")
+    
+    def assertXPath(self,doc,xpath,expected):
+        self.assertEqual(
+            doc.xpath(xpath, namespaces=(dict(d="http://namespaces.plone.org/diazo")))[0],
+            expected
+        )
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
