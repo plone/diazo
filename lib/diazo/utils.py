@@ -16,6 +16,7 @@ namespaces = dict(
     old2="http://namespaces.plone.org/xdv",
     oldcss1="http://namespaces.plone.org/xdv+css",
     oldcss2="http://namespaces.plone.org/diazo+css",
+    xml="http://www.w3.org/XML/1998/namespace",
     xsl="http://www.w3.org/1999/XSL/Transform",
     )
 

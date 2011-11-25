@@ -31,6 +31,15 @@ annotate_rules   = pkg_xsl('annotate-rules.xsl')
 apply_rules      = pkg_xsl('apply-rules.xsl')
 fixup_themes     = pkg_xsl('fixup-themes.xsl')
 
+def add_identifiers(rules_doc):
+    """Add identifiers to the rules for debugging"""
+    for i, elem in enumerate(rules_doc.xpath(
+        '//diazo:rules | //diazo:rules/diazo:*'
+        ' | //old1:rules | //old1:rules/old1:*'
+        ' | //old2:rules | //old2:rules/old1:*',
+        namespaces=namespaces)):
+        elem.set(fullname(namespaces['xml'], 'id'), 'r%s'%i)
+    return rules_doc
 
 def update_namespace(rules_doc):
     """Convert old namespace to new namespace in place
@@ -143,33 +152,35 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
     if xinclude:
         rules_doc.xinclude() # XXX read_network limitation not yet supported for xinclude
     if stop == 1: return rules_doc
+    rules_doc = add_identifiers(rules_doc)
+    if stop == 2: return rules_doc
     if update:
         rules_doc = update_namespace(rules_doc)
-    if stop == 2: return rules_doc
+    if stop == 3: return rules_doc
     if css:
         rules_doc = convert_css_selectors(rules_doc)
-    if stop == 3: return rules_doc
-    rules_doc = fixup_theme_comment_selectors(rules_doc)
     if stop == 4: return rules_doc
+    rules_doc = fixup_theme_comment_selectors(rules_doc)
+    if stop == 5: return rules_doc
     rules_doc = expand_themes(rules_doc, parser, absolute_prefix, read_network)
     if theme is not None:
         rules_doc = add_theme(rules_doc, theme, parser, absolute_prefix, read_network)
-    if stop == 5: return rules_doc
+    if stop == 6: return rules_doc
     if includemode is None:
         includemode = 'document'
     includemode = "'%s'" % includemode
     rules_doc = normalize_rules(rules_doc, includemode=includemode)
-    if stop == 6: return rules_doc
-    rules_doc = apply_conditions(rules_doc)
     if stop == 7: return rules_doc
-    rules_doc = merge_conditions(rules_doc)
+    rules_doc = apply_conditions(rules_doc)
     if stop == 8: return rules_doc
-    rules_doc = fixup_themes(rules_doc)
+    rules_doc = merge_conditions(rules_doc)
     if stop == 9: return rules_doc
-    rules_doc = annotate_themes(rules_doc)
+    rules_doc = fixup_themes(rules_doc)
     if stop == 10: return rules_doc
-    rules_doc = annotate_rules(rules_doc)
+    rules_doc = annotate_themes(rules_doc)
     if stop == 11: return rules_doc
+    rules_doc = annotate_rules(rules_doc)
+    if stop == 12: return rules_doc
     rules_doc = apply_rules(rules_doc, trace=trace)
     return rules_doc
 
