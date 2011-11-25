@@ -38,12 +38,13 @@ class TestDebug(unittest.TestCase):
     """
     def compile(self):
         # Compile default rule and themes
-        return etree.XSLT(diazo.compiler.compile_theme(
+        ct = diazo.compiler.compile_theme(
             rules=StringIO(self.rules_str),
             theme=StringIO(self.theme_str),
             indent=True,
             runtrace=True,
-            ))
+            )
+        return etree.XSLT(ct)
     
     def test_internal(self):
         processor = self.compile()
@@ -58,13 +59,19 @@ class TestDebug(unittest.TestCase):
             rules=StringIO(self.rules_str),
             error_log = processor.error_log,
         )
+        print etree.tostring(runtrace_doc,pretty_print=True)
         self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "0")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "1")
+        # <replace css:content="div.bovine" css:theme="div.cow" css:if-content="body.female" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "0")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-theme", "1")
+        # <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-content", "1")
+        # <replace css:content="div.pig" css:theme="div.pig" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[3]/@runtrace-content", "1")
+        # <replace css:content="div.antelope" css:theme="div.antelope" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[4]/@runtrace-content", "0")
     
     def test_external(self):
@@ -83,11 +90,16 @@ class TestDebug(unittest.TestCase):
         print etree.tostring(runtrace_doc,pretty_print=True)
         self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "1")
+        # <replace css:content="div.bovine" css:theme="div.cow" css:if-content="body.female" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-theme", "0")
+        # <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "0")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-content", "1")
+        # <replace css:content="div.pig" css:theme="div.pig" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[3]/@runtrace-content", "1")
+        # <replace css:content="div.antelope" css:theme="div.antelope" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[4]/@runtrace-content", "0")
     
     def assertXPath(self,doc,xpath,expected):

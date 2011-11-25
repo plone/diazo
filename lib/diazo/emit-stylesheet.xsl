@@ -184,7 +184,7 @@
                     <xsl:text>&#10;</xsl:text>
                     <xsl:if test="$runtrace">
                         <xsl:apply-templates mode="generate-runtrace" select="/dv:rules">
-                            <xsl:with-param name="theme" value="."/>
+                            <xsl:with-param name="themeid" select="$themeid"/>
                         </xsl:apply-templates>
                     </xsl:if>
                 </xsl:element>
@@ -444,7 +444,8 @@
             <xsl:value-of select="' '"/><xsl:value-of select="name()"/>="<xsl:value-of select="."/>"</xsl:for-each>/&gt;</xsl:comment>
     </xsl:template>
 
-    <xsl:template match="*" mode="generate-runtrace"><xsl:param name="theme"/>
+    <xsl:template match="*" mode="generate-runtrace"><xsl:param name="themeid"/>
+        <!-- For content conditions, generate code to evaluate and count matches -->
         <xsl:for-each select="@if-content|@content|@content-children">
            <xsl:variable name="attr" select="."/>
            <xsl:element name="xsl:message">
@@ -459,9 +460,23 @@
              <xsl:text>&lt;/runtrace&gt;</xsl:text>
            </xsl:element>
         </xsl:for-each>
-        <!--TODO: Look for theme attributes and run against these too? -->
+        <!-- For theme conditions, count matches in document relevant to current theme -->
+        <xsl:for-each select="@if-theme|@theme|@theme-children">
+           <xsl:variable name="attr" select="."/>
+           <xsl:element name="xsl:message">
+             <xsl:text>&lt;runtrace</xsl:text>
+             <xsl:for-each select=".|../@*[namespace-uri() = 'http://namespaces.plone.org/diazo/css' and local-name() = name($attr)]">
+                 <xsl:value-of select="concat(' ',name(),'=&quot;')"/>
+                 <xsl:call-template name="replace-string"><xsl:with-param name="string" select="."/></xsl:call-template>
+                 <xsl:text>&quot;</xsl:text>
+             </xsl:for-each>
+             <xsl:text>&gt;</xsl:text>
+             <xsl:value-of select="count(../dv:matches/dv:xmlid[@themeid = $themeid])"/>
+             <xsl:text>&lt;/runtrace&gt;</xsl:text>
+           </xsl:element>
+        </xsl:for-each>
         <xsl:apply-templates select="./*" mode="generate-runtrace">
-            <xsl:with-param name="theme" select="$theme"/>
+            <xsl:with-param name="themeid" select="$themeid"/>
         </xsl:apply-templates>
     </xsl:template>
 
