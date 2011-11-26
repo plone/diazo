@@ -18,8 +18,13 @@ def testfile(filename):
 class TestDebug(unittest.TestCase):
     rules_str = """\
 <rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo/css" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <!--TODO: proper path -->
-  <theme href="/srv/work/diazo.debugger-buildout/src/diazo/lib/diazo/tests/external_theme.html" css:if-content="body.external" />
+  <theme css:if-content="body.external">
+    <html><body>
+      <h1>External Theme</h1>
+      <div class="cow">I am daisy the cow</div>
+      <div class="pig">I am daisy the pig</div>
+    </body></html>
+  </theme>
   <rules if-content="/html/body[@id = 'theme-on']" useless="I need to be put before if-content processing">
       <replace css:content="div.bovine" css:theme="div.cow" css:if-content="body.female" />
       <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
@@ -30,7 +35,7 @@ class TestDebug(unittest.TestCase):
     """
     theme_str = """\
 <html><body>
-  <h1>Theme</h1>
+  <h1>Provided Theme</h1>
   <div class="cow">I am a template cow</div>
   <div class="bull">I am a template bull</div>
   <div class="pig">I am daisy the pig</div>
@@ -59,7 +64,6 @@ class TestDebug(unittest.TestCase):
             rules=StringIO(self.rules_str),
             error_log = processor.error_log,
         )
-        print etree.tostring(runtrace_doc,pretty_print=True)
         self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "0")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "1")
         # <replace css:content="div.bovine" css:theme="div.cow" css:if-content="body.female" />
@@ -69,6 +73,7 @@ class TestDebug(unittest.TestCase):
         # <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-theme", "1")
         # <replace css:content="div.pig" css:theme="div.pig" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[3]/@runtrace-content", "1")
         # <replace css:content="div.antelope" css:theme="div.antelope" />
@@ -87,16 +92,17 @@ class TestDebug(unittest.TestCase):
             rules=StringIO(self.rules_str),
             error_log = processor.error_log,
         )
-        print etree.tostring(runtrace_doc,pretty_print=True)
         self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "1")
         # <replace css:content="div.bovine" css:theme="div.cow" css:if-content="body.female" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-content", "1")
-        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-theme", "0")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-theme", "1")
         # <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
+        # The external theme only has the cow slot
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "0")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-theme", "0")
         # <replace css:content="div.pig" css:theme="div.pig" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[3]/@runtrace-content", "1")
         # <replace css:content="div.antelope" css:theme="div.antelope" />
