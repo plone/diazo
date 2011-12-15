@@ -35,7 +35,9 @@ class TestDebug(unittest.TestCase):
 </rules>
     """
     theme_str = """\
-<html><body>
+<html><head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8; i-am-not-a-diazo-rule" />
+</head><body>
   <h1>Provided Theme</h1>
   <div class="cow">I am a template cow</div>
   <div class="bull">I am a template bull</div>
