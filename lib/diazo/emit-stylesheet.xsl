@@ -483,7 +483,7 @@
     <xsl:template name="replace-string">
         <xsl:param name="string"/>
         <xsl:param name="from">"</xsl:param>
-        <xsl:param name="to">&amp;&quot;</xsl:param>
+        <xsl:param name="to">&amp;quot;</xsl:param>
         <xsl:choose>
             <xsl:when test="contains($string,$from)">
               <xsl:call-template name="replace-string">

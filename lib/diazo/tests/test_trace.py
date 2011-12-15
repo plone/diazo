@@ -30,6 +30,7 @@ class TestDebug(unittest.TestCase):
       <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
       <replace css:content="div.pig" css:theme="div.pig" />
       <replace css:content="div.antelope" css:theme="div.antelope" />
+      <replace content='//*[@id="some_other_node_but_weird_quoting"]' css:theme-children='#alpha' />
   </rules>
 </rules>
     """
