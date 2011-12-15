@@ -40,7 +40,7 @@ def convert_css_selectors(rules):
                 continue
             if css_prefix is not None:
                 prefix = css_prefix
-            elif (tag_namespace == utils.namespaces['diazo'] and localname in ('content', 'content-children', 'if-content') or
+            elif (tag_namespace == utils.namespaces['diazo'] and localname in ('content', 'content-children', 'if-content', 'if-not-content') or
                 (tag_namespace == utils.namespaces['xsl'] and localname in ('match',))
                 ):
                 prefix = '//'
