@@ -230,7 +230,9 @@ class XSLTMiddleware(object):
         # so that other middleware could avoid having to re-parse, even if
         # we take a hit on serialising here
         if self.update_content_length and 'Content-Length' in response.headers:
-            response.headers['Content-Length'] = str(len(str(app_iter)))
+            # convert to unicode in order to have the real payload size
+            content = str(app_iter).decode(encoding)
+            response.headers['Content-Length'] = str(len(content))
         
         # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
         # the content tree in later middleware stages
