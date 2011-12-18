@@ -451,6 +451,9 @@
                <xsl:variable name="attr" select="."/>
                <xsl:element name="xsl:message">
                  <xsl:text>&lt;runtrace</xsl:text>
+                 <xsl:text> theme_xmlid=&quot;</xsl:text>
+                 <xsl:call-template name="replace-string"><xsl:with-param name="string" select="../@xml:id"/></xsl:call-template>
+                 <xsl:text>&quot;</xsl:text>
                  <xsl:for-each select=".|../@*[namespace-uri() = 'http://namespaces.plone.org/diazo/css' and local-name() = name($attr)]">
                      <xsl:value-of select="concat(' ',name(),'=&quot;')"/>
                      <xsl:call-template name="replace-string"><xsl:with-param name="string" select="."/></xsl:call-template>
@@ -461,11 +464,15 @@
                  <xsl:text>&lt;/runtrace&gt;</xsl:text>
                </xsl:element>
             </xsl:for-each>
+
             <!-- For theme conditions, count matches in document relevant to current theme -->
             <xsl:for-each select="@if-theme|@theme|@theme-children">
                <xsl:variable name="attr" select="."/>
                <xsl:element name="xsl:message">
                  <xsl:text>&lt;runtrace</xsl:text>
+                 <xsl:text> theme_xmlid=&quot;</xsl:text>
+                 <xsl:call-template name="replace-string"><xsl:with-param name="string" select="../@xml:id"/></xsl:call-template>
+                 <xsl:text>&quot;</xsl:text>
                  <xsl:for-each select=".|../@*[namespace-uri() = 'http://namespaces.plone.org/diazo/css' and local-name() = name($attr)]">
                      <xsl:value-of select="concat(' ',name(),'=&quot;')"/>
                      <xsl:call-template name="replace-string"><xsl:with-param name="string" select="."/></xsl:call-template>
@@ -477,6 +484,8 @@
                </xsl:element>
             </xsl:for-each>
         </xsl:if>
+
+        <!-- Recurse through all nodes -->
         <xsl:apply-templates select="./*" mode="generate-runtrace">
             <xsl:with-param name="themeid" select="$themeid"/>
         </xsl:apply-templates>
