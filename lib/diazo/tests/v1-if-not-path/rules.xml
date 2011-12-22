@@ -1,0 +1,19 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+    
+    <replace
+        if-not-path="/foo"
+        css:theme="#alpha"
+        css:content="#one"
+        />
+    
+    <replace
+        if-not-path="/bar"
+        css:theme="#beta"
+        css:content="#two"
+        />
+        
+</rules>
