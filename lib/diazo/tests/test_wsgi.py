@@ -252,8 +252,31 @@ class TestXSLTMiddleware(unittest.TestCase):
         
         request = Request.blank('/')
         response = request.get_response(app)
-        self.assertEqual(response.headers['Content-Length'], '178')
-    
+        self.assertEqual(response.headers['Content-Length'], '192')
+
+    def test_update_content_range(self):
+        from lxml import etree
+
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+
+        def application(environ, start_response):
+            status = '200 OK'
+            length = str(len(HTML))
+            content_range = 'bytes 0-%s/%s' % (str(int(length) - 1), length)
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-Range', content_range),
+                                ('Content-Length', length)]
+            start_response(status, response_headers)
+            return [HTML]
+
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
+
+        request = Request.blank('/')
+        response = request.get_response(app)
+
+        self.assertFalse('Content-Range' in response.headers)
+
     def test_dont_update_content_length(self):
         from lxml import etree
         
