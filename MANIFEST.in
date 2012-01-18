@@ -1,0 +1,8 @@
+include *
+
+recursive-include docs *
+recursive-include examples *
+recursive-include lib *
+recursive-include templates *
+
+global-exclude *pyc
