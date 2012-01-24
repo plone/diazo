@@ -8,6 +8,8 @@ Changelog
 
 * Add support for @if-not-path.
 
+* Avoid setting headers too soon -- as this is an issue with CherryPy server
+
 1.0rc4 - 2011-11-02
 -------------------
 

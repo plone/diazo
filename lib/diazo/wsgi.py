@@ -187,9 +187,14 @@ class XSLTMiddleware(object):
         request = Request(environ)
         response = request.get_response(self.app)
         
-        app_iter = response(environ, start_response)
+        sr = self._sr(start_response)
+
+        app_iter = response(environ, sr)
         
         if self.should_ignore(request) or not self.should_transform(response):
+            start_response(self._status,
+                           self._response_headers,
+                           self._exc_info)
             return app_iter
         
         # Set up parameters
@@ -231,11 +236,28 @@ class XSLTMiddleware(object):
         # we take a hit on serialising here
         if self.update_content_length and 'Content-Length' in response.headers:
             response.headers['Content-Length'] = str(len(str(app_iter)))
-        
+
+        # After calculate the content length we must remove the Content-Range
+        # header or we might get a broken pipe with clients closing the
+        # connection before receiving all content
+        if self.update_content_length and 'Content-Range' in response.headers:
+            del(response.headers['Content-Range'])
+
+        self._response_headers = response.headers.items()
+        start_response(self._status,
+                       self._response_headers,
+                       self._exc_info)
         # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
         # the content tree in later middleware stages
         return app_iter
     
+    def _sr(self, start_response):
+        def callback(status, response_headers, exc_info=None):
+            self._status = status
+            self._response_headers = response_headers
+            self._exc_info = exc_info
+        return callback
+
     def should_ignore(self, request):
         """Determine if we should ignore the request
         """

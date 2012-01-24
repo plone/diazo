@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import sys
 import os.path
 
@@ -14,6 +15,15 @@ HTML = """\
     <body>
         <h1>Content title</h1>
         <div id="content">Content content</div>
+    </body>
+</html>
+"""
+
+HTML_UTF8 = """\
+<html>
+    <body>
+        <h1>Content title</h1>
+        <div id="content">áãéÉóúüç áãéÉóú</div>
     </body>
 </html>
 """
@@ -224,7 +234,49 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
         
         self.assertEqual(response.headers['Content-Length'], '178')
-    
+
+    def test_update_content_length_with_charset(self):
+        from lxml import etree
+        
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+        
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html; charset=UTF-8'),
+                                ('Content-Length', str(len(HTML_UTF8)))]
+            start_response(status, response_headers)
+            return [HTML_UTF8]
+        
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
+        
+        request = Request.blank('/')
+        response = request.get_response(app)
+        self.assertEqual(response.headers['Content-Length'], '192')
+
+    def test_update_content_range(self):
+        from lxml import etree
+
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+
+        def application(environ, start_response):
+            status = '200 OK'
+            length = str(len(HTML))
+            content_range = 'bytes 0-%s/%s' % (str(int(length) - 1), length)
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-Range', content_range),
+                                ('Content-Length', length)]
+            start_response(status, response_headers)
+            return [HTML]
+
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
+
+        request = Request.blank('/')
+        response = request.get_response(app)
+
+        self.assertFalse('Content-Range' in response.headers)
+
     def test_dont_update_content_length(self):
         from lxml import etree
         
