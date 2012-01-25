@@ -185,9 +185,20 @@ class XSLTMiddleware(object):
     
     def __call__(self, environ, start_response):
         request = Request(environ)
-        response = request.get_response(self.app)
         
-        app_iter = response(environ, start_response)
+        ignore = self.should_ignore(request)
+
+        if not ignore:
+            # We do not deal with Range requests
+            try:
+                del request.headers['Range']
+            except KeyError:
+                pass
+
+        response = request.get_response(self.app)
+
+        sr = self._sr(start_response)
+        app_iter = response(environ, sr)
         
         if self.should_ignore(request) or not self.should_transform(response):
             return app_iter
