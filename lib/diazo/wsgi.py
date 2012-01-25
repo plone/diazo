@@ -235,7 +235,16 @@ class XSLTMiddleware(object):
         # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
         # the content tree in later middleware stages
         return app_iter
-    
+
+    def _sr(self, start_response):
+        """Capture a start_response call
+        """
+        def callback(status, response_headers, exc_info=None):
+            self._status = status
+            self._response_headers = response_headers
+            self._exc_info = exc_info
+        return callback
+   
     def should_ignore(self, request):
         """Determine if we should ignore the request
         """
