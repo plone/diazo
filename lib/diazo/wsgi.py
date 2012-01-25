@@ -29,6 +29,28 @@ def asbool(value):
     else:
         return bool(value)
 
+class DeferStartResponse(object):
+    def __init__(self, start_response):
+        self.original_start_response = start_response
+        self.called = False
+
+    def start_response(self, status, response_headers, exc_info=None):
+        assert not self.called
+        if exc_info is not None:
+            # See http://www.python.org/dev/peps/pep-0333/#the-start-response-callable
+            try:
+                self.original_start_response(status, response_headers, exc_info)
+            finally:
+                exc_info = None
+                self.called = True
+        else:
+            self.status = status
+            self.response_headers = response_headers
+
+    def finalize(self):
+        assert not self.called
+        self.original_start_response(status, response_headers)
+
 class FilesystemResolver(etree.Resolver):
     """Resolver for filesystem paths
     """
@@ -80,11 +102,29 @@ class WSGIResolver(etree.Resolver):
         subrequest = Request.blank(system_url)
         response = subrequest.get_response(self.app)
         
-        status_code = response.status.split()[0]
+        status_code, reason = response.status.split(None, 1)
         if not status_code == '200':
             return None
         
-        return self.resolve_string(response.body, context)
+        charset = response.charset
+        if charset is None:
+            charset = 'UTF-8' # Maybe this should be latin1?
+        result = response.body.decode(charset).encode('ascii', 'xmlcharrefreplace')
+
+        if response.content_type in ('text/javascript', 'application/x-javascript'):
+            result = ''.join([
+                '<html><body><script type="text/javascript">',
+                result,
+                '</script></body></html>',
+                ])
+        elif response.content_type == 'text/css':
+            result = ''.join([
+                '<html><body><style type="text/css">',
+                result,
+                '</style></body></html>',
+                ])
+        
+        return self.resolve_string(result, context)
 
 class XSLTMiddleware(object):
     """Apply XSLT in middleware
@@ -94,7 +134,7 @@ class XSLTMiddleware(object):
                  filename=None, tree=None,
                  read_network=False,
                  read_file=True,
-                 update_content_length=True,
+                 update_content_length=False,
                  ignored_extensions=(
                      'js', 'css', 'gif', 'jpg', 'jpeg', 'pdf', 'ps', 'doc',
                      'png', 'ico', 'mov', 'mpg', 'mpeg', 'mp3', 'm4a', 'txt',
@@ -105,6 +145,8 @@ class XSLTMiddleware(object):
                  unquoted_params=None,
                  doctype=None,
                  content_type=None,
+                 charset=None,
+                 remove_conditional_headers=False,
                  **params
     ):
         """Initialise, giving a filename or parsed XSLT tree.
@@ -120,10 +162,10 @@ class XSLTMiddleware(object):
           from the network.
         * ``read_file``, should be set to False to disallow resolving resources
           from the filesystem.
-        * ``update_content_length``, can be set to False to avoid calculating
-          an updated Content-Length header when applying the transformation.
-          This is only a good idea if some middleware higher up the chain
-          is going to set the content length instead.
+        * ``update_content_length``, can be set to True to update the
+          Content-Length header when applying the transformation. When set to
+          False (the default), the header is removed and it is left to the WSGI
+          server recalculate or send a chunked response.
         * ``ignored_extensions`` can be set to a list of filename extensions
           for which the transformation should never be applied
         * ``environ_param_map`` can be set to a dict of environ keys to
@@ -135,7 +177,11 @@ class XSLTMiddleware(object):
           the XSLT, for example, "<!DOCTYPE html>".
         * ``content_type``, can be set to a string which will be set in the
           Content-Type header. By default it is inferred from the stylesheet.
-         
+        * ``charset``, can be set to a string which will be set in the
+          Content-Type header. By default it is inferred from the stylesheet.
+        * ``remove_conditional_headers``, should be set to True if the
+        transformed output includes other files.
+        
         Additional keyword arguments will be passed to the transformation as
         parameters.
         """
@@ -167,12 +213,21 @@ class XSLTMiddleware(object):
                         content_type = 'text/xml'
         self.content_type = content_type
         
+        if charset is None:
+            encoding = tree.xpath('/xsl:stylesheet/xsl:output/@encoding',
+                                  namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"))
+            if encoding:
+                charset = encoding[-1]
+            else:
+                charset = "UTF-8"
+        self.charset = charset
+        
         self.read_network = asbool(read_network)
         self.read_file = asbool(read_file)
         self.access_control = etree.XSLTAccessControl(read_file=self.read_file, write_file=False, create_dir=False, read_network=self.read_network, write_network=False)
         self.transform = etree.XSLT(tree, access_control=self.access_control)
         self.update_content_length = asbool(update_content_length)
-        self.ignored_extensions = ignored_extensions
+        self.ignored_extensions = frozenset(ignored_extensions)
         
         self.ignored_pattern = re.compile("^.*\.(%s)$" % '|'.join(ignored_extensions))
         
@@ -182,29 +237,46 @@ class XSLTMiddleware(object):
         self.unquoted_params = unquoted_params and frozenset(unquoted_params) or ()
         self.params = params
         self.doctype = doctype
+        self.remove_conditional_headers = asbool(remove_conditional_headers)
     
     def __call__(self, environ, start_response):
         request = Request(environ)
-        
-        ignore = self.should_ignore(request)
+        if self.should_ignore(request):
+            return self.app(environ, start_response)
 
-        if not ignore:
-            # We do not deal with Range requests
-            try:
-                del request.headers['Range']
-            except KeyError:
-                pass
+        if self.remove_conditional_headers:
+            request.remove_conditional_headers()
+        else:
+            # Always remove Range and Accept-Encoding headers
+            request.remove_conditional_headers(
+                remove_encoding=True,
+                remove_range=False,
+                remove_match=False,
+                remove_modified=True,
+                )
 
         response = request.get_response(self.app)
+        if not self.should_transform(response):
+            return response(environ, start_response)
 
-        sr = self._sr(start_response)
-        app_iter = response(environ, sr)
+        input_encoding = response.charset
         
-        if ignore or not self.should_transform(response):
-            start_response(self._status,
-                           self._response_headers,
-                           self._exc_info)
-            return app_iter
+        # Remove any response headers that might change.
+        response.content_range = None
+        response.accept_ranges = None
+        response.content_length = None
+        response.content_md5 = None
+        if self.remove_conditional_headers:
+            response.last_modified = None
+            response.etag = None
+        # Set the output Content-Type
+        response.content_type = self.content_type
+        if self.content_type is not None:
+            response.charset = self.charset
+
+        # Note, the Content-Length header will not be set
+        if request.method == 'HEAD':
+            return response(environ, start_response)
         
         # Set up parameters
         
@@ -222,51 +294,34 @@ class XSLTMiddleware(object):
                 params[key] = quote_param(value)
         
         # Apply the transformation
-        app_iter = getHTMLSerializer(app_iter)
-        tree = self.transform(app_iter.tree, **params)
+        try:
+            serializer = getHTMLSerializer(response.app_iter, encoding=input_encoding)
+        finally:
+            if hasattr(response.app_iter, 'close'):
+                response.app_iter.close()
         
-        # Set content type
+        tree = self.transform(serializer.tree, **params)
+        
+        # Set content type (normally inferred from stylesheet)
         # Unfortunately lxml does not expose docinfo.mediaType
-        content_type = self.content_type
-        if content_type is None:
+        if self.content_type is None:
             if tree.getroot().tag == 'html':
-                content_type = 'text/html'
+                response.content_type = 'text/html'
             else:
-                content_type = 'text/xml'
-        encoding = tree.docinfo.encoding
-        if not encoding:
-            encoding = "UTF-8"
-        response.headers['Content-Type'] = '%s; charset=%s' % (content_type, encoding)
+                response.content_type = 'text/xml'
+        response.charset = tree.docinfo.encoding or self.charset
         
-        app_iter = XMLSerializer(tree, doctype=self.doctype)
+        # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
+        # the content tree in later middleware stages.
+        response.app_iter = XMLSerializer(tree, doctype=self.doctype)
         
         # Calculate the content length - we still return the parsed tree
         # so that other middleware could avoid having to re-parse, even if
         # we take a hit on serialising here
-        if self.update_content_length and 'Content-Length' in response.headers:
-            response.headers['Content-Length'] = str(len(str(app_iter)))
+        if self.update_content_length:
+            response.content_length = len(str(response.app_iter))
         
-        # Remove Content-Range if set by the application we theme
-        if self.update_content_length and 'Content-Range' in response.headers:
-            del(response.headers['Content-Range'])
-
-        # Start response here, after we update response headers
-        self._response_headers = response.headers.items()
-        start_response(self._status,
-                       self._response_headers,
-                       self._exc_info)
-        # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
-        # the content tree in later middleware stages
-        return app_iter
-
-    def _sr(self, start_response):
-        """Capture a start_response call
-        """
-        def callback(status, response_headers, exc_info=None):
-            self._status = status
-            self._response_headers = response_headers
-            self._exc_info = exc_info
-        return callback
+        return response(environ, start_response)
    
     def should_ignore(self, request):
         """Determine if we should ignore the request
@@ -275,10 +330,6 @@ class XSLTMiddleware(object):
         if asbool(request.headers.get(DIAZO_OFF_HEADER, 'no')):
             return True
         
-        if request.method == 'HEAD':
-            # response will have no content
-            return True
-
         path = request.path_info
         if self.ignored_pattern.search(path) is not None:
             return True
@@ -303,7 +354,7 @@ class XSLTMiddleware(object):
         if content_encoding in ('zip', 'deflate', 'compress',):
             return False
         
-        status_code = response.status.split()[0]
+        status_code, reason = response.status.split(None, 1)
         if status_code.startswith('3') or status_code == '204' or status_code == '401':
             return False
         
@@ -320,7 +371,7 @@ class DiazoMiddleware(object):
                  debug=False,
                  read_network=False,
                  read_file=True,
-                 update_content_length=True,
+                 update_content_length=False,
                  ignored_extensions=(
                      'js', 'css', 'gif', 'jpg', 'jpeg', 'pdf', 'ps', 'doc',
                      'png', 'ico', 'mov', 'mpg', 'mpeg', 'mp3', 'm4a', 'txt',
@@ -354,10 +405,10 @@ class DiazoMiddleware(object):
           from the network.
         * ``read_file``, should be set to False to disallow resolving resources
           from the filesystem.
-        * ``update_content_length``, can be set to False to avoid calculating
-          an updated Content-Length header when applying the transformation.
-          This is only a good idea if some middleware higher up the chain
-          is going to set the content length instead.
+        * ``update_content_length``, can be set to True to update the
+          Content-Length header when applying the transformation. When set to
+          False (the default), the header is removed and it is left to the WSGI
+          server recalculate or send a chunked response.
         * ``ignored_extensions`` can be set to a list of filename extensions
           for which the transformation should never be applied
         * ``environ_param_map`` can be set to a dict of environ keys to
@@ -370,6 +421,10 @@ class DiazoMiddleware(object):
           example, "<!DOCTYPE html>".
         * ``content_type``, can be set to a string which will be set in the
           Content-Type header. By default it is inferred from the stylesheet.
+        * ``charset``, can be set to a string which will be set in the
+          Content-Type header. By default it is inferred from the stylesheet.
+        * ``remove_conditional_headers``, should be set to True if the
+        transformed output includes other files.
         * ``filter_xpath``, should be set to True to enable filter_xpath support
           for external includes.
         
