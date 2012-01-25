@@ -246,6 +246,10 @@ class XSLTMiddleware(object):
         if self.update_content_length and 'Content-Length' in response.headers:
             response.headers['Content-Length'] = str(len(str(app_iter)))
         
+        # Remove Content-Range if set by the application we theme
+        if self.update_content_length and 'Content-Range' in response.headers:
+            del(response.headers['Content-Range'])
+
         # Start response here, after we update response headers
         self._response_headers = response.headers.items()
         start_response(self._status,
