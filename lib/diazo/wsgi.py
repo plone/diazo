@@ -200,7 +200,10 @@ class XSLTMiddleware(object):
         sr = self._sr(start_response)
         app_iter = response(environ, sr)
         
-        if self.should_ignore(request) or not self.should_transform(response):
+        if ignore or not self.should_transform(response):
+            start_response(self._status,
+                           self._response_headers,
+                           self._exc_info)
             return app_iter
         
         # Set up parameters
@@ -243,6 +246,11 @@ class XSLTMiddleware(object):
         if self.update_content_length and 'Content-Length' in response.headers:
             response.headers['Content-Length'] = str(len(str(app_iter)))
         
+        # Start response here, after we update response headers
+        self._response_headers = response.headers.items()
+        start_response(self._status,
+                       self._response_headers,
+                       self._exc_info)
         # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
         # the content tree in later middleware stages
         return app_iter
