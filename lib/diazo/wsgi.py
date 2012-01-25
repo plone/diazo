@@ -29,28 +29,6 @@ def asbool(value):
     else:
         return bool(value)
 
-class DeferStartResponse(object):
-    def __init__(self, start_response):
-        self.original_start_response = start_response
-        self.called = False
-
-    def start_response(self, status, response_headers, exc_info=None):
-        assert not self.called
-        if exc_info is not None:
-            # See http://www.python.org/dev/peps/pep-0333/#the-start-response-callable
-            try:
-                self.original_start_response(status, response_headers, exc_info)
-            finally:
-                exc_info = None
-                self.called = True
-        else:
-            self.status = status
-            self.response_headers = response_headers
-
-    def finalize(self):
-        assert not self.called
-        self.original_start_response(status, response_headers)
-
 class FilesystemResolver(etree.Resolver):
     """Resolver for filesystem paths
     """
