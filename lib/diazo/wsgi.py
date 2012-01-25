@@ -185,11 +185,25 @@ class XSLTMiddleware(object):
     
     def __call__(self, environ, start_response):
         request = Request(environ)
+        
+        ignore = self.should_ignore(request)
+
+        if not ignore:
+            # We do not deal with Range requests
+            try:
+                del request.headers['Range']
+            except KeyError:
+                pass
+
         response = request.get_response(self.app)
+
+        sr = self._sr(start_response)
+        app_iter = response(environ, sr)
         
-        app_iter = response(environ, start_response)
-        
-        if self.should_ignore(request) or not self.should_transform(response):
+        if ignore or not self.should_transform(response):
+            start_response(self._status,
+                           self._response_headers,
+                           self._exc_info)
             return app_iter
         
         # Set up parameters
@@ -232,10 +246,28 @@ class XSLTMiddleware(object):
         if self.update_content_length and 'Content-Length' in response.headers:
             response.headers['Content-Length'] = str(len(str(app_iter)))
         
+        # Remove Content-Range if set by the application we theme
+        if self.update_content_length and 'Content-Range' in response.headers:
+            del(response.headers['Content-Range'])
+
+        # Start response here, after we update response headers
+        self._response_headers = response.headers.items()
+        start_response(self._status,
+                       self._response_headers,
+                       self._exc_info)
         # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
         # the content tree in later middleware stages
         return app_iter
-    
+
+    def _sr(self, start_response):
+        """Capture a start_response call
+        """
+        def callback(status, response_headers, exc_info=None):
+            self._status = status
+            self._response_headers = response_headers
+            self._exc_info = exc_info
+        return callback
+   
     def should_ignore(self, request):
         """Determine if we should ignore the request
         """
