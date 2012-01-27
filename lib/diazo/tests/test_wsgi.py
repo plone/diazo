@@ -202,7 +202,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         # The *real* test is whether or not an exception is raised here.
         response = request.get_response(app)
         
-        self.assertEqual(response.headers['Content-Type'], 'text/html')
+        self.assertEqual(response.headers['Content-Type'], 'text/html; charset=UTF-8')
         self.assertFalse(response.body)
     
     def test_update_content_length(self):
@@ -218,7 +218,8 @@ class TestXSLTMiddleware(unittest.TestCase):
             start_response(status, response_headers)
             return [HTML]
         
-        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT),
+                             update_content_length=True)
         
         request = Request.blank('/')
         response = request.get_response(app)
@@ -238,14 +239,38 @@ class TestXSLTMiddleware(unittest.TestCase):
             start_response(status, response_headers)
             return [HTML]
         
-        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT),
-                             update_content_length=False)
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
         
         request = Request.blank('/')
         response = request.get_response(app)
         
-        self.assertEqual(response.headers['Content-Length'], '1')
-    
+        self.assertEqual(response.headers.get('Content-Length'), None)
+
+    def test_content_range(self):
+        from lxml import etree
+
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+
+        def application(environ, start_response):
+            status = '200 OK'
+            content_length = len(HTML)
+            content_range = 'bytes %d-%d/%d' % (0,
+                                                content_length - 1,
+                                                content_length)
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-Range', content_range),
+                                ('Content-Length', str(content_length))]
+            start_response(status, response_headers)
+            return [HTML]
+
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
+
+        request = Request.blank('/')
+        response = request.get_response(app)
+
+        self.assertFalse('Content-Range' in response.headers)
+
     def test_no_content_length(self):
         from lxml import etree
         
@@ -278,8 +303,7 @@ class TestXSLTMiddleware(unittest.TestCase):
             start_response(status, response_headers)
             return [HTML]
         
-        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT),
-            ignored_extensions=('html',))
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
         
         request = Request.blank('/')
         response = request.get_response(app)
