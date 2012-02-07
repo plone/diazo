@@ -26,18 +26,11 @@ Contributing to this documentation is easy, just follow these steps*:
 
     $ git commit -m 'Added documentation to make the world a better place'
 
-6. Login to deus.plone.org to synchronize your changes**::
-
-    $ ssh deus.plone.org
-    $ cd /srv/diazo.org
-    $ sudo svn up
-    $ sudo make html
 
 (*) You will need core contributor access, you can read about that here:
 
     - http://dev.plone.org/plone/
 
-(**) If you don't have access to deus.plone.org, please send a request to admins@plone.org.
 
 Contributing to Diazo
 =====================
