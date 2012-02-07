@@ -9,11 +9,11 @@ Contributing to this documentation is easy, just follow these steps*:
 
 2. Check out the documentation::
 
-    $ svn co https://svn.plone.org/svn/plone/plone.org/diazo-docs/trunk diazo-docs
+    $ git clone https://github.com/plone/diazo diazo
 
 3. Change directories to the documentation directory::
 
-    $ cd diazo-docs
+    $ cd diazo/docs
 
 4. Make your changes. If you don't know Sphinx or reStructuredText, 
    you can read about them respectively here_, `and here`_.
@@ -21,15 +21,12 @@ Contributing to this documentation is easy, just follow these steps*:
 .. _here: http://sphinx.pocoo.org/
 .. _`and here`: http://docutils.sourceforge.net/rst.html
 
-5. Build the html::
 
-    $ make html
+5. Commit your changes::
 
-6. Commit your changes::
+    $ git commit -m 'Added documentation to make the world a better place'
 
-    $ svn commit -m 'Added documentation to make the world a better place'
-
-7. Login to deus.plone.org to synchronize your changes**::
+6. Login to deus.plone.org to synchronize your changes**::
 
     $ ssh deus.plone.org
     $ cd /srv/diazo.org
