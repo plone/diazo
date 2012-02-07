@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Basic syntax &mdash; Diazo</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Diazo" href="index.html" />
+    <link rel="next" title="Advanced usage" href="advanced.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Diazo</span></a></h1>
+        <h2 class="heading"><span>Basic syntax</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="installation.html">Installation</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="advanced.html">Advanced usage</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="basic-syntax">
+<h1>Basic syntax<a class="headerlink" href="#basic-syntax" title="Permalink to this headline">¶</a></h1>
+<p>A Diazo theme consists of a static HTML page (referred to as the &#8220;theme&#8221;) and
+a rules file, conventionally called <tt class="docutils literal"><span class="pre">rules.xml</span></tt>.</p>
+<p>The rules file contains an XML document that is is rooted in a tag called
+<tt class="docutils literal"><span class="pre">&lt;rules</span> <span class="pre">/&gt;</span></tt>:</p>
+<div class="highlight-python"><pre>&lt;rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+
+       ...
+
+&lt;/rules&gt;</pre>
+</div>
+<p>Here we have defined three namespaces: the default namespace is used for rules
+and XPath selectors. The <tt class="docutils literal"><span class="pre">css</span></tt> namespace is used for CSS3 selectors. These
+are functionally equivalent to the XPath selectors. In fact, CSS selectors are
+replaced by the equivalent XPath selector during the pre-processing step of
+the compiler. Thus, they have no performance impact. The <tt class="docutils literal"><span class="pre">xsl</span></tt> namespace is
+used if you want to add inline XSLT directives for fine-grained control. We
+will come to that later in this guide.</p>
+<blockquote>
+<div>Diazo supports complex CSS3 and XPath selectors, including things like the
+<tt class="docutils literal"><span class="pre">nth-child</span></tt> pseudo-selector. You are advised to consult a good reference
+if you are new to XPath and/or CSS3.</div></blockquote>
+<div class="section" id="rule-directives">
+<h2>Rule directives<a class="headerlink" href="#rule-directives" title="Permalink to this headline">¶</a></h2>
+<p>The following directives are allowed inside the <tt class="docutils literal"><span class="pre">&lt;rules</span> <span class="pre">/&gt;</span></tt> element in the
+rules file:</p>
+<div class="section" id="theme">
+<h3><tt class="docutils literal"><span class="pre">&lt;theme</span> <span class="pre">/&gt;</span></tt><a class="headerlink" href="#theme" title="Permalink to this headline">¶</a></h3>
+<p>Used to specify the theme file. For example:</p>
+<div class="highlight-python"><pre>&lt;theme href="theme.html" /&gt;</pre>
+</div>
+<p>Relative paths are resolved relative to the rules.xml file. For http/https
+urls, the <tt class="docutils literal"><span class="pre">--network</span></tt> switch must be supplied to the <tt class="docutils literal"><span class="pre">diazocompiler</span></tt> or
+<tt class="docutils literal"><span class="pre">diazorun</span></tt> program.</p>
+<p>The following attributes are allowed:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">href</span></tt> (required)</dt>
+<dd>A reference to the theme HTML file, as either a relative or absolute
+URL.</dd>
+<dt><tt class="docutils literal"><span class="pre">if</span></tt></dt>
+<dd>Used to specify an arbitrary condition that must be true for this theme
+reference to be used. More on this in the section on using multiple themes
+later in this guide.</dd>
+<dt><tt class="docutils literal"><span class="pre">if-path</span></tt></dt>
+<dd>Used to specify a URL path segment that must be matched by the current
+request for this theme reference to be used. More on this in the section
+on using multiple themes later in this guide.</dd>
+<dt><tt class="docutils literal"><span class="pre">if-content</span></tt> or <tt class="docutils literal"><span class="pre">css:if-content</span></tt></dt>
+<dd>Used to specify an element that must be present in the content for this
+theme reference to be used. More on this in the section on using multiple
+themes later in this guide.</dd>
+</dl>
+</div>
+<div class="section" id="notheme">
+<h3><tt class="docutils literal"><span class="pre">&lt;notheme</span> <span class="pre">/&gt;</span></tt><a class="headerlink" href="#notheme" title="Permalink to this headline">¶</a></h3>
+<p>Used to turn off all theming in certain conditions. For example:</p>
+<div class="highlight-python"><pre>&lt;theme href="theme.html" /&gt;
+&lt;notheme css:if-content="body.rawpage" /&gt;</pre>
+</div>
+<p>Multiple <tt class="docutils literal"><span class="pre">&lt;notheme</span> <span class="pre">/&gt;</span></tt> elements may be used. If the condition on any of
+them is true, the theme will be omitted. That is, they are logically or&#8217;d
+together.</p>
+<p>One or more of the following attributes are required:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">if</span></tt></dt>
+<dd>Used to specify an arbitrary condition for when to omit the theme.</dd>
+<dt><tt class="docutils literal"><span class="pre">if-path</span></tt></dt>
+<dd>Used to specify a URL path segment that must be matched by the current
+request for the theme to be omitted.</dd>
+<dt><tt class="docutils literal"><span class="pre">if-content</span></tt> or <tt class="docutils literal"><span class="pre">css:if-content</span></tt></dt>
+<dd>Used to specify an element that must be present in the content for the
+theme to be omitted.</dd>
+</dl>
+<p>If more than one attribute is used, the condition of all must be true for the
+directive to take effect. That is, they are logically and&#8217;ed together.</p>
+</div>
+<div class="section" id="replace">
+<h3><tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt><a class="headerlink" href="#replace" title="Permalink to this headline">¶</a></h3>
+<p>Used to replace an element in the theme entirely with an element in the
+content. For example:</p>
+<div class="highlight-python"><pre>&lt;replace theme="/html/head/title" content="/html/head/title"/&gt;</pre>
+</div>
+<p>The (near-)equivalent using CSS selectors would be:</p>
+<div class="highlight-python"><pre>&lt;replace css:theme="title" css:content="title"/&gt;</pre>
+</div>
+<p>The result of either is that the <tt class="docutils literal"><span class="pre">&lt;title</span> <span class="pre">/&gt;</span></tt> element in the theme is
+replaced with the <tt class="docutils literal"><span class="pre">&lt;title</span> <span class="pre">/&gt;</span></tt> element in the (dynamic) content.</p>
+<p>The following attributes are allowed:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">theme</span></tt> or <tt class="docutils literal"><span class="pre">theme-children</span></tt> or <tt class="docutils literal"><span class="pre">css:theme</span></tt> or <tt class="docutils literal"><span class="pre">css:theme-children</span></tt> (required)</dt>
+<dd>Used to specify the node(s) in the theme that is to be replaced. When using
+<tt class="docutils literal"><span class="pre">theme-children</span></tt>, all elements inside the tag that matches the XPath
+or CSS expression will be replaced, but the matched tag itself will remain
+intact.</dd>
+<dt><tt class="docutils literal"><span class="pre">content</span></tt> or <tt class="docutils literal"><span class="pre">content-children</span></tt> or <tt class="docutils literal"><span class="pre">css:content</span></tt> or <tt class="docutils literal"><span class="pre">css:content-children</span></tt> (required)</dt>
+<dd>Used to specify the node in the content that is to replace the matched
+node(s) in the theme. When using <tt class="docutils literal"><span class="pre">content-children</span></tt>, all elements inside
+the tag that matches the XPath or CSS expression will be used, but the
+matched tag itself will be left out.</dd>
+<dt><tt class="docutils literal"><span class="pre">attributes</span></tt></dt>
+<dd><p class="first">If you want to replace attributes instead of tags, you can use the
+<tt class="docutils literal"><span class="pre">attributes</span></tt> attribute to provide a space-separated list of attributes
+that should be replaced on the matched theme node(s). For example, with
+<tt class="docutils literal"><span class="pre">attributes=&quot;class&quot;</span></tt> the <tt class="docutils literal"><span class="pre">class</span></tt> attribute on the matched theme
+node(s) will be replaced by the <tt class="docutils literal"><span class="pre">class</span></tt> attribute of the matched content
+node(s).</p>
+<p><strong>Note:</strong> As with <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt> rules working on tags, if the named
+attribute(s) do not exist on the both the theme and content nodes, nothing
+will happen. If you want to copy attributes regardless of whether they
+exist on the theme node(s) or not, you can use <tt class="docutils literal"><span class="pre">&lt;copy</span> <span class="pre">/&gt;</span></tt> instead.</p>
+<p>Using <tt class="docutils literal"><span class="pre">attributes=&quot;class</span> <span class="pre">id&quot;</span></tt>, the <tt class="docutils literal"><span class="pre">class</span></tt> and <tt class="docutils literal"><span class="pre">id</span></tt> attributes will
+be replaced.</p>
+<p>As a special case, you can write <tt class="docutils literal"><span class="pre">attributes=&quot;*&quot;</span></tt> to drop all attributes
+on the matched theme node and copy over all attributes from the matched
+content node.</p>
+<p><strong>Note:</strong> You should not use <tt class="docutils literal"><span class="pre">theme-children</span></tt> or <tt class="docutils literal"><span class="pre">content-children</span></tt>
+or their CSS equivalents when using <tt class="docutils literal"><span class="pre">attributes</span></tt>.</p>
+<p class="last">See also <tt class="docutils literal"><span class="pre">&lt;merge</span> <span class="pre">/&gt;</span></tt>, <tt class="docutils literal"><span class="pre">&lt;copy</span> <span class="pre">/&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;drop</span> <span class="pre">/&gt;</span></tt></p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">method</span></tt></dt>
+<dd>If you have any <tt class="docutils literal"><span class="pre">&lt;drop</span> <span class="pre">/&gt;</span></tt> or other rules that manipulate the <em>content</em>,
+and you do not want that manipulation to be taken into account when
+performing this replacement, you can add <tt class="docutils literal"><span class="pre">method=&quot;raw&quot;</span></tt> to the
+<tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt> rule.</dd>
+<dt><tt class="docutils literal"><span class="pre">if</span></tt></dt>
+<dd>Used to specify an arbitrary condition for when to perform the
+replacement.</dd>
+<dt><tt class="docutils literal"><span class="pre">if-path</span></tt></dt>
+<dd>Used to specify a URL path segment that must be matched by the current
+request for the replacement to be performed</dd>
+<dt><tt class="docutils literal"><span class="pre">if-content</span></tt> or <tt class="docutils literal"><span class="pre">css:if-content</span></tt></dt>
+<dd>Used to specify an element that must be present in the content for the
+replacement to be performed.</dd>
+</dl>
+<p>For more advanced usage of <tt class="docutils literal"><span class="pre">&lt;replace&gt;</span></tt>, see <a href="#id1"><span class="problematic" id="id2">`Modifying the theme on the
+fly`_</span></a> and <a href="#id3"><span class="problematic" id="id4">`Modifying the content on the fly`_</span></a>.</p>
+</div>
+<div class="section" id="before-and-after">
+<h3><tt class="docutils literal"><span class="pre">&lt;before</span> <span class="pre">/&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;after</span> <span class="pre">/&gt;</span></tt><a class="headerlink" href="#before-and-after" title="Permalink to this headline">¶</a></h3>
+<p>These are equivalent to <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt> except that the node(s) matched in
+the content are inserted before or after the node(s) matched in the theme,
+respectively. For example:</p>
+<div class="highlight-python"><pre>&lt;before css:theme="#content" css:content="#info-box" /&gt;</pre>
+</div>
+<p>This would place the element with id <tt class="docutils literal"><span class="pre">info-box</span></tt> from the content
+immediately before the element with id <tt class="docutils literal"><span class="pre">content</span></tt> in the theme. If we
+wanted the box below the content instead, we could do:</p>
+<div class="highlight-python"><pre>&lt;after css:theme="#content" css:content="#info-box" /&gt;</pre>
+</div>
+<p>To insert the box immediately inside the <tt class="docutils literal"><span class="pre">#content</span></tt> node, before any of its
+existing children, we could do:</p>
+<div class="highlight-python"><pre>&lt;before css:theme-children="#content" css:content="#info-box" /&gt;</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">&lt;before</span> <span class="pre">/&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;after</span> <span class="pre">/&gt;</span></tt> have the same required and optional
+attributes as <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt>, except for <tt class="docutils literal"><span class="pre">attributes</span></tt>, which is not
+supported.</p>
+</div>
+<div class="section" id="drop">
+<h3><tt class="docutils literal"><span class="pre">&lt;drop</span> <span class="pre">/&gt;</span></tt><a class="headerlink" href="#drop" title="Permalink to this headline">¶</a></h3>
+<p>Used to drop elements from the theme or the content. This is the only
+element that accepts either <tt class="docutils literal"><span class="pre">theme</span></tt> or <tt class="docutils literal"><span class="pre">content</span></tt> attributes (or their
+<tt class="docutils literal"><span class="pre">css:</span></tt> and <tt class="docutils literal"><span class="pre">-children</span></tt> equivalents), but not both:</p>
+<div class="highlight-python"><pre>&lt;drop css:content="#portal-content .about-box" /&gt;
+&lt;replace css:theme-children="#content" css:content="#portal-content" /&gt;</pre>
+</div>
+<p>This would copy all children of the element with id <tt class="docutils literal"><span class="pre">portal-content</span></tt> in
+the theme  into the element with id <tt class="docutils literal"><span class="pre">content</span></tt> in the theme, but only
+after removing any element with class <tt class="docutils literal"><span class="pre">about-box</span></tt> inside the content
+element first.</p>
+<p>Similarly:</p>
+<div class="highlight-python"><pre>&lt;drop theme="/html/head/base" /&gt;</pre>
+</div>
+<p>Would drop the <tt class="docutils literal"><span class="pre">&lt;base</span> <span class="pre">/&gt;</span></tt> tag from the head of the theme.</p>
+<p>The following attributes are allowed:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">theme</span></tt> or <tt class="docutils literal"><span class="pre">theme-children</span></tt> or <tt class="docutils literal"><span class="pre">css:theme</span></tt> or <tt class="docutils literal"><span class="pre">css:theme-children</span></tt></dt>
+<dd>Used to specify the node(s) in the theme that is to be dropped. When using
+<tt class="docutils literal"><span class="pre">theme-children</span></tt>, all elements inside the tag that matches the XPath
+or CSS expression will be dropped, but the matched tag itself will remain
+intact.</dd>
+<dt><tt class="docutils literal"><span class="pre">content</span></tt> or <tt class="docutils literal"><span class="pre">content-children</span></tt> or <tt class="docutils literal"><span class="pre">css:content</span></tt> or <tt class="docutils literal"><span class="pre">css:content-children</span></tt></dt>
+<dd>Used to specify the node(s) in the content that is to be dropped. When
+using <tt class="docutils literal"><span class="pre">content-children</span></tt>, all elements inside the tag that matches the
+XPath or CSS expression will be dropped, but the matched tag itself will
+remain intact.</dd>
+<dt><tt class="docutils literal"><span class="pre">attributes</span></tt></dt>
+<dd><p class="first">If you want to drop attributes instead of whole tags, you can use the
+<tt class="docutils literal"><span class="pre">attributes</span></tt> attribute to provide a space-separated list of attributes
+that should be dropped on the matched theme node(s). For example, with
+<tt class="docutils literal"><span class="pre">attributes=&quot;class&quot;</span></tt> the <tt class="docutils literal"><span class="pre">class</span></tt> attribute will be dropped from the
+matched node(s). Using <tt class="docutils literal"><span class="pre">attributes=&quot;class</span> <span class="pre">id&quot;</span></tt>, the <tt class="docutils literal"><span class="pre">class</span></tt> and <tt class="docutils literal"><span class="pre">id</span></tt>
+attributes will both be dropped.</p>
+<p>As a special case, you can write <tt class="docutils literal"><span class="pre">attributes=&quot;*&quot;</span></tt> to drop all attributes
+on the matched theme node.</p>
+<p><strong>Note:</strong> You should not use <tt class="docutils literal"><span class="pre">theme-children</span></tt> or <tt class="docutils literal"><span class="pre">content-children</span></tt>
+or their CSS equivalents when using <tt class="docutils literal"><span class="pre">attributes</span></tt>.</p>
+<p class="last">See also <tt class="docutils literal"><span class="pre">&lt;merge</span> <span class="pre">/&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt></p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">if</span></tt></dt>
+<dd>Used to specify an arbitrary condition for when to perform the
+drop.</dd>
+<dt><tt class="docutils literal"><span class="pre">if-path</span></tt></dt>
+<dd>Used to specify a URL path segment that must be matched by the current
+request for the drop to be performed</dd>
+<dt><tt class="docutils literal"><span class="pre">if-content</span></tt> or <tt class="docutils literal"><span class="pre">css:if-content</span></tt></dt>
+<dd>Used to specify an element that must be present in the content for the
+drop to be performed.</dd>
+</dl>
+</div>
+<div class="section" id="strip">
+<h3><tt class="docutils literal"><span class="pre">&lt;strip</span> <span class="pre">/&gt;</span></tt><a class="headerlink" href="#strip" title="Permalink to this headline">¶</a></h3>
+<p>Used to strip a tag from the theme or content, leaving its children intact.
+You can think of this as the inverse of <tt class="docutils literal"><span class="pre">&lt;drop</span> <span class="pre">/&gt;</span></tt> with <tt class="docutils literal"><span class="pre">theme-children</span></tt>
+or <tt class="docutils literal"><span class="pre">content-children</span></tt>. For example:</p>
+<div class="highlight-python"><pre>&lt;strip css:theme="#content" /&gt;</pre>
+</div>
+<p>This will remove the element with id <tt class="docutils literal"><span class="pre">content</span></tt>, leaving in place all its
+children.</p>
+<p>Similarly:</p>
+<div class="highlight-python"><pre>&lt;strip css:content="#main-area .wrapper" /&gt;
+&lt;replace css:theme="#content-area" css:content="#main-area" /&gt;</pre>
+</div>
+<p>This will replace the theme&#8217;s element with the id <tt class="docutils literal"><span class="pre">content-area</span></tt> with the
+element in the content that has the id <tt class="docutils literal"><span class="pre">main-area</span></tt>, but will strip out any
+nested tags with the CSS class <tt class="docutils literal"><span class="pre">wrapper</span></tt> found inside <tt class="docutils literal"><span class="pre">#main-area</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">&lt;strip</span> <span class="pre">/&gt;</span></tt> uses the same attributes and semantics as <tt class="docutils literal"><span class="pre">&lt;drop</span> <span class="pre">/&gt;</span></tt>.</p>
+</div>
+<div class="section" id="merge">
+<h3><tt class="docutils literal"><span class="pre">&lt;merge</span> <span class="pre">/&gt;</span></tt><a class="headerlink" href="#merge" title="Permalink to this headline">¶</a></h3>
+<p>Used to merge the values of attributes in the content with attributes with the
+same name in the theme. This is mainly useful for merging CSS classes:</p>
+<div class="highlight-python"><pre>&lt;merge attributes="class" css:theme="body" css:content="body" /&gt;</pre>
+</div>
+<p>If the theme has the following body tag:</p>
+<div class="highlight-python"><pre>&lt;body class="alpha beta"&gt;</pre>
+</div>
+<p>and the content has:</p>
+<div class="highlight-python"><pre>&lt;body class="delta gamma"&gt;</pre>
+</div>
+<p>then the result will be:</p>
+<div class="highlight-python"><pre>&lt;body class="alpha beta delta gamma"&gt;</pre>
+</div>
+<p>The following attributes are allowed:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">attributes</span></tt> (required)</dt>
+<dd>A space-separated list of attributes to merge. A given attribute must
+exist on both the theme and the content nodes for the rule to have any
+effect.</dd>
+<dt><tt class="docutils literal"><span class="pre">theme</span></tt> or <tt class="docutils literal"><span class="pre">css:theme</span></tt> (required)</dt>
+<dd>The theme node(s) to merge the attribute value(s) with.</dd>
+<dt><tt class="docutils literal"><span class="pre">content</span></tt> (required)</dt>
+<dd>The content node(s) to merge the attribute value(s) from.</dd>
+<dt><tt class="docutils literal"><span class="pre">separator</span></tt></dt>
+<dd>The separator to use when merging attributes. The default is to use
+a space. Use <tt class="docutils literal"><span class="pre">separator=&quot;&quot;</span></tt> to merge with no separator.</dd>
+<dt><tt class="docutils literal"><span class="pre">if</span></tt></dt>
+<dd>Used to specify an arbitrary condition for when to perform the
+merge.</dd>
+<dt><tt class="docutils literal"><span class="pre">if-path</span></tt></dt>
+<dd>Used to specify a URL path segment that must be matched by the current
+request for the merge to be performed</dd>
+<dt><tt class="docutils literal"><span class="pre">if-content</span></tt> or <tt class="docutils literal"><span class="pre">css:if-content</span></tt></dt>
+<dd>Used to specify an element that must be present in the content for the
+merge to be performed.</dd>
+</dl>
+</div>
+<div class="section" id="copy">
+<h3><tt class="docutils literal"><span class="pre">&lt;copy</span> <span class="pre">/&gt;</span></tt><a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h3>
+<p>Used to copy an attribute from a node in the content to a node in the theme.
+Unlike <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt>, <tt class="docutils literal"><span class="pre">&lt;copy</span> <span class="pre">/&gt;</span></tt> will work even if the attribute does
+not exist on the target theme node. If it <em>does</em> exist, it will be replaced.
+For example:</p>
+<div class="highlight-python"><pre>&lt;copy attributes="class" css:theme="body" css:content="body"/&gt;</pre>
+</div>
+<p>The following attributes are allowed:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">theme</span></tt> or <tt class="docutils literal"><span class="pre">css:theme</span></tt> (required)</dt>
+<dd>Used to specify the node(s) in the theme where the attribute should be
+copied.</dd>
+<dt><tt class="docutils literal"><span class="pre">content</span></tt> or <tt class="docutils literal"><span class="pre">css:content</span></tt> (required)</dt>
+<dd>Used to specify the node(s) in the content from which the attribute should
+be copied.</dd>
+<dt><tt class="docutils literal"><span class="pre">attributes</span></tt> (required)</dt>
+<dd><p class="first">A space-separated list of attributes that should be copied to the theme.</p>
+<p class="last">As a special case, you can write <tt class="docutils literal"><span class="pre">attributes=&quot;*&quot;</span></tt> to drop all attributes
+on the matched theme node and copy over all attributes from the matched
+content node.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">if</span></tt></dt>
+<dd>Used to specify an arbitrary condition for when to perform the
+copy.</dd>
+<dt><tt class="docutils literal"><span class="pre">if-path</span></tt></dt>
+<dd>Used to specify a URL path segment that must be matched by the current
+request for the copy to be performed</dd>
+<dt><tt class="docutils literal"><span class="pre">if-content</span></tt> or <tt class="docutils literal"><span class="pre">css:if-content</span></tt></dt>
+<dd>Used to specify an element that must be present in the content for the
+copy to be performed.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="order-of-rule-execution">
+<h2>Order of rule execution<a class="headerlink" href="#order-of-rule-execution" title="Permalink to this headline">¶</a></h2>
+<p>In most cases, you should not care too much about the inner workings of the
+Diazo compiler. However, it can sometimes be useful to understand the order
+in which rules are applied.</p>
+<ol class="arabic simple">
+<li><tt class="docutils literal"><span class="pre">&lt;before</span> <span class="pre">/&gt;</span></tt> rules using <tt class="docutils literal"><span class="pre">theme</span></tt> (but not <tt class="docutils literal"><span class="pre">theme-children</span></tt>) are
+always executed first.</li>
+<li><tt class="docutils literal"><span class="pre">&lt;drop</span> <span class="pre">/&gt;</span></tt> rules are executed next.</li>
+<li><tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt> rules using <tt class="docutils literal"><span class="pre">theme</span></tt> (but not <tt class="docutils literal"><span class="pre">theme-children</span></tt>) are
+executed next, provided no <tt class="docutils literal"><span class="pre">&lt;drop</span> <span class="pre">/&gt;</span></tt> rule was applied to the same theme
+node or <tt class="docutils literal"><span class="pre">method=&quot;raw&quot;</span></tt> was used.</li>
+<li><tt class="docutils literal"><span class="pre">&lt;strip</span> <span class="pre">/&gt;</span></tt> rules are executed next. Note that <tt class="docutils literal"><span class="pre">&lt;strip</span> <span class="pre">/&gt;</span></tt> rules do
+not prevent other rules from firing, even if the content or theme node
+is going to be stripped.</li>
+<li>Rules that operate on attributes.</li>
+<li><tt class="docutils literal"><span class="pre">&lt;before</span> <span class="pre">/&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;after</span> <span class="pre">/&gt;</span></tt> rules using
+<tt class="docutils literal"><span class="pre">theme-children</span></tt> execute next, provided no <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt> rule using
+<tt class="docutils literal"><span class="pre">theme</span></tt> was applied to the same theme node previously.</li>
+<li><tt class="docutils literal"><span class="pre">&lt;after</span> <span class="pre">/&gt;</span></tt> rules using <tt class="docutils literal"><span class="pre">theme</span></tt> (but not <tt class="docutils literal"><span class="pre">theme-children</span></tt>) are
+executed last.</li>
+</ol>
+</div>
+<div class="section" id="behaviour-if-theme-or-content-is-not-matched">
+<h2>Behaviour if theme or content is not matched<a class="headerlink" href="#behaviour-if-theme-or-content-is-not-matched" title="Permalink to this headline">¶</a></h2>
+<p>If a rule does not match the theme (whether or not it matches the content),
+it is silently ignored.</p>
+<p>If a <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt> rule matches the theme, but not the content, the matched
+element will be dropped in the theme:</p>
+<div class="highlight-python"><pre>&lt;replace css:theme="#header" content="#header-element" /&gt;</pre>
+</div>
+<p>Here, if the element with id <tt class="docutils literal"><span class="pre">header-element</span></tt> is not found in the content,
+the placeholder with id <tt class="docutils literal"><span class="pre">header</span></tt> in the theme is removed.</p>
+<p>Similarly, the contents of a theme node matched with a <tt class="docutils literal"><span class="pre">&lt;copy</span> <span class="pre">/&gt;</span></tt> rule will
+be dropped if there is no matching content. Another way to think of this is
+that if no content node is matched, Diazo uses an empty nodeset when copying
+or replacing.</p>
+<p>If you want the placeholder to stay put in the case of a missing content node,
+you can make this a conditional rule:</p>
+<div class="highlight-python"><pre>&lt;replace css:theme="#header" content="#header-element" if-content="" /&gt;</pre>
+</div>
+<p>See the next section for more details on conditional rules.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="installation.html">Installation</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="advanced.html">Advanced usage</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Plone Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

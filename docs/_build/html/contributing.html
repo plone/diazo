@@ -1,0 +1,132 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Contributing to this documentation &mdash; Diazo</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Diazo" href="index.html" />
+    <link rel="prev" title="Deployment" href="deployment.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Diazo</span></a></h1>
+        <h2 class="heading"><span>Contributing to this documentation</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="deployment.html">Deployment</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="contributing-to-this-documentation">
+<h1>Contributing to this documentation<a class="headerlink" href="#contributing-to-this-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contributing to this documentation is easy, just follow these steps*:</p>
+<ol class="arabic simple">
+<li>Install <a class="reference external" href="http://pypi.python.org/pypi/Sphinx">Sphinx</a>.</li>
+</ol>
+<ol class="arabic" start="2">
+<li><p class="first">Check out the documentation:</p>
+<div class="highlight-python"><pre>$ svn co https://svn.plone.org/svn/plone/plone.org/diazo-docs/trunk diazo-docs</pre>
+</div>
+</li>
+<li><p class="first">Change directories to the documentation directory:</p>
+<div class="highlight-python"><pre>$ cd diazo-docs</pre>
+</div>
+</li>
+<li><p class="first">Make your changes. If you don&#8217;t know Sphinx or reStructuredText,
+you can read about them respectively <a class="reference external" href="http://sphinx.pocoo.org/">here</a>, <a class="reference external" href="http://docutils.sourceforge.net/rst.html">and here</a>.</p>
+</li>
+</ol>
+<ol class="arabic" start="5">
+<li><p class="first">Build the html:</p>
+<div class="highlight-python"><pre>$ make html</pre>
+</div>
+</li>
+<li><p class="first">Commit your changes:</p>
+<div class="highlight-python"><pre>$ svn commit -m 'Added documentation to make the world a better place'</pre>
+</div>
+</li>
+<li><p class="first">Login to deus.plone.org to synchronize your changes**:</p>
+<div class="highlight-python"><pre>$ ssh deus.plone.org
+$ cd /srv/diazo.org
+$ sudo svn up
+$ sudo make html</pre>
+</div>
+</li>
+</ol>
+<p>(*) You will need core contributor access, you can read about that here:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://dev.plone.org/plone/">http://dev.plone.org/plone/</a></li>
+</ul>
+</div></blockquote>
+<p>(**) If you don&#8217;t have access to deus.plone.org, please send a request to <a class="reference external" href="mailto:admins&#37;&#52;&#48;plone&#46;org">admins<span>&#64;</span>plone<span>&#46;</span>org</a>.</p>
+</div>
+<div class="section" id="contributing-to-diazo">
+<h1>Contributing to Diazo<a class="headerlink" href="#contributing-to-diazo" title="Permalink to this headline">¶</a></h1>
+<p>Diazo is maintained by the Plone project. The canonical source code
+repository can be found at:</p>
+<div class="highlight-python"><pre>https://svn.plone.org/svn/plone/diazo/</pre>
+</div>
+<p>Note that commit rights require a signed Plone contributor agreement. Patches
+are received with thanks.</p>
+<p>Discussion about the development of Diazo happens mainly on the
+<tt class="docutils literal"><span class="pre">plone-developers</span></tt> mailing list.</p>
+<p>If you have questions as a user of Diazo, please see <a class="reference external" href="http://plone.org/support">http://plone.org/support</a>.</p>
+<p>Some important ground rules:</p>
+<ul class="simple">
+<li>Please do all new features on a branch and ask for review before
+merging.</li>
+<li>Keep the tests passing and write new tests (simply create a new directory
+in the <tt class="docutils literal"><span class="pre">tests/</span></tt> directory following the convention of the existing
+tests).</li>
+</ul>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="deployment.html">Deployment</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Plone Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Advanced usage &mdash; Diazo</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Diazo" href="index.html" />
+    <link rel="next" title="Compilation" href="compiler.html" />
+    <link rel="prev" title="Basic syntax" href="basic.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Diazo</span></a></h1>
+        <h2 class="heading"><span>Advanced usage</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="basic.html">Basic syntax</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="compiler.html">Compilation</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="advanced-usage">
+<h1>Advanced usage<a class="headerlink" href="#advanced-usage" title="Permalink to this headline">¶</a></h1>
+<p>For most themes, the basic rules will suffice. There are times when you need
+a little more power, however, for example when working with a complex design
+or a content source that does not have well-defined, semantic markup.</p>
+<div class="section" id="conditional-rules">
+<h2>Conditional rules<a class="headerlink" href="#conditional-rules" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes, it is useful to apply a rule only if a given element appears or
+does not appear in the markup. The <tt class="docutils literal"><span class="pre">if</span></tt>, <tt class="docutils literal"><span class="pre">if-content</span></tt> and <tt class="docutils literal"><span class="pre">if-path</span></tt>
+attributes can be used with any rule, as well as the &lt;theme /&gt; and &lt;notheme /&gt;
+directives.</p>
+<div class="section" id="conditions-based-on-content-nodes">
+<h3>Conditions based on content nodes<a class="headerlink" href="#conditions-based-on-content-nodes" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">if-content</span></tt> should be set to an XPath expression. You can also use
+<tt class="docutils literal"><span class="pre">css:if-content</span></tt> with a CSS3 expression. If the expression matches a node
+in the content, the rule will be applied:</p>
+<div class="highlight-python"><pre>&lt;replace css:theme-children="#portlets" css:content=".portlet"/&gt;
+&lt;drop css:theme="#portlet-wrapper" if-content="not(//*[@class='portlet'])"/&gt;</pre>
+</div>
+<p>This will copy all elements with class <tt class="docutils literal"><span class="pre">portlet</span></tt> into the <tt class="docutils literal"><span class="pre">portlets</span></tt>
+element. If there are no matching elements in the content we drop the
+<tt class="docutils literal"><span class="pre">portlet-wrapper</span></tt> element, which is presumably superfluous.</p>
+<p>Here is another example using CSS selectors:</p>
+<div class="highlight-python"><pre>&lt;replace css:theme-children="#header" css:content-children="#header-box"
+      css:if-content="#personal-bar"/&gt;</pre>
+</div>
+<p>This will copy the children of the element with id <tt class="docutils literal"><span class="pre">header-box</span></tt> in the
+content into the element with id <tt class="docutils literal"><span class="pre">header</span></tt> in the theme, so long as an
+element with id <tt class="docutils literal"><span class="pre">personal-bar</span></tt> also appears somewhere in the content.</p>
+<p>An empty <tt class="docutils literal"><span class="pre">if-content</span></tt> (or <tt class="docutils literal"><span class="pre">css:if-content</span></tt>) is a shortcut meaning &#8220;use the
+expression in the <tt class="docutils literal"><span class="pre">content</span></tt> or <tt class="docutils literal"><span class="pre">css:content`</span></tt> attribute as the condition&#8221;.
+Hence the following two rules are equivalent:</p>
+<div class="highlight-python"><pre>&lt;replace css:theme-children="#header" css:content="#header-box"
+      css:if-content="#header-box"/&gt;
+&lt;copy css:theme-children="#header" css:content="#header-box"
+      css:if-content=""/&gt;</pre>
+</div>
+<p>If multiple rules of the same type match the same theme node but have
+different <tt class="docutils literal"><span class="pre">if-content</span></tt> expressions, they will be combined as an
+if..else if...else block:</p>
+<div class="highlight-python"><pre>&lt;replace theme-children="/html/body/h1" content="/html/body/h1/text()"
+      if-content="/html/body/h1"/&gt;
+&lt;replace theme-children="/html/body/h1" content="//h1[@id='first-heading']/text()"
+      if-content="//h1[@id='first-heading']"/&gt;
+&lt;replace theme-children="/html/body/h1" content="/html/head/title/text()" /&gt;</pre>
+</div>
+<p>These rules all attempt to fill the text in the <tt class="docutils literal"><span class="pre">&lt;h1</span> <span class="pre">/&gt;</span></tt> inside the body.
+The first rule looks for a similar <tt class="docutils literal"><span class="pre">&lt;h1</span> <span class="pre">/&gt;</span></tt> tag and uses its text. If that
+doesn&#8217;t match, the second rule looks for any <tt class="docutils literal"><span class="pre">&lt;h1</span> <span class="pre">/&gt;</span></tt> with id
+<tt class="docutils literal"><span class="pre">first-heading</span></tt>, and uses its text. If that doesn&#8217;t match either, the
+final rule will be used as a fallback (since it has no <tt class="docutils literal"><span class="pre">if-content</span></tt>),
+taking the contents of the <tt class="docutils literal"><span class="pre">&lt;title</span> <span class="pre">/&gt;</span></tt> tag in the head of the content
+document.</p>
+</div>
+<div class="section" id="conditions-based-on-paths">
+<h3>Conditions based on paths<a class="headerlink" href="#conditions-based-on-paths" title="Permalink to this headline">¶</a></h3>
+<p>Provided the live transform is correctly configured to pass the relevant
+parameter (the <tt class="docutils literal"><span class="pre">$path</span></tt> parameter), it is possible to create conditions based
+on URL path segments in the incoming request. This uses the <tt class="docutils literal"><span class="pre">if-path</span></tt>
+attribute.</p>
+<p>A leading <tt class="docutils literal"><span class="pre">/</span></tt> indicates that a path should be matched at the start of the
+url:</p>
+<div class="highlight-python"><pre>&lt;drop css:theme="#info-box" if-path="/news"/&gt;</pre>
+</div>
+<p>matches pages with urls <tt class="docutils literal"><span class="pre">/news</span></tt>, <tt class="docutils literal"><span class="pre">/news/</span></tt> and <tt class="docutils literal"><span class="pre">/news/page1.html</span></tt> but
+not <tt class="docutils literal"><span class="pre">/newspapers</span></tt> - only complete path segments are matched.</p>
+<p>A trailing <tt class="docutils literal"><span class="pre">/</span></tt> indicates that a path should be matched at the end of the
+url:</p>
+<div class="highlight-python"><pre>&lt;drop css:theme="#info-box" if-path="news/"/&gt;</pre>
+</div>
+<p>matches <tt class="docutils literal"><span class="pre">/mysite/news</span></tt> and <tt class="docutils literal"><span class="pre">/mysite/news/</span></tt>.</p>
+<p>To match an exact url, use both leading and trailing <tt class="docutils literal"><span class="pre">/</span></tt>:</p>
+<div class="highlight-python"><pre>&lt;drop css:theme="#info-box" if-path="/news/"/&gt;</pre>
+</div>
+<p>matches <tt class="docutils literal"><span class="pre">/news</span></tt> and <tt class="docutils literal"><span class="pre">/news/</span></tt>.</p>
+<p>Without a leading or trailing <tt class="docutils literal"><span class="pre">/</span></tt> the path segment(s) may match anywhere in
+the url:</p>
+<div class="highlight-python"><pre>&lt;drop css:theme="#info-box" if-path="news/space"/&gt;</pre>
+</div>
+<p>matches <tt class="docutils literal"><span class="pre">/mysite/news/space/page1.html</span></tt>.</p>
+<p>Multiple alternative path conditions may be included in the <tt class="docutils literal"><span class="pre">if-path</span></tt>
+attribute as whitespace separated list:</p>
+<div class="highlight-python"><pre>&lt;drop css:theme="#info-box" if-path="/ /index.html/"/&gt;</pre>
+</div>
+<p>matches <tt class="docutils literal"><span class="pre">/</span></tt> and <tt class="docutils literal"><span class="pre">/index.html</span></tt>. <tt class="docutils literal"><span class="pre">if-path=&quot;/&quot;</span></tt> is considered an exact
+match condition</p>
+</div>
+<div class="section" id="conditions-based-on-arbitrary-parameters">
+<h3>Conditions based on arbitrary parameters<a class="headerlink" href="#conditions-based-on-arbitrary-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">if</span></tt> attribute can be used to make a rule or theme conditional on any
+valid XPath expression.</p>
+<p>For example, if the transform is set up to receive a string parameter
+<tt class="docutils literal"><span class="pre">$mode</span></tt>, you could write:</p>
+<div class="highlight-python"><pre>&lt;drop css:theme="test-site-warning" if="$mode = 'live'" /&gt;</pre>
+</div>
+</div>
+<div class="section" id="condition-grouping-and-nesting">
+<h3>Condition grouping and nesting<a class="headerlink" href="#condition-grouping-and-nesting" title="Permalink to this headline">¶</a></h3>
+<p>A condition may be applied to multiple rules by placing it on a <tt class="docutils literal"><span class="pre">&lt;rules&gt;</span></tt>
+tag:</p>
+<div class="highlight-python"><pre>&lt;rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+
+    &lt;rules css:if-content="#personal-bar"&gt;
+        &lt;after css:theme-children="#header-box" css:content="#user-prefs"/&gt;
+        &lt;after css:theme-children="#header-box" css:content="#logout"/&gt;
+    &lt;/rules&gt;
+
+    ...
+
+&lt;/rules&gt;</pre>
+</div>
+<p>Conditions may also be nested, so:</p>
+<div class="highlight-python"><pre>&lt;rules if="condition1"&gt;
+    &lt;rules if="condition2"&gt;
+        &lt;copy if="condition3" css:theme="#a" css:content="#b"/&gt;
+    &lt;/rules&gt;
+&lt;/rules&gt;</pre>
+</div>
+<p>Is equivalent to:</p>
+<div class="highlight-python"><pre>&lt;copy if="(condition1) and (condition2) and (condition3)" css:theme="#a" css:content="#b"/&gt;</pre>
+</div>
+</div>
+<div class="section" id="multiple-conditional-themes">
+<h3>Multiple, conditional themes<a class="headerlink" href="#multiple-conditional-themes" title="Permalink to this headline">¶</a></h3>
+<p>It&#8217;s possible to specify multiple themes using conditions. For instance:</p>
+<div class="highlight-python"><pre>&lt;theme href="theme.html"/&gt;
+&lt;theme href="news.html" css:if-content="body.section-news"/&gt;
+&lt;theme href="members.html" css:if-content="body.section-members"/&gt;</pre>
+</div>
+<p>Potential themes are tested in the order specified. The first one to match is
+used.</p>
+<p>The unconditional theme is used as a fallback when no other theme&#8217;s condition
+is satisfied. If no unconditional theme is specified, the document is passed
+through without theming.</p>
+<p>It is also possible to conditionally disable theming, using <tt class="docutils literal"><span class="pre">&lt;notheme</span> <span class="pre">/&gt;</span></tt>:</p>
+<div class="highlight-python"><pre>&lt;theme href="theme.html"/&gt;
+&lt;notheme if-path="/assets" /&gt;</pre>
+</div>
+<p>The theme is disabled if there is a matching <tt class="docutils literal"><span class="pre">&lt;notheme</span> <span class="pre">/&gt;</span></tt>, regardless of
+any conditional <tt class="docutils literal"><span class="pre">&lt;theme</span> <span class="pre">/&gt;</span></tt> directives.</p>
+<p>All rules are applied to all themes. To have a rule apply to only a single
+theme, use the condition grouping syntax:</p>
+<div class="highlight-python"><pre>&lt;rules css:if-content="body.section-news"&gt;
+    &lt;theme href="news.html"/&gt;
+    &lt;copy css:content="h2.articleheading" css:theme="h1"/&gt;
+&lt;/rules&gt;</pre>
+</div>
+</div>
+</div>
+<div class="section" id="modifying-the-theme-on-the-fly">
+<h2>Modifying the theme on the fly<a class="headerlink" href="#modifying-the-theme-on-the-fly" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes, the theme is almost perfect, but cannot be modified, for example
+because it is being served from a remote location that you do not have access
+to, or because it is shared with other applications.</p>
+<p>Diazo allows you to modify the theme using &#8220;inline&#8221; markup in the rules file.
+You can think of this as a rule where the matched <tt class="docutils literal"><span class="pre">content</span></tt> is explicitly
+stated in the rules file, rather than pulled from the response being styled.</p>
+<p>For example:</p>
+<div class="highlight-python"><pre>&lt;after theme-content="/html/head"&gt;
+    &lt;style type="text/css"&gt;
+        /* From the rules */
+        body &gt; h1 { color: red; }
+    &lt;/style&gt;
+&lt;/after&gt;</pre>
+</div>
+<p>In the example above, the <tt class="docutils literal"><span class="pre">&lt;after</span> <span class="pre">/&gt;</span></tt> rule will copy the <tt class="docutils literal"><span class="pre">&lt;style</span> <span class="pre">/&gt;</span></tt>
+attribute and its contents into the <tt class="docutils literal"><span class="pre">&lt;head</span> <span class="pre">/&gt;</span></tt> of the theme. Similar rules
+can be constructed for <tt class="docutils literal"><span class="pre">&lt;before</span> <span class="pre">/&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt>.</p>
+<p>It is even possible to insert XSLT instructions into the compiled theme in
+this manner:</p>
+<div class="highlight-python"><pre>&lt;replace css:theme="#details"&gt;
+    &lt;dl id="details"&gt;
+        &lt;xsl:for-each css:select="table#details &gt; tr"&gt;
+            &lt;dt&gt;&lt;xsl:copy-of select="td[1]/text()"/&gt;&lt;/dt&gt;
+            &lt;dd&gt;&lt;xsl:copy-of select="td[2]/node()"/&gt;&lt;/dd&gt;
+        &lt;/xsl:for-each&gt;
+    &lt;/dl&gt;
+&lt;/replace&gt;</pre>
+</div>
+<p>Here, the XSL context is the root node of the content.</p>
+<p>Notice how we used <tt class="docutils literal"><span class="pre">css:select</span></tt> to select a node to operate on in the
+<tt class="docutils literal"><span class="pre">&lt;xsl:for-each</span> <span class="pre">/&gt;</span></tt> directive. In fact, you can use the <tt class="docutils literal"><span class="pre">css:</span></tt> namespace
+for anything that specifies an XPath expression, and the Diazo pre-processor
+will turn it into the equivalent XPath for you.</p>
+<p>Inline markup and XSLT may be combined with conditions:</p>
+<div class="highlight-python"><pre>&lt;before css:theme"#content-wrapper" css:if-content="body.blog-page"&gt;
+    &lt;div class="notice"&gt;Welcome to our new blog&lt;/div&gt;
+&lt;/before&gt;</pre>
+</div>
+</div>
+<div class="section" id="modifying-the-content-on-the-fly">
+<h2>Modifying the content on the fly<a class="headerlink" href="#modifying-the-content-on-the-fly" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to modify the included content using <tt class="docutils literal"><span class="pre">&lt;replace</span> <span class="pre">/&gt;</span></tt>.</p>
+<p>For example:</p>
+<div class="highlight-python"><pre>&lt;replace css:content="div#portal-searchbox input.searchButton"&gt;
+    &lt;button type="submit"&gt;
+        &lt;img src="images/search.png" alt="Search" /&gt;
+    &lt;/button&gt;
+&lt;/replace&gt;</pre>
+</div>
+<p>This may be combined with conditions and inline XSLT.</p>
+</div>
+<div class="section" id="inline-xsl-directives">
+<h2>Inline XSL directives<a class="headerlink" href="#inline-xsl-directives" title="Permalink to this headline">¶</a></h2>
+<p>You may supply inline XSL directives in the rules to tweak the final output.
+For instance to strip space from the output document use:</p>
+<div class="highlight-python"><pre>&lt;xsl:strip-space elements="*" /&gt;</pre>
+</div>
+<p>(Note: this may effect the rendering of the page on the browser.)</p>
+<p>Inline XSL directives must be placed directly inside the root <tt class="docutils literal"><span class="pre">&lt;rules&gt;</span></tt> tag
+and are applied unconditionally.</p>
+</div>
+<div class="section" id="doctypes">
+<h2>Doctypes<a class="headerlink" href="#doctypes" title="Permalink to this headline">¶</a></h2>
+<p>By default, Diazo transforms output pages with the XHTML 1.0 Transitional
+doctype. To use a strict doctype include this inline XSL:</p>
+<div class="highlight-python"><pre>&lt;xsl:output
+    doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+    doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/&gt;</pre>
+</div>
+<p>It&#8217;s important to note that only the XHTML 1.0 Strict and XHTML 1.0
+Transitional doctypes trigger the special XHTML compatibility mode of
+libxml2&#8217;s XML serializer. This ensures <tt class="docutils literal"><span class="pre">&lt;br/&gt;</span></tt> is rendered as <tt class="docutils literal"><span class="pre">&lt;br</span> <span class="pre">/&gt;</span></tt> and
+<tt class="docutils literal"><span class="pre">&lt;div/&gt;</span></tt> as <tt class="docutils literal"><span class="pre">&lt;div&gt;&lt;/div&gt;</span></tt>, which is necessary for browsers to correctly
+parse the document as HTML.</p>
+<p>It&#8217;s not possible to set the HTML5 doctype from XSLT, so plone.app.theming and
+the included WSGI middleware include a <tt class="docutils literal"><span class="pre">doctype</span></tt> option which may be set to
+&#8220;&lt;!DOCTYPE html&gt;&#8221;.</p>
+</div>
+<div class="section" id="xinclude">
+<h2>XInclude<a class="headerlink" href="#xinclude" title="Permalink to this headline">¶</a></h2>
+<p>You may wish to re-use elements of your rules file across multiple themes.
+This is particularly useful if you have multiple variations on the same theme
+used to style different pages on a particular website.</p>
+<p>Rules files may be included using the XInclude protocol.</p>
+<p>Inclusions use standard XInclude syntax. For example:</p>
+<div class="highlight-python"><pre>&lt;rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:xi="http://www.w3.org/2001/XInclude"&gt;
+
+    &lt;xi:include href="standard-rules.xml" /&gt;
+
+&lt;/rules&gt;</pre>
+</div>
+</div>
+<div class="section" id="including-external-content">
+<h2>Including external content<a class="headerlink" href="#including-external-content" title="Permalink to this headline">¶</a></h2>
+<p>Normally, the <tt class="docutils literal"><span class="pre">content</span></tt> attribute of any rule selects nodes from the
+response being returned by the underlying dynamic web server. However, it is
+possible to include content from a different URL using the <tt class="docutils literal"><span class="pre">href</span></tt> attribute
+on any rule (other than <tt class="docutils literal"><span class="pre">&lt;drop</span> <span class="pre">/&gt;</span></tt>). For example:</p>
+<div class="highlight-python"><pre>&lt;after css:theme-content="#left-column" css:content="#portlet" href="/extra.html"/&gt;</pre>
+</div>
+<p>This will resolve the URL <tt class="docutils literal"><span class="pre">/extra.html</span></tt>, look for an element with id
+<tt class="docutils literal"><span class="pre">portlet</span></tt> and then append to to the element with id <tt class="docutils literal"><span class="pre">left-column</span></tt> in the
+theme.</p>
+<p>The inclusion can happen in one of three ways:</p>
+<div class="section" id="using-the-xslt-document-function">
+<h3>Using the XSLT <tt class="docutils literal"><span class="pre">document()</span></tt> function.<a class="headerlink" href="#using-the-xslt-document-function" title="Permalink to this headline">¶</a></h3>
+<p>This is the default, but it can be explicitly specified by adding an attribute
+<tt class="docutils literal"><span class="pre">method=&quot;document&quot;</span></tt> to the rule element. Whether this is able to resolve the
+URL depends on how and where the compiled XSLT is being executed:</p>
+<div class="highlight-python"><pre>&lt;after css:theme-children="#left-column" css:content="#portlet"
+        href="/extra.html" method="document" /&gt;</pre>
+</div>
+</div>
+<div class="section" id="using-a-server-side-include-directive">
+<h3>Using a Server Side Include directive<a class="headerlink" href="#using-a-server-side-include-directive" title="Permalink to this headline">¶</a></h3>
+<p>This can be specified by setting the <tt class="docutils literal"><span class="pre">method</span></tt> attribute to <tt class="docutils literal"><span class="pre">ssi</span></tt>:</p>
+<div class="highlight-python"><pre>&lt;after css:theme-children="#left-column" css:content="#portlet"
+        href="/extra.html" method="ssi"/&gt;</pre>
+</div>
+<p>The output will render like this:</p>
+<div class="highlight-python"><pre>&lt;!--#include virtual="/extra.html?;filter_xpath=descendant-or-self::*[@id%20=%20'portlet']"--&gt;</pre>
+</div>
+<p>This SSI instruction would need to be processed by a fronting web server such
+as Apache or Nginx. Also note the <tt class="docutils literal"><span class="pre">;filter_xpath</span></tt> query string parameter.
+Since we are deferring resolution of the referenced document until SSI
+processing takes place (i.e. after the compiled Diazo XSLT transform has
+executed), we need to ask the SSI processor to filter out elements in the
+included file that we are not interested in. This requires specific
+configuration. An example for Nginx is included below.</p>
+<p>For simple SSI includes of a whole document, you may omit the <tt class="docutils literal"><span class="pre">content</span></tt>
+selector from the rule:</p>
+<div class="highlight-python"><pre>&lt;append css:theme="#left-column" href="/extra.html" method="ssi"/&gt;</pre>
+</div>
+<p>The output then renders like this:</p>
+<div class="highlight-python"><pre>&lt;!--#include virtual="/extra.html"--&gt;</pre>
+</div>
+<p>Some versions of Nginx have required the <tt class="docutils literal"><span class="pre">wait=&quot;yes&quot;</span></tt> ssi option to be
+stable. This can be specified by setting the <tt class="docutils literal"><span class="pre">method</span></tt> attribute to
+<tt class="docutils literal"><span class="pre">ssiwait</span></tt>.</p>
+</div>
+<div class="section" id="using-an-edge-side-includes-directive">
+<h3>Using an Edge Side Includes directive<a class="headerlink" href="#using-an-edge-side-includes-directive" title="Permalink to this headline">¶</a></h3>
+<p>This can be specified by setting the <tt class="docutils literal"><span class="pre">method</span></tt> attribute to <tt class="docutils literal"><span class="pre">esi</span></tt>:</p>
+<div class="highlight-python"><pre>&lt;after css:theme-content="#left-column" css:content="#portlet"
+        href="/extra.html" method="esi"/&gt;</pre>
+</div>
+<p>The output is similar to that for the SSI mode:</p>
+<div class="highlight-python"><pre>&lt;esi:include src="/extra.html?;filter_xpath=descendant-or-self::*[@id%20=%20'portlet']"&gt;&lt;/esi:include&gt;</pre>
+</div>
+<p>Again, the directive would need to be processed by a fronting server, such as
+Varnish. Chances are an ESI-aware cache server would not support arbitrary
+XPath filtering. If the referenced file is served by a dynamic web server, it
+may be able to inspect the <tt class="docutils literal"><span class="pre">;filter_xpath</span></tt> parameter and return a tailored
+response. Otherwise, if a server that can be made aware of this is placed
+in-between the cache server and the underlying web server, that server can
+perform the necessary filtering.</p>
+<p>For simple ESI includes of a whole document, you may omit the <tt class="docutils literal"><span class="pre">content</span></tt>
+selector from the rule:</p>
+<div class="highlight-python"><pre>&lt;append css:theme="#left-column" href="/extra.html" method="esi"/&gt;</pre>
+</div>
+<p>The output then renders like this:</p>
+<div class="highlight-python"><pre>&lt;esi:include src="/extra.html"&gt;&lt;/esi:include&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="basic.html">Basic syntax</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="compiler.html">Compilation</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Plone Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

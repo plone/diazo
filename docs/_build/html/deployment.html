@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Deployment &mdash; Diazo</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Diazo" href="index.html" />
+    <link rel="next" title="Contributing to this documentation" href="contributing.html" />
+    <link rel="prev" title="Compilation" href="compiler.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Diazo</span></a></h1>
+        <h2 class="heading"><span>Deployment</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="compiler.html">Compilation</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="contributing.html">Contributing to this documentation</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="deployment">
+<h1>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
+<p>Before it can be used, the deployed theme needs to be deployed to a proxying
+web server which can apply the XSLT to the response coming back from another
+web application.</p>
+<p>In theory, any XSLT processor will do. In practice, however, most websites
+do not produce 100% well-formed XML (i.e. they do not conform to the XHTML
+&#8220;strict&#8221; doctype). For this reason, it is normally necessary to use an XSLT
+processor that will parse the content using a more lenient parser with some
+knowledge of HTML. libxml2, the most popular XML processing library on Linux
+and similar operating systems, contains such a parser.</p>
+<div class="section" id="plone">
+<h2>Plone<a class="headerlink" href="#plone" title="Permalink to this headline">¶</a></h2>
+<p>If you are working with Plone, the easiest way to use Diazo is via the
+<a class="reference external" href="http://pypi.python.org/pypi/plone.app.theming">plone.app.theming</a> add-on. This provides a control panel for configuring the
+Diazo rules file, theme and other options, and hooks into a transformation
+chain that executes after Plone has rendered the final page to apply the Diazo
+transform.</p>
+<p>Even if you intend to deploy the compiled theme to another web server,
+<tt class="docutils literal"><span class="pre">plone.app.theming</span></tt> is a useful development tool: so long as Zope is in
+&#8220;development mode&#8221;, it will re-compile the theme on the fly, allowing you to
+make changes to theme and rules on the fly. It also provides some tools for
+packaging up your theme and deploying it to different sites.</p>
+</div>
+<div class="section" id="wsgi">
+<h2>WSGI<a class="headerlink" href="#wsgi" title="Permalink to this headline">¶</a></h2>
+<p>Diazo ships with two WSGI middleware filters that can be used to apply
+the theme:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">XSLTMiddleware</span></tt>, which can apply a compiled theme created with
+<tt class="docutils literal"><span class="pre">diazocompiler</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">DiazoMiddleware</span></tt>, which can be used to compile a theme on the fly and
+apply it.</li>
+</ul>
+<p>In most cases, you will want to use <tt class="docutils literal"><span class="pre">DiazoMiddleware</span></tt>, since it will cache
+the compiled theme. In fact, it uses the <tt class="docutils literal"><span class="pre">XSLTMiddleware</span></tt> internally.</p>
+<p>See <a class="reference internal" href="quickstart.html"><em>Quickstart</em></a> for an example of how to set up a WSGI pipeline using
+the <tt class="docutils literal"><span class="pre">DiazoMiddleware</span></tt> filter, which is exposed to Paste Deploy as
+<tt class="docutils literal"><span class="pre">egg:diazo</span></tt>. You can use <tt class="docutils literal"><span class="pre">egg:diazo#xslt</span></tt> for the XSLT filter.</p>
+<p>The following options can be passed to <tt class="docutils literal"><span class="pre">XSLTMiddleware</span></tt>:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">filename</span></tt></dt>
+<dd>A filename from which to read the XSLT file</dd>
+<dt><tt class="docutils literal"><span class="pre">tree</span></tt></dt>
+<dd>A pre-parsed lxml tree representing the XSLT file</dd>
+</dl>
+<p><tt class="docutils literal"><span class="pre">filename</span></tt> and <tt class="docutils literal"><span class="pre">tree</span></tt> are mutually exclusive. One is required.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">read_network</span></tt></dt>
+<dd>Set this to True to allow resolving resources from the network. Defaults
+to False.</dd>
+<dt><tt class="docutils literal"><span class="pre">update_content_length</span></tt></dt>
+<dd>Can be set to False to avoid calculating an updated <tt class="docutils literal"><span class="pre">Content-Length</span></tt>
+header when applying the transformation. This is only a good idea if some
+middleware higher up the chain is going to set the content length instead.
+Defaults to True.</dd>
+<dt><tt class="docutils literal"><span class="pre">ignored_extensions</span></tt></dt>
+<dd>Can be set to a list of filename extensions for which the transformation
+should never be applied. Defaults to a list of common file extensions for
+images and binary files.</dd>
+<dt><tt class="docutils literal"><span class="pre">environ_param_map</span></tt></dt>
+<dd>Can be set to a dict of <tt class="docutils literal"><span class="pre">environ</span></tt> keys to parameter names. The
+corresponding values in the WSGI <tt class="docutils literal"><span class="pre">environ</span></tt> will then be sent to the
+transformation as parameters with the given names.</dd>
+</dl>
+<p>Additional arguments will be passed to the transformation as parameters. When
+using Paste Deploy, they will always be passed as strings.</p>
+<p>The following options can be passed to <tt class="docutils literal"><span class="pre">DiazoMiddleware</span></tt>:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">rules</span></tt></dt>
+<dd>Path to the rules file</dd>
+<dt><tt class="docutils literal"><span class="pre">theme</span></tt></dt>
+<dd>Path to the theme, if not specified using a <tt class="docutils literal"><span class="pre">&lt;theme</span> <span class="pre">/&gt;</span></tt> directive in
+the rules file. May also be a URL to a theme served over the network.</dd>
+<dt><tt class="docutils literal"><span class="pre">debug</span></tt></dt>
+<dd>If set to True, the theme will be recompiled on every request, allowing
+changes to the rules to be made on the fly. Defaults to False.</dd>
+<dt><tt class="docutils literal"><span class="pre">prefix</span></tt></dt>
+<dd><p class="first">Can be set to a string that will be prefixed to any <em>relative</em> URL
+referenced in an image, link or stylesheet in the theme HTML file before
+the theme is passed to the compiler.</p>
+<p class="last">This allows a theme to be written so that it can be opened and views
+standalone on the filesystem, even if at runtime its static resources are
+going to be served from some other location. For example, an
+<tt class="docutils literal"><span class="pre">&lt;img</span> <span class="pre">src=&quot;images/foo.jpg&quot;</span> <span class="pre">/&gt;</span></tt> can be turned into
+<tt class="docutils literal"><span class="pre">&lt;img</span> <span class="pre">src=&quot;/static/images/foo.jpg&quot;</span> <span class="pre">/&gt;</span></tt> with a <tt class="docutils literal"><span class="pre">prefix</span></tt> of &#8220;/static&#8221;.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">includemode</span></tt></dt>
+<dd>Can be set to &#8216;document&#8217;, &#8216;esi&#8217; or &#8216;ssi&#8217; to change the way in which
+includes are processed</dd>
+<dt><tt class="docutils literal"><span class="pre">read_network</span></tt></dt>
+<dd>Set this to True to allow resolving resources from the network. Defaults
+to False.</dd>
+<dt><tt class="docutils literal"><span class="pre">update_content_length</span></tt></dt>
+<dd>Can be set to False to avoid calculating an updated <tt class="docutils literal"><span class="pre">Content-Length</span></tt>
+header when applying the transformation. This is only a good idea if some
+middleware higher up the chain is going to set the content length instead.
+Defaults to True.</dd>
+<dt><tt class="docutils literal"><span class="pre">ignored_extensions</span></tt></dt>
+<dd>Can be set to a list of filename extensions for which the transformation
+should never be applied. Defaults to a list of common file extensions for
+images and binary files.</dd>
+<dt><tt class="docutils literal"><span class="pre">environ_param_map</span></tt></dt>
+<dd>Can be set to a dict of <tt class="docutils literal"><span class="pre">environ</span></tt> keys to parameter names. The
+corresponding values in the WSGI <tt class="docutils literal"><span class="pre">environ</span></tt> will then be sent to the
+transformation as parameters with the given names.</dd>
+</dl>
+<p>When using <tt class="docutils literal"><span class="pre">DiazoMiddleware</span></tt>, the following keys will be added to the
+WSGI <tt class="docutils literal"><span class="pre">environ</span></tt>:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">diazo.rules</span></tt></dt>
+<dd>The path to the rules file.</dd>
+<dt><tt class="docutils literal"><span class="pre">diazo.absolute_prefix</span></tt></dt>
+<dd>The absolute prefix as set with the <tt class="docutils literal"><span class="pre">prefix</span></tt> argument</dd>
+<dt><tt class="docutils literal"><span class="pre">diazo.path</span></tt></dt>
+<dd>The path portion of the inbound request, which will be mapped to the the
+<tt class="docutils literal"><span class="pre">$path</span></tt> rules variable and so enables <tt class="docutils literal"><span class="pre">if-path</span></tt> expressions.</dd>
+<dt><tt class="docutils literal"><span class="pre">diazo.host</span></tt></dt>
+<dd>The inbound hostname, which will be available in the rules file as the
+variable <tt class="docutils literal"><span class="pre">$host</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">diazo.scheme</span></tt></dt>
+<dd>The request scheme (usually <tt class="docutils literal"><span class="pre">http</span></tt> or <tt class="docutils literal"><span class="pre">https</span></tt>), which will be
+available in the rules file as the variable <tt class="docutils literal"><span class="pre">$scheme</span></tt>.</dd>
+</dl>
+</div>
+<div class="section" id="nginx">
+<h2>Nginx<a class="headerlink" href="#nginx" title="Permalink to this headline">¶</a></h2>
+<p>To deploy an Diazo theme to the <a class="reference internal" href="#nginx">Nginx</a> web server, you
+will need to compile Nginx with a special version of the XSLT module that
+can (optionally) use the HTML parser from libxml2.</p>
+<p>In the future, the necessary patches to enable HTML mode parsing will
+hopefully be part of the standard Nginx distribution. In the meantime, they
+are maintained in the <a class="reference external" href="http://code.google.com/p/html-xslt/">html-xslt</a> project.</p>
+<p>Using a properly patched Nginx, you can configure it with XSLT support like
+so:</p>
+<div class="highlight-python"><pre>$ ./configure --with-http_xslt_module</pre>
+</div>
+<p>If you are using zc.buildout and would like to build Nginx, you can start
+with the following example:</p>
+<div class="highlight-python"><pre>[buildout]
+parts =
+    ...
+    Nginx
+
+...
+
+[Nginx]
+recipe = zc.recipe.cmmi
+url = http://html-xslt.googlecode.com/files/Nginx-0.7.67-html-xslt-4.tar.gz
+extra_options =
+    --conf-path=${buildout:directory}/etc/Nginx.conf
+    --sbin-path=${buildout:directory}/bin
+    --error-log-path=${buildout:directory}/var/log/Nginx-error.log
+    --http-log-path=${buildout:directory}/var/log/Nginx-access.log
+    --pid-path=${buildout:directory}/var/Nginx.pid
+    --lock-path=${buildout:directory}/var/Nginx.lock
+    --with-http_stub_status_module
+    --with-http_xslt_module</pre>
+</div>
+<p>If libxml2 or libxslt are installed in a non-standard location you may need to
+supply the <tt class="docutils literal"><span class="pre">--with-libxml2=&lt;path&gt;</span></tt> and <tt class="docutils literal"><span class="pre">--with-libxslt=&lt;path&gt;</span></tt> options.
+This requires that you set an appropriate <tt class="docutils literal"><span class="pre">LD_LIBRARY_PATH</span></tt> (Linux / BSD) or
+<tt class="docutils literal"><span class="pre">DYLD_LIBRARY_PATH</span></tt> (Mac OS X) environment variable when running Nginx.</p>
+<p>For theming a static site, enable the XSLT transform in the Nginx
+configuration as follows:</p>
+<div class="highlight-python"><pre>location / {
+    xslt_stylesheet /path/to/compiled-theme.xsl
+        path='$uri'
+        ;
+    xslt_html_parser on;
+    xslt_types text/html;
+}</pre>
+</div>
+<p>Notice how we pass the <tt class="docutils literal"><span class="pre">path</span></tt> parameter, which will enable <tt class="docutils literal"><span class="pre">if-path</span></tt>
+expressions to work. It is possible to pass additional parameters to use in
+an <tt class="docutils literal"><span class="pre">if</span></tt> condition, provided the compiled theme is aware of these. See the
+previous section about the compiler for more details.</p>
+<p>Nginx may also be configured as a transforming proxy server:</p>
+<div class="highlight-python"><pre>location / {
+    xslt_stylesheet /path/to/compiled-theme.xsl
+        path='$uri'
+        ;
+    xslt_html_parser on;
+    xslt_types text/html;
+    rewrite ^(.*)$ /VirtualHostBase/http/localhost/Plone/VirtualHostRoot$1 break;
+    proxy_pass http://127.0.0.1:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Diazo "true";
+    proxy_set_header Accept-Encoding "";
+}</pre>
+</div>
+<p>Removing the Accept-Encoding header is sometimes necessary to prevent the
+backend server compressing the response (and preventing transformation). The
+response may be compressed in Nginx by setting <tt class="docutils literal"><span class="pre">gzip</span> <span class="pre">on;</span></tt> - see the <a class="reference external" href="http://wiki.Nginx.org/NginxHttpGzipModule">gzip
+module documentation</a> for
+details.</p>
+<p>In this example an X-Diazo header was set so the backend server may choose to
+serve different different CSS resources.</p>
+<div class="section" id="including-external-content-with-ssi">
+<h3>Including external content with SSI<a class="headerlink" href="#including-external-content-with-ssi" title="Permalink to this headline">¶</a></h3>
+<p>As an event based server, it is not practical to add <tt class="docutils literal"><span class="pre">document()</span></tt> support to
+the Nginx XSLT module for in-transform inclusion. Instead, external content is
+included through SSI in a sub-request. The SSI sub-request includes a query
+string parameter to indicate which parts of the resultant document to include,
+called <tt class="docutils literal"><span class="pre">;filter_xpath</span></tt> - see above for a full example. The configuration
+below uses this parameter to apply a filter:</p>
+<div class="highlight-python"><pre>worker_processes  1;
+events {
+    worker_connections  1024;
+}
+http {
+    include mime.types;
+    gzip on;
+    server {
+        listen 80;
+        server_name localhost;
+        root html;
+
+        # Decide if we need to filter
+        if ($args ~ "^(.*);filter_xpath=(.*)$") {
+            set $newargs $1;
+            set $filter_xpath $2;
+            # rewrite args to avoid looping
+            rewrite    ^(.*)$    /_include$1?$newargs?;
+        }
+
+        location @include500 { return 500; }
+        location @include404 { return 404; }
+
+        location ^~ /_include {
+            # Restrict _include (but not ?;filter_xpath=) to subrequests
+            internal;
+            error_page 404 = @include404;
+            # Cache page fragments in Varnish for 1h when using ESI mode
+            expires 1h;
+            # Proxy
+            rewrite    ^/_include(.*)$    $1    break;
+            proxy_pass http://127.0.0.1:80;
+            # Protect against infinite loops
+            proxy_set_header X-Loop 1$http_X_Loop; # unary count
+            proxy_set_header Accept-Encoding "";
+            error_page 500 = @include500;
+            if ($http_X_Loop ~ "11111") {
+                return 500;
+            }
+            # Filter by xpath
+            xslt_stylesheet filter.xsl
+                xpath=$filter_xpath
+                ;
+            xslt_html_parser on;
+            xslt_types text/html;
+        }
+
+        location / {
+            xslt_stylesheet theme.xsl
+                path='$uri'
+                ;
+            xslt_html_parser on;
+            xslt_types text/html;
+            ssi on; # Not required in ESI mode
+        }
+    }
+}</pre>
+</div>
+<p>In this example the sub-request is set to loop back on itself, so the include
+is taken from a themed page. <tt class="docutils literal"><span class="pre">filter.xsl</span></tt> (in the lib/diazo directory) and
+<tt class="docutils literal"><span class="pre">theme.xsl</span></tt> should both be placed in the same directory as <tt class="docutils literal"><span class="pre">Nginx.conf</span></tt>.</p>
+<p>An example buildout is available in <tt class="docutils literal"><span class="pre">Nginx.cfg</span></tt> in this package.</p>
+</div>
+</div>
+<div class="section" id="varnish">
+<h2>Varnish<a class="headerlink" href="#varnish" title="Permalink to this headline">¶</a></h2>
+<p>To enable ESI in Varnish simply add the following to your VCL file:</p>
+<div class="highlight-python"><pre>sub vcl_fetch {
+    if (obj.http.Content-Type ~ "text/html") {
+        esi;
+    }
+}</pre>
+</div>
+<p>An example buildout is available in <tt class="docutils literal"><span class="pre">varnish.cfg</span></tt> in the Diazo distribution.</p>
+</div>
+<div class="section" id="apache">
+<h2>Apache<a class="headerlink" href="#apache" title="Permalink to this headline">¶</a></h2>
+<p>Diazo requires a version of <tt class="docutils literal"><span class="pre">mod_transform</span></tt> with html parsing support.
+The latest compatible version may be downloaded from the <a class="reference external" href="http://code.google.com/p/html-xslt/">html-xslt</a> project
+page.</p>
+<p>As well as the libxml2 and libxslt development packages, you will require the
+appropriate Apache development package:</p>
+<div class="highlight-python"><pre>$ sudo apt-get install libxslt1-dev apache2-threaded-dev</pre>
+</div>
+<p>(or <tt class="docutils literal"><span class="pre">apache2-prefork-dev</span></tt> when using PHP.)</p>
+<p>Install mod_transform using the standard procedure:</p>
+<div class="highlight-python"><pre>$ ./configure
+$ make
+$ sudo make install</pre>
+</div>
+<p>An example virtual host configuration is shown below:</p>
+<div class="highlight-python"><pre>NameVirtualHost *
+LoadModule transform_module /usr/lib/apache2/modules/mod_transform.so
+&lt;VirtualHost *&gt;
+
+    FilterDeclare THEME
+    FilterProvider THEME XSLT resp=Content-Type $text/html
+
+    TransformOptions +ApacheFS +HTML +HideParseErrors
+    TransformSet /theme.xsl
+    TransformCache /theme.xsl /etc/apache2/theme.xsl
+
+    &lt;LocationMatch "/"&gt;
+        FilterChain THEME
+    &lt;/LocationMatch&gt;
+
+&lt;/VirtualHost&gt;</pre>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">ApacheFS</span></tt> directive enables XSLT <tt class="docutils literal"><span class="pre">document()</span></tt> inclusion, though
+beware that the includes documents are currently parsed using the XML rather
+than HTML parser.</p>
+<p>Unfortunately it is not possible to theme error responses (such as a 404 Not
+Found page) with Apache as these do not pass through the filter chain.</p>
+<p>As parameters are not currently supported, path expression are unavailable.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="compiler.html">Compilation</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="contributing.html">Contributing to this documentation</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Plone Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

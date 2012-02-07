@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quickstart &mdash; Diazo</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Diazo" href="index.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Diazo</span></a></h1>
+        <h2 class="heading"><span>Quickstart</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="introduction.html">Introduction</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="installation.html">Installation</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>There are several ways to use Diazo:</p>
+<ul class="simple">
+<li>If you want to theme <a class="reference external" href="http://plone.org">Plone</a>, you should use <a class="reference external" href="http://pypi.python.org/pypi/plone.app.theming">plone.app.theming</a></li>
+<li>If you want to theme a Python WSGI application, you can use the WSGI
+middleware component described here and in more detail in <a class="reference internal" href="deployment.html"><em>Deployment</em></a>.</li>
+<li>If you want to theme just about anything, you can deploy a compiled theme to
+<a class="reference external" href="http://wiki.nginx.org">nginx</a> or another web server</li>
+</ul>
+<p>To test Diazo, however, the easiest way is to set up a simple proxy. The idea
+is to run a local webserver that applies the Diazo theme to a response coming
+from an existing website, either locally or somewhere on the internet.</p>
+<p>To set up the proxy, we will use <a class="reference external" href="http://www.buildout.org">Buildout</a>.</p>
+<ol class="arabic">
+<li><p class="first">Create a directory for the buildout:</p>
+<div class="highlight-python"><pre>$ mkdir diazo-test</pre>
+</div>
+</li>
+<li><p class="first">Download the latest Buildout <a class="reference external" href="http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py">bootstrap.py</a> and put it in this directory:</p>
+<div class="highlight-python"><pre>$ cd diazo-test
+$ wget http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py</pre>
+</div>
+</li>
+<li><p class="first">Create a <tt class="docutils literal"><span class="pre">buildout.cfg</span></tt> in this directory with the following contents.
+Please read the inline comments and adjust your copy as necessary:</p>
+<div class="highlight-python"><pre>[buildout]
+# Adjust the version number as required. See
+# http://good-py.appspot.com/release/diazo for a full list
+
+extends = http://good-py.appspot.com/release/diazo/1.0b1
+versions = versions
+
+# Uncomment the `lxml` line if you are on OS X or want to compile your
+# own lxml binary egg on Linux. This will not work on Windows.
+
+parts =
+#   lxml
+    diazo
+
+[diazo]
+recipe = zc.recipe.egg
+eggs =
+    diazo [wsgi]
+    PasteScript
+
+[lxml]
+recipe = z3c.recipe.staticlxml
+egg = lxml</pre>
+</div>
+</li>
+<li><p class="first">Bootstrap the buildout (this is only required once):</p>
+<div class="highlight-python"><pre>$ python bootstrap.py</pre>
+</div>
+<p>Note: You should use a Python binary version 2.6 or above. Python 3 is
+currently untested and may not work.</p>
+</li>
+<li><p class="first">Run the buildout (this is required each time you change <tt class="docutils literal"><span class="pre">buildout.cfg</span></tt>):</p>
+<div class="highlight-python"><pre>$ bin/buildout</pre>
+</div>
+<p>You should now have the binaries <tt class="docutils literal"><span class="pre">bin/paster</span></tt>, <tt class="docutils literal"><span class="pre">bin/diazocompiler</span></tt>,
+<tt class="docutils literal"><span class="pre">bin/diazorun</span></tt> and maybe a few others.</p>
+</li>
+<li><p class="first">Place the theme in a directory. The theme is a static HTML design, usually
+with placeholder content and images, stylesheets and JavaScript resources
+included via relative links. You would normally be able to test the theme
+by opening it from the filesystem.</p>
+<p>For the purposes of this quick-start guide, we&#8217;ll create a very simple
+theme:</p>
+<div class="highlight-python"><pre>$ mkdir theme</pre>
+</div>
+<p>In the <tt class="docutils literal"><span class="pre">theme</span></tt> directory, we place a <tt class="docutils literal"><span class="pre">theme.html</span></tt>:</p>
+<div class="highlight-python"><pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;My own Diazo&lt;/title&gt;
+        &lt;link rel="stylesheet" href="./theme.css" /&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1 id="title"&gt;My own Diazo home page&lt;/h1&gt;
+        &lt;div id="content"&gt;
+            &lt;!-- Placeholder --&gt;
+            Lorem ipsum ...
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+</div>
+<p>We also create <tt class="docutils literal"><span class="pre">theme.css</span></tt>:</p>
+<div class="highlight-python"><pre>h1 {
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+.headerlink {
+    color: #DDDDDD;
+    font-size: 80%;
+    text-decoration: none;
+    vertical-align: top;
+}
+
+.align-right {
+    float: right;
+    margin: 0 10px;
+    border: dotted #ddd 1px;
+}</pre>
+</div>
+</li>
+<li><p class="first">Create the rules file. The rules file contains the Diazo directives that
+merge the content (the thing we are applying the theme to) into the theme,
+replacing placeholders with real content.</p>
+<p>For this example, we&#8217;ll theme diazo.org, copying in the <tt class="docutils literal"><span class="pre">.content</span></tt>
+area and dropping the indices and tables.</p>
+<p>We create <tt class="docutils literal"><span class="pre">rules.xml</span></tt> at the top level (next to <tt class="docutils literal"><span class="pre">buildout.cfg</span></tt>):</p>
+<div class="highlight-python"><pre>&lt;rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+
+    &lt;theme href="theme/theme.html" /&gt;
+
+    &lt;drop css:content="#indices-and-tables" /&gt;
+    &lt;replace css:theme-children="#content" css:content-children=".content" /&gt;
+
+&lt;/rules&gt;</pre>
+</div>
+</li>
+</ol>
+<blockquote>
+<div><p>See <a class="reference internal" href="basic.html"><em>Basic syntax</em></a> for details about the rules syntax.</p>
+<blockquote>
+<div><strong>Hint:</strong> Use tools like Firefox&#8217;s Firebug or Chrome&#8217;s Developer Tools to
+inspect the theme and content pages, looking for suitable ids and classes
+to build the rules from.</div></blockquote>
+</div></blockquote>
+<ol class="arabic" start="8">
+<li><p class="first">Create the configuration file for the proxy server. This uses the Paste
+Deploy toolset to set up a WSGI application.</p>
+<p>At the top level (next to <tt class="docutils literal"><span class="pre">buildout.cfg</span></tt>), we create <tt class="docutils literal"><span class="pre">proxy.ini</span></tt>:</p>
+<div class="highlight-python"><pre>[server:main]
+use = egg:Paste#http
+host = 0.0.0.0
+port = 5000
+
+[composite:main]
+use = egg:Paste#urlmap
+/static = static
+/ = default
+
+# Serve the theme from disk from /static (as set up in [composite:main])
+[app:static]
+use = egg:Paste#static
+document_root = %(here)s/theme
+
+# Serve the Diazo-transformed content everywhere else
+[pipeline:default]
+pipeline = theme
+           content
+
+# Reference the rules file and the prefix applied to relative links
+# (e.g. the stylesheet). We turn on debug mode so that the theme is
+# re-built on each request, making it easy to experiment.
+
+[filter:theme]
+use = egg:diazo
+rules = %(here)s/rules.xml
+prefix = /static
+debug = true
+
+# Proxy http://diazo.org as the content
+[app:content]
+use = egg:Paste#proxy
+address = http://diazo.org/
+suppress_http_headers = accept-encoding</pre>
+</div>
+</li>
+<li><p class="first">Run the proxy:</p>
+<div class="highlight-python"><pre>$ bin/paster serve --reload proxy.ini</pre>
+</div>
+</li>
+<li><p class="first">Test, by opening up <tt class="docutils literal"><span class="pre">http://localhost:5000/</span></tt> in your favourite web
+browser.</p>
+</li>
+</ol>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="introduction.html">Introduction</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="installation.html">Installation</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Plone Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

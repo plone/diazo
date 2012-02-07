@@ -1,0 +1,121 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; Diazo</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Diazo" href="index.html" />
+    <link rel="next" title="Quickstart" href="quickstart.html" />
+    <link rel="prev" title="We Write XSLT, So You Don’t Have To™" href="index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Diazo</span></a></h1>
+        <h2 class="heading"><span>Introduction</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">We Write XSLT, So You Don&#8217;t Have To™</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="quickstart.html">Quickstart</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Consider a scenario where you have a dynamic website, to which you want to
+apply a theme built by a web designer. The web designer is not familiar with
+the technology behind the dynamic website, and so has supplied a static HTML
+wireframe of the site. This consists of an HTML file with more-or-less
+semantic markup, one or more style sheets, and perhaps some other resources
+like images or JavaScript files.</p>
+<p>Using Diazo, you could apply this theme to your dynamic website as follows:</p>
+<ol class="arabic simple">
+<li>Identify the placeholders in the theme file that need to be replaced with
+dynamic elements. Ideally, these should be clearly identifiable, for
+example with a unique HTML <tt class="docutils literal"><span class="pre">id</span></tt> attribute.</li>
+<li>Identify the corresponding markup in the dynamic website. Then write a
+&#8220;replace&#8221; or &#8220;copy&#8221; rule using Diazo&#8217;s rules syntax that replaces the
+theme&#8217;s static placeholder with the dynamic content.</li>
+<li>Identify markup in the dynamic website that should be copied wholesale into
+the theme. CSS and JavaScript links in the <tt class="docutils literal"><span class="pre">&lt;head</span> <span class="pre">/&gt;</span></tt> are often treated
+this way. Write an Diazo &#8220;append&#8221; or &#8220;prepend&#8221; rule to copy these elements
+over.</li>
+<li>Identify parts of the theme and/or dynamic website that are superfluous.
+Write an Diazo &#8220;drop&#8221; rule to remove these elements.</li>
+</ol>
+<p>The rules file is written using a simple XML syntax. Elements in the theme
+and &#8220;content&#8221; (the dynamic website) can be identified using CSS3 or XPath
+selectors.</p>
+<p>Once you have a theme HTML file and a rules XML file, you compile these using
+the Diazo compiler into a single XSLT file. You can then deploy this XSLT file
+with your application. An XSLT processor (such as mod_transform in Apache)
+will then transform the dynamic content from your website into the themed
+content your end users see. The transformation takes place on-the-fly for
+each request.</p>
+<p>Bear in mind that:</p>
+<ul class="simple">
+<li>You never have to write, or even read, a line of XSLT (unless you want to).</li>
+<li>The XSLT transformation that takes place for each request is very fast.</li>
+<li>Static theme resources (like images, stylesheets or JavaScript files) can
+be served from a static webserver, which is normally much faster than
+serving them from a dynamic application.</li>
+<li>You can leave the original theme HTML untouched, which makes it easier to
+re-use for other scenarios. For example, you can stitch two unrelated
+applications together by using a single theme file with separate rules
+files. This would result in two compiled XSLT files. You could use location
+match rules or similar techniques to choose which one to invoke for a given
+request.</li>
+</ul>
+<p>We will illustrate how to set up Diazo for deployment later in this guide.</p>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">We Write XSLT, So You Don&#8217;t Have To™</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="quickstart.html">Quickstart</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Plone Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

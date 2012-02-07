@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Compilation &mdash; Diazo</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Diazo" href="index.html" />
+    <link rel="next" title="Deployment" href="deployment.html" />
+    <link rel="prev" title="Advanced usage" href="advanced.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Diazo</span></a></h1>
+        <h2 class="heading"><span>Compilation</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="advanced.html">Advanced usage</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="deployment.html">Deployment</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="compilation">
+<h1>Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h1>
+<p>Once you have written your rules file, you need to compile it to an XSLT for
+deployment. In some cases, you may have an application server that does this
+on the fly, e.g. if you are using the <tt class="docutils literal"><span class="pre">plone.app.theming</span></tt> package with
+Plone. For deployment to a web server like Apache or Nginx, however, you will
+need to perform this step manually.</p>
+<p>The easiest way to invoke the Diazo compiler is via the <tt class="docutils literal"><span class="pre">diazocompiler</span></tt>
+command line script which is installed with the <tt class="docutils literal"><span class="pre">diazo</span></tt> egg. To see its help
+output, do:</p>
+<div class="highlight-python"><pre>$ bin/diazocompiler --help</pre>
+</div>
+<p>To run the compiler with <tt class="docutils literal"><span class="pre">rules.xml</span></tt>:</p>
+<div class="highlight-python"><pre>$ bin/diazocompiler rules.xml</pre>
+</div>
+<p>This will print the compiled XSLT file to the standard output. You can save
+it to a file instead using:</p>
+<div class="highlight-python"><pre>$ bin/diazocompiler -o theme.xsl -r rules.xml</pre>
+</div>
+<p>The following command line options are available:</p>
+<ul class="simple">
+<li>Use <tt class="docutils literal"><span class="pre">-t</span> <span class="pre">theme.html</span></tt> to supply a theme if none is specified in the rules.</li>
+<li>Use <tt class="docutils literal"><span class="pre">-p</span></tt> to pretty-print the output for improved readability. There is a
+risk that this could alter rendering in the browser, though, as browsers
+are sensitive to some kinds of whitespace.</li>
+<li>Use <tt class="docutils literal"><span class="pre">-a</span></tt> to set an absolute prefix - see below.</li>
+<li>Use <tt class="docutils literal"><span class="pre">-i</span></tt> to set the default external file inclusion mode to one of
+<tt class="docutils literal"><span class="pre">document</span></tt>, <tt class="docutils literal"><span class="pre">ssi</span></tt> or <tt class="docutils literal"><span class="pre">esi</span></tt>.</li>
+<li>Use <tt class="docutils literal"><span class="pre">-n</span></tt> to permit fetching resources over a network.</li>
+<li>Use <tt class="docutils literal"><span class="pre">--trace</span></tt> to output trace logging during the compilation step. This
+can be helpful in debugging rules.</li>
+</ul>
+<p>Check the output of the <tt class="docutils literal"><span class="pre">--help</span></tt> option for more details.</p>
+<div class="section" id="absolute-prefix">
+<h2>Absolute prefix<a class="headerlink" href="#absolute-prefix" title="Permalink to this headline">¶</a></h2>
+<p>The compiler can be passed an &#8220;absolute prefix&#8221;. This is a string that will be
+prefixed to any <em>relative</em> URL referenced an image, link or stylesheet in the
+theme HTML file, before the theme is passed to the compiler. This allows a
+theme to be written so that it can be opened and views standalone on the
+filesystem, even if at runtime its static resources are going to be served
+from some other location.</p>
+<p>For example, say the theme is written with relative URLs for images and
+external resources, such as <tt class="docutils literal"><span class="pre">&lt;img</span> <span class="pre">src=&quot;images/foo.jpg&quot;</span> <span class="pre">/&gt;</span></tt>. When the
+compiled theme is applied to a live site, this is unlikely to work for
+any URL other than a sibling of the <tt class="docutils literal"><span class="pre">images</span></tt> folder.</p>
+<p>Let&#8217;s say the theme&#8217;s static resources are served from a simple web server
+and made available under the directory <tt class="docutils literal"><span class="pre">/static</span></tt>. In this case, we can
+set an absolute prefix of <tt class="docutils literal"><span class="pre">/static</span></tt>. This will modify the <tt class="docutils literal"><span class="pre">&lt;img</span> <span class="pre">/&gt;</span></tt> tag
+in the compiled theme so that it becomes an absolute path that will work for
+any URL: <tt class="docutils literal"><span class="pre">&lt;img</span> <span class="pre">src=&quot;/static/images/foo.jpg&quot;</span></tt> /&gt;</p>
+</div>
+<div class="section" id="custom-parameters">
+<h2>Custom parameters<a class="headerlink" href="#custom-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Custom parameters may be passed in at runtime to enable advanced <tt class="docutils literal"><span class="pre">if</span></tt>
+conditions for rules and theme selection. For this to work, however, the
+compiled theme needs to be aware of the possible parameters.</p>
+<p>Use the <tt class="docutils literal"><span class="pre">-c</span></tt> / <tt class="docutils literal"><span class="pre">--custom-parameters</span></tt> option to <tt class="docutils literal"><span class="pre">diazocompiler</span></tt> and
+<tt class="docutils literal"><span class="pre">diazorun</span></tt> to list the parameter names that should be known to the theme.
+Multiple names should be separated by spaces. For example:</p>
+<div class="highlight-python"><pre>$ bin/diazocompiler -o theme.xsl -r rules.xml -c mode=test,preview</pre>
+</div>
+<p>Here, the compiled theme will be aware of the parameters <tt class="docutils literal"><span class="pre">$mode</span></tt> and
+<tt class="docutils literal"><span class="pre">$test</span></tt>. The default for <tt class="docutils literal"><span class="pre">mode</span></tt> will be the string value <tt class="docutils literal"><span class="pre">test</span></tt>.</p>
+<p>Using this <tt class="docutils literal"><span class="pre">theme.xsl</span></tt>, it is now possible to pass these parameters. See
+the section on Nginx deployment for more details about how to do this with
+Nginx, or the next section for how to test it with <tt class="docutils literal"><span class="pre">diazorun</span></tt>.</p>
+</div>
+<div class="section" id="testing-the-compiled-theme">
+<h2>Testing the compiled theme<a class="headerlink" href="#testing-the-compiled-theme" title="Permalink to this headline">¶</a></h2>
+<p>To test the compiled theme, you can apply it to a static file representing
+the content. The easiest way to do this is via the <tt class="docutils literal"><span class="pre">diazorun</span></tt> script:</p>
+<div class="highlight-python"><pre>$ bin/diazorun --xsl theme.xsl content.html</pre>
+</div>
+<p>This will print the output to the standard output. You can save it to a file
+instead with:</p>
+<div class="highlight-python"><pre>$ bin/diazorun -o output.html --xsl theme.xsl content.html</pre>
+</div>
+<p>For testing, you can also compile and run the theme in one go, by supplying the
+<tt class="docutils literal"><span class="pre">-r</span></tt> (rules) argument to <tt class="docutils literal"><span class="pre">diazorun</span></tt>:</p>
+<div class="highlight-python"><pre>$ bin/diazorun -o output.html -r rules.xml content.html</pre>
+</div>
+<p>If you are using any custom parameters, you can specify string values for
+them on the command line:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>$ bin/diazorun -o output.html -r rules.xml </dt>
+<dd>-c mode=test,preview &#8211;parameters mode=live,preview=off content.html</dd>
+</dl>
+</div></blockquote>
+<p>To see the built-in help for this command, run:</p>
+<div class="highlight-python"><pre>$ bin/diazorun --help</pre>
+</div>
+</div>
+<div class="section" id="compiling-the-theme-in-python-code">
+<h2>Compiling the theme in Python code<a class="headerlink" href="#compiling-the-theme-in-python-code" title="Permalink to this headline">¶</a></h2>
+<p>You can run the Diazo compiler from Python code using the following helper
+function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">diazo.compiler</span> <span class="kn">import</span> <span class="n">compile_theme</span>
+</pre></div>
+</div>
+<p>Please see the docstring for this function for more details about the
+parameters it takes.</p>
+<p><tt class="docutils literal"><span class="pre">compile_theme()</span></tt> returns an XSLT document in <tt class="docutils literal"><span class="pre">lxml</span></tt>&#8216;s <tt class="docutils literal"><span class="pre">ElementTree</span></tt>
+format. To set up a transform representing the theme and rules, you can do:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
+<span class="kn">from</span> <span class="nn">diazo.compiler</span> <span class="kn">import</span> <span class="n">compile_theme</span>
+
+<span class="n">absolute_prefix</span> <span class="o">=</span> <span class="s">&quot;/static&quot;</span>
+
+<span class="n">rules</span> <span class="o">=</span> <span class="s">&quot;rules.xml&quot;</span>
+<span class="n">theme</span> <span class="o">=</span> <span class="s">&quot;theme.html&quot;</span>
+
+<span class="n">compiled_theme</span> <span class="o">=</span> <span class="n">compile_theme</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">theme</span><span class="p">,</span>
+                               <span class="n">absolute_prefix</span><span class="o">=</span><span class="n">absolute_prefix</span><span class="p">)</span>
+
+<span class="n">transform</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">XSLT</span><span class="p">(</span><span class="n">compiled_theme</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can now use this transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">content</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">some_content</span><span class="p">)</span>
+<span class="n">transformed</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+<span class="n">output</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">transformed</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Please see the <tt class="docutils literal"><span class="pre">lxml</span></tt> documentation for more details.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="advanced.html">Advanced usage</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="deployment.html">Deployment</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Plone Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
