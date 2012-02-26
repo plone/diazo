@@ -24,7 +24,6 @@ Contents:
 
 .. toctree::
    :maxdepth: 3
-   :glob:
 
    introduction
    quickstart
@@ -34,6 +33,11 @@ Contents:
    compiler
    deployment
    contributing
+
+.. toctree::
+   :maxdepth: 2
+
+   recipes/index
 
 Search
 ======
