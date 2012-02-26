@@ -31,10 +31,11 @@ Debian/Ubuntu you can run::
 
     $ sudo apt-get install build-essential python2.6-dev libxslt1-dev
 
-On some operating systems, notably Mac OS X, installing a "good" ``lxml`` egg
-can be problematic, due to a mismatch in the operating system versions of the
-``libxml2`` and ``libxslt`` libraries that ``lxml`` uses. To get around that,
-you can compile a static ``lxml`` egg using the following buildout recipe::
+On some operating systems, notably Mac OS X, CentOS and other RedHat-based
+Linux distributions, installing a "good" ``lxml`` egg can be problematic,
+due to a mismatch in the operating system versions of the ``libxml2`` and
+``libxslt`` libraries that ``lxml`` uses. To get around that, you can
+compile a static ``lxml`` egg using the following buildout recipe::
 
     [buildout]
     # lxml should be first in the parts list
