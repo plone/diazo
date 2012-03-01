@@ -195,7 +195,7 @@ stated in the rules file, rather than pulled from the response being styled.
 
 For example::
 
-    <after theme-content="/html/head">
+    <after theme-children="/html/head">
         <style type="text/css">
             /* From the rules */
             body > h1 { color: red; }
