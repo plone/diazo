@@ -54,9 +54,18 @@ def update_namespace(rules_doc):
             logger.warning('The %s namespace is deprecated, use %s instead.' % (ns, namespaces['css']))
             update = True
     if update:
-        return update_transform(rules_doc)
-    else:
-        return rules_doc
+        new_doc = update_transform(rules_doc)
+        # Place the nodes into the old tree to preserve any custom resolvers
+        new = new_doc.getroot()
+        root = rules_doc.getroot()
+        root.clear()
+        root.tag = new.tag
+        root.nsmap.update(new.nsmap.items())
+        root.attrib.update(new.attrib.items())
+        root.text = new.text
+        root[:] = new[:] 
+        root.tail = new.tail
+    return rules_doc
 
 def expand_theme(element, theme_doc, absolute_prefix):
     prefix = urljoin(absolute_prefix, element.get('prefix', ''))
