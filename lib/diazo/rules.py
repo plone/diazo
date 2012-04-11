@@ -11,7 +11,7 @@ import re
 
 from optparse import OptionParser
 from lxml import etree
-from urlparse import urljoin as urlparse_urljoin
+from urlparse import urljoin
 
 from diazo.cssrules import convert_css_selectors
 from diazo.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE, pkg_xsl, _createOptionParser
@@ -31,12 +31,12 @@ annotate_rules   = pkg_xsl('annotate-rules.xsl')
 apply_rules      = pkg_xsl('apply-rules.xsl')
 fixup_themes     = pkg_xsl('fixup-themes.xsl')
 
-def urljoin(base, url, allow_fragments=True):
+def anchor_safe_urljoin(base, url):
     """Join the base with the url only when the url doesn't start with '#'"""
     if url.startswith('#'):
         return url
     else:
-        return urlparse_urljoin(base, url, allow_fragments)
+        return urljoin(base, url)
 
 def add_identifiers(rules_doc):
     """Add identifiers to the rules for debugging"""
@@ -110,7 +110,7 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         url = urljoin(absolute_prefix, node.get('src'))
         node.set('src', url)
     for node in theme_doc.xpath('//*[@href]'):
-        url = urljoin(absolute_prefix, node.get('href'))
+        url = anchor_safe_urljoin(absolute_prefix, node.get('href'))
         node.set('href', url)
     for node in theme_doc.xpath('//style'):
         node.text = IMPORT_STYLESHEET.sub(
