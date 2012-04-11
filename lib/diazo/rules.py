@@ -11,7 +11,7 @@ import re
 
 from optparse import OptionParser
 from lxml import etree
-from urlparse import urljoin
+from urlparse import urljoin as urlparse_urljoin
 
 from diazo.cssrules import convert_css_selectors
 from diazo.utils import namespaces, fullname, AC_READ_NET, AC_READ_FILE, pkg_xsl, _createOptionParser
@@ -30,6 +30,13 @@ annotate_themes  = pkg_xsl('annotate-themes.xsl')
 annotate_rules   = pkg_xsl('annotate-rules.xsl')
 apply_rules      = pkg_xsl('apply-rules.xsl')
 fixup_themes     = pkg_xsl('fixup-themes.xsl')
+
+def urljoin(base, url, allow_fragments=True):
+    """Join the base with the url only when the url doesn't start with '#'"""
+    if url.startswith('#'):
+        return url
+    else:
+        return urlparse_urljoin(base, url, allow_fragments)
 
 def add_identifiers(rules_doc):
     """Add identifiers to the rules for debugging"""
