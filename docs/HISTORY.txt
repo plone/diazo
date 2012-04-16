@@ -1,9 +1,6 @@
 History
 =======
 
-* Fixed to not apply absolute prefix for relative urls starting with '#'.
-  [datakurre]
-
 0.3 - 2010-05-29
 ----------------
 
