@@ -21,7 +21,7 @@ Conditions based on content nodes
 in the content, the rule will be applied::
 
     <replace css:theme-children="#portlets" css:content=".portlet"/>
-    <drop css:theme="#portlet-wrapper" if-content="not(//*[@class='portlet'])"/>
+    <drop css:theme="#portlet-wrapper" css:if-content="#content.wide"/>
 
 This will copy all elements with class ``portlet`` into the ``portlets``
 element. If there are no matching elements in the content we drop the
@@ -62,6 +62,11 @@ doesn't match, the second rule looks for any ``<h1 />`` with id
 final rule will be used as a fallback (since it has no ``if-content``),
 taking the contents of the ``<title />`` tag in the head of the content
 document.
+
+A content condition may be negated with ``if-not-content`` or ``css:if-not-content``,
+for example::
+
+    <drop css:theme="#portlet-wrapper" css:if-not-content=".portlet"/>
 
 Conditions based on paths
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,6 +112,10 @@ attribute as whitespace separated list::
 matches ``/`` and ``/index.html``. ``if-path="/"`` is considered an exact
 match condition
 
+A path condition may be negated with ``if-not-path``, for example::
+
+    <drop css:theme="#info-box" if-not-path="/news"/>
+
 Conditions based on arbitrary parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -116,7 +125,11 @@ valid XPath expression.
 For example, if the transform is set up to receive a string parameter
 ``$mode``, you could write::
 
-    <drop css:theme="test-site-warning" if="$mode = 'live'" />
+    <drop css:theme=".test-site-warning" if="$mode = 'live'" />
+
+Use the ``if-not`` attribute to negate the conditon, for example::
+
+    <drop css:theme=".test-site-warning" if-not="$mode = 'live'" />
 
 Condition grouping and nesting
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
