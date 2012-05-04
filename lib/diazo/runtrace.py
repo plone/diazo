@@ -2,11 +2,14 @@
 import logging
 
 from diazo.rules import process_rules
+from diazo.utils import pkg_xsl
 
 from lxml import etree
 from xml.etree import ElementTree
 
 logger = logging.getLogger('diazo')
+
+_runtrace_to_html = pkg_xsl('runtrace_to_html.xsl')
 
 def log_to_xml_string(error_log):
     return """
@@ -32,3 +35,7 @@ def generate_runtrace(rules, error_log, rules_parser=None):
         for el in rules_doc.xpath("id('"+trace.attrib['theme_xmlid']+"')"):
             el.set(condition_name(trace),trace.text)
     return rules_doc
+
+def runtrace_to_html(runtrace_doc):
+    """Convert the runtrace document into HTML"""
+    return _runtrace_to_html(runtrace_doc)
