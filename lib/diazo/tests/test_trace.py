@@ -111,6 +111,39 @@ class TestDebug(unittest.TestCase):
         # <replace css:content="div.antelope" css:theme="div.antelope" />
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[4]/@runtrace-content", "0")
     
+    def test_htmlformat(self):
+        html_string = etree.tostring(diazo.runtrace.runtrace_to_html(etree.fromstring("""\
+<rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo/css" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" css:if-content="#visual-portal-wrapper" xml:id="r0" runtrace-if-content="1">
+
+    <theme href="index.html" xml:id="r1"/>
+    <notheme if-path="presentation_view" xml:id="r2"/>
+    <notheme if-path="source_editor.htm" xml:id="r3"/>
+    <rules xml:id="r4">
+        <!-- Rules, lots of rules -->
+        <copy xml:id="r5" content="//a" theme="//a" runtrace-content="0" runtrace-theme="0" />
+        <copy xml:id="r6" content="//a" theme="//b" runtrace-content="1" runtrace-theme="0" />
+        <copy xml:id="r7" content="//b" theme="//b" runtrace-content="1" runtrace-theme="1" />
+        <copy xml:id="r8" content="//b" theme="//c" runtrace-content="1" runtrace-theme="2" />
+    </rules>
+</rules>
+        """)))
+        # HTML comments are included and escaped
+        self.assertIn("""&lt;!-- Rules, lots of rules --&gt;""",html_string)
+        # Rules tag has children
+        self.assertIn("""<span class="node unrelated">&lt;rules <span class="attr">xml:id="r4"</span>&gt;</span>""",html_string)
+        # Theme tag has no conditions, is a singleton
+        self.assertIn("""<span class="node unrelated">&lt;theme <span class="attr">href="index.html"</span> <span class="attr">xml:id="r1"</span>/&gt;</span>""",html_string)
+        # Whitespace is preserved
+        self.assertIn("xml:id=\"r4\"</span>&gt;</span>\n        &lt;!-- Rules, lots of rules --&gt;",html_string)
+        # Neither theme or content matched
+        self.assertIn("""<span class="node no-match" title="Matches: content:0 theme:0 ">&lt;copy <span class="attr">xml:id="r5"</span>""",html_string)
+        # Just content matched, still not good enough
+        self.assertIn("""<span class="node no-match" title="Matches: content:1 theme:0 ">&lt;copy <span class="attr">xml:id="r6"</span>""",html_string)
+        # Full match
+        self.assertIn("""<span class="node match" title="Matches: content:1 theme:1 ">&lt;copy <span class="attr">xml:id="r7"</span>""",html_string)
+        # More than one match still fine
+        self.assertIn("""<span class="node match" title="Matches: content:1 theme:2 ">&lt;copy <span class="attr">xml:id="r8"</span>""",html_string)
+    
     def assertXPath(self,doc,xpath,expected):
         self.assertEqual(
             doc.xpath(xpath, namespaces=(dict(d="http://namespaces.plone.org/diazo")))[0],
