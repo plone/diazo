@@ -195,6 +195,8 @@ theme, use the condition grouping syntax::
         <copy css:content="h2.articleheading" css:theme="h1"/>
     </rules>
 
+.. _modifying-the-theme-on-the-fly:
+
 Modifying the theme on the fly
 ------------------------------
 
@@ -243,6 +245,8 @@ Inline markup and XSLT may be combined with conditions::
     <before css:theme"#content-wrapper" css:if-content="body.blog-page">
         <div class="notice">Welcome to our new blog</div>
     </before>
+
+.. _modifying-the-content-on-the-fly:
 
 Modifying the content on the fly
 --------------------------------
