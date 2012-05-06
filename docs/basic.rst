@@ -155,8 +155,9 @@ The following attributes are allowed:
     Used to specify an element that must be present in the content for the
     replacement to be performed.
 
-For more advanced usage of ``<replace>``, see `Modifying the theme on the
-fly`_ and `Modifying the content on the fly`_.
+For more advanced usage of ``<replace>``, 
+see :ref:`modifying-the-theme-on-the-fly`
+and :ref:`modifying-the-content-on-the-fly`.
 
 ``<before />`` and ``<after />``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
