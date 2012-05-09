@@ -19,8 +19,6 @@ from diazo.utils import quote_param
 if __name__ == '__main__':
     __file__ = sys.argv[0]
 
-HERE = os.path.abspath(os.path.dirname(__file__))
-
 defaultsfn = pkg_resources.resource_filename('diazo.tests', 'default-options.cfg')
 
 class DiazoTestCase(unittest.TestCase):
@@ -29,7 +27,27 @@ class DiazoTestCase(unittest.TestCase):
     warnings = os.environ.get('DiazoTESTS_WARN', "1").lower() not in ('0', 'false', 'off') 
 
     testdir = None # override
-    
+
+    @classmethod
+    def suiteForParent(cls, parent, prefix):
+        """Return a suite of diazo tests, one for each directory in parent.
+        """
+        suite = unittest.TestSuite()
+        for name in os.listdir(parent):
+            if name.startswith('.'):
+                continue
+            path = os.path.join(parent, name)
+            if not os.path.isdir(path):
+                continue
+
+            contentpath = os.path.join(path, 'content.html')
+            if not os.path.isfile(contentpath):
+                continue
+
+            test_cls = type('%s-%s'%(prefix, name), (DiazoTestCase,), dict(testdir=path))
+            suite.addTest(unittest.makeSuite(test_cls))
+        return suite
+
     def testAll(self):
         self.errors = StringIO()
         config = ConfigParser.ConfigParser()
@@ -143,17 +161,11 @@ class DiazoTestCase(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    for name in os.listdir(HERE):
-        if name.startswith('.'):
-            continue
-        path = os.path.join(HERE, name)
-        if not os.path.isdir(path):
-            continue
-        
-        contentpath = os.path.join(path, 'content.html')
-        if not os.path.isfile(contentpath):
-            continue
-        
-        cls = type('Test-%s'%name, (DiazoTestCase,), dict(testdir=path))
-        suite.addTest(unittest.makeSuite(cls))
+    dist = pkg_resources.get_distribution('diazo')
+    tests_dir = os.path.join(dist.location, 'diazo', 'tests')
+    suite.addTest(DiazoTestCase.suiteForParent(tests_dir, 'Test'))
+    if dist.precedence == pkg_resources.DEVELOP_DIST:
+        recipes_dir = os.path.join(os.path.dirname(dist.location), 'docs', 'recipes')
+        if os.path.exists(os.path.join(recipes_dir, 'diazo-tests-marker.txt')): # Could still be a 'System' package.
+            suite.addTest(DiazoTestCase.suiteForParent(recipes_dir, 'Recipe'))
     return suite

@@ -1,0 +1,1 @@
+Marker that subdirectories are diazo tests.

@@ -1,6 +1,31 @@
 Changelog
 =========
 
+1.0.2 (unreleased)
+------------------
+
+* Allow attributes (i.e. xml:id) to pass through on drop @attribute nodes
+  [lentinj]
+
+1.0.1 (2012-05-09)
+------------------
+
+* Fixed to not apply absolute prefix for relative urls starting with '#'.
+  [datakurre]
+
+1.0 (2012-04-15)
+----------------
+
+* Preserve resolvers in the rules document when updating from an old namespace.
+
+* Add javascript / css include support to WSGIResolver.
+
+* Refactoring if WSGI middleware to use WebOb better and fix corner cases.
+
+* Use same xpath prefix for css:if-not-content and css:if-content.
+
+* Add support for @if-not-path.
+
 1.0rc4 - 2011-11-02
 -------------------
 

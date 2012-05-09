@@ -1,0 +1,15 @@
+<rules
+  xmlns="http://namespaces.plone.org/diazo"
+  xmlns:css="http://namespaces.plone.org/diazo/css"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  >
+  <replace css:content-children="#content" css:theme-children="#content"/>
+  <before css:theme-children="#content">
+      <div id="wrapper">
+        <xsl:apply-templates css:select="#title" mode="raw"/>
+        <xsl:apply-templates css:select="#description" mode="raw"/>
+      </div>
+  </before>
+  <drop css:content="#title"/>
+  <drop css:content="#description"/>  
+</rules>

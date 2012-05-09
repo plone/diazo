@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+    <!-- indent and strip space for pretty output -->
+    <xsl:output indent="yes"/>
+    <xsl:strip-space elements="*"/>
+
+    <!-- TinyMCE empty paras include a non breaking space -->
+    <drop content="p[not(*) and (not(normalize-space()) or text() = '&#160;')]"/>
+
+    <replace css:theme="#target" css:content="#content" />            
+</rules>
