@@ -109,9 +109,10 @@
     <xsl:template match="//diazo:rules/diazo:drop[@attributes and @content]">
         <xsl:variable name="attributes" select="concat(' ', normalize-space(@attributes), ' ')"/>
         <xsl:variable name="content" select="@content"/>
+        <xsl:variable name="node_attrs" select="@*"/>
         <xsl:for-each select="str:tokenize(normalize-space(@attributes), ' ')">
             <xsl:element name="diazo:drop">
-                <xsl:apply-templates select="@*"/>
+                <xsl:apply-templates select="$node_attrs"/>
                 <xsl:attribute name="content"><xsl:value-of select="$content"/><xsl:choose>
                     <xsl:when test="contains($attributes, ' * ')">/@*</xsl:when>
                     <xsl:otherwise>/@*[contains('<xsl:value-of select="$attributes"/>', concat(' ', name(), ' '))]</xsl:otherwise>

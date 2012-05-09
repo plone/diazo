@@ -4,6 +4,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+* Allow attributes (i.e. xml:id) to pass through on drop @attribute nodes
+  [lentinj]
+
 1.0.1 (2012-05-09)
 ------------------
 
