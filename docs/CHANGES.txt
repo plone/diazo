@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.1 (unreleased)
+1.0.1 (2012-05-09)
 ------------------
 
 * Fixed to not apply absolute prefix for relative urls starting with '#'.
