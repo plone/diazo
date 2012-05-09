@@ -463,6 +463,7 @@
                  <xsl:element name="xsl:value-of"><xsl:attribute name="select">count(<xsl:value-of select="$attr"/>)</xsl:attribute></xsl:element>
                  <xsl:text>&lt;/runtrace&gt;</xsl:text>
                </xsl:element>
+               <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
 
             <!-- For theme conditions, count matches in document relevant to current theme -->
