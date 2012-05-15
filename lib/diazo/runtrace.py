@@ -33,7 +33,7 @@ def generate_runtrace(rules, error_log, rules_parser=None):
     
     for trace in trace_doc.xpath('/runtrace/runtrace'):
         for el in rules_doc.xpath("id('"+trace.attrib['theme_xmlid']+"')"):
-            el.set(condition_name(trace),trace.text)
+            el.set(condition_name(trace),trace.text or '')
     return rules_doc
 
 def runtrace_to_html(runtrace_doc):

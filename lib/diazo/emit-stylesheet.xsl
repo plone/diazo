@@ -460,7 +460,9 @@
                      <xsl:text>&quot;</xsl:text>
                  </xsl:for-each>
                  <xsl:text>&gt;</xsl:text>
-                 <xsl:element name="xsl:value-of"><xsl:attribute name="select">count(<xsl:value-of select="$attr"/>)</xsl:attribute></xsl:element>
+                 <xsl:if test="string($attr)">
+                     <xsl:element name="xsl:value-of"><xsl:attribute name="select">count(<xsl:value-of select="$attr"/>)</xsl:attribute></xsl:element>
+                 </xsl:if>
                  <xsl:text>&lt;/runtrace&gt;</xsl:text>
                </xsl:element>
                <xsl:text>&#10;</xsl:text>
