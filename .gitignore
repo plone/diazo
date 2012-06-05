@@ -6,3 +6,4 @@ dist
 *.pyc
 *.pyo
 *.egg-info
+.tox
