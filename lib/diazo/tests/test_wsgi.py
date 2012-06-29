@@ -7,7 +7,7 @@ if __name__ == '__main__':
     __file__ = sys.argv[0]
 
 def testfile(filename):
-    return os.path.join(os.path.abspath(os.path.dirname(__file__)), 'test_wsgi_files', filename)
+    return '/'.join(('file://',) + os.path.split(os.path.abspath(os.path.dirname(__file__))) + ('test_wsgi_files', filename,))
 
 HTML = """\
 <html>
@@ -804,7 +804,7 @@ class TestDiazoMiddleware(unittest.TestCase):
             return [HTML]
         
         app = DiazoMiddleware(application, {}, testfile('explicit_theme.xml'),
-            theme='file://' + testfile('theme.html'))
+            theme=testfile('theme.html'))
         request = Request.blank('/')
         response = request.get_response(app)
         
