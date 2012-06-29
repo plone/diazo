@@ -451,15 +451,15 @@ class DiazoMiddleware(object):
         network_resolver = NetworkResolver()
         
         rules_parser = etree.XMLParser(recover=False)
-        rules_parser.resolvers.add(filesystem_resolver)
         rules_parser.resolvers.add(wsgi_resolver)
+        rules_parser.resolvers.add(filesystem_resolver)
         rules_parser.resolvers.add(python_resolver)
         if self.read_network:
             rules_parser.resolvers.add(network_resolver)
         
         theme_parser = etree.HTMLParser()
-        theme_parser.resolvers.add(filesystem_resolver)
         theme_parser.resolvers.add(wsgi_resolver)
+        theme_parser.resolvers.add(filesystem_resolver)
         theme_parser.resolvers.add(python_resolver)
         if self.read_network:
             theme_parser.resolvers.add(network_resolver)
