@@ -4,6 +4,10 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+* Allow Diazo middleware to read rules file location from HTTP headers.
+  This requires explicitly specifying ``read_headers`` as an option against
+  the middleware.
+  [davidjb]
 * Allow attributes (i.e. xml:id) to pass through on drop @attribute nodes
   [lentinj]
 

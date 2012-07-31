@@ -437,6 +437,32 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue('<div id="content">Content content</div>' in response.body)
         self.assertTrue('<title>Transformed</title>' in response.body)
     
+    def test_diazo_rules_request_header(self):
+        from lxml import etree
+        
+        from diazo.wsgi import DiazoMiddleware
+        from webob import Request
+        
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html')]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = DiazoMiddleware(application, {}, rules=None, read_headers=True)
+
+        #Without headers or rules set, expect an exception
+        request = Request.blank('/')
+        self.assertRaisesRegexp(ValueError, 'No rules specified', request.get_response, app)
+
+        #With headers set, expect theming        
+        request = Request.blank('/')
+        request.headers['X-Diazo-Rules'] = testfile('simple_transform.xml')
+        response = request.get_response(app)
+        
+        self.assertTrue('<div id="content">Content content</div>' in response.body)
+        self.assertTrue('<title>Transformed</title>' in response.body)
+    
     def test_non_html_content_type(self):
         from lxml import etree
         

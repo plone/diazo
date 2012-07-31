@@ -16,6 +16,7 @@ from diazo.utils import pkg_parse
 from diazo.utils import quote_param
 
 DIAZO_OFF_HEADER = 'X-Diazo-Off'
+DIAZO_RULES_HEADER = 'HTTP_X_DIAZO_RULES'
 
 def asbool(value):
     if isinstance(value, basestring):
@@ -342,11 +343,13 @@ class DiazoMiddleware(object):
     """Invoke the Diazo transform as middleware
     """
     
-    def __init__(self, app, global_conf, rules,
+    def __init__(self, app, global_conf, 
+                 rules=None,
                  theme=None,
                  prefix=None,
                  includemode='document',
                  debug=False,
+                 read_headers=False,
                  read_network=False,
                  read_file=True,
                  update_content_length=False,
@@ -365,7 +368,9 @@ class DiazoMiddleware(object):
     ):
         """Create the middleware. The parameters are:
         
-        * ``rules``, the rules file
+        * ``rules``, the rules file, which may be omitted if 
+          enabling the ``read_headers`` option and reading
+          the rules location from the ``X-Diazo-Rules`` HTTP header.
         * ``theme``, a URL to the theme file (may be a file:// URL)
         * ``debug``, set to True to recompile the theme on each request
         * ``prefix`` can be set to a string that will be prefixed to
@@ -379,6 +384,11 @@ class DiazoMiddleware(object):
           "/static".
         * ``includemode`` can be set to 'document', 'esi' or 'ssi' to change
           the way in which includes are processed
+        * ``read_headers``, should be set to True to allow resolving
+          options from HTTP headers. At present, ``X-Diazo-Rules`` is
+          the only such option, which refers to the location of the rules file.
+          *Warning*: beware of enabling this option if users are able to
+          spoof headers.
         * ``read_network``, should be set to True to allow resolving resources
           from the network.
         * ``read_file``, should be set to False to disallow resolving resources
@@ -418,6 +428,7 @@ class DiazoMiddleware(object):
         self.absolute_prefix = prefix
         self.includemode = includemode
         self.debug = asbool(debug)
+        self.read_headers = asbool(read_headers)
         self.read_network = asbool(read_network)
         self.read_file = asbool(read_file)
         self.update_content_length = asbool(update_content_length)
@@ -509,6 +520,14 @@ class DiazoMiddleware(object):
             )
 
     def __call__(self, environ, start_response):
+        #Read certain options from headers but only if explicitly allowed
+        if self.read_headers:
+            if DIAZO_RULES_HEADER in environ:
+                self.rules = environ[DIAZO_RULES_HEADER]
+
+        if not self.rules:
+            raise ValueError('No rules specified in settings or headers.')
+
         if self.filter_xpath:
             filter_xpath = ';filter_xpath='
             query_string = environ.get('QUERY_STRING', '')
