@@ -436,6 +436,100 @@ class TestXSLTMiddleware(unittest.TestCase):
         
         self.assertTrue('<div id="content">Content content</div>' in response.body)
         self.assertTrue('<title>Transformed</title>' in response.body)
+        
+    def test_xlst_xsl_request_header(self):
+        from lxml import etree
+        
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+        
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html')]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = XSLTMiddleware(application, {}, filename=None,
+                             tree=None, read_headers=True)
+        
+        #Without headers set, expect no transformation
+        request = Request.blank('/')
+        response = request.get_response(app)
+        self.assertEqual(response.body, HTML)
+        
+        #With headers set, expect transformation
+        request = Request.blank('/')
+        request.headers['X-XSLT-Stylesheet'] = testfile('simple_transform.xsl')[8:]
+        response = request.get_response(app)
+        
+        self.assertTrue('<div id="content">Content content</div>' in response.body)
+        self.assertTrue('<title>Transformed</title>' in response.body)
+        
+    def test_xlst_xsl_response_header(self):
+        from lxml import etree
+        
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+        
+        file_path = testfile('simple_transform.xsl')[8:]
+        
+        #Without headers set, expect no transformation
+        def application1(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html')]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = XSLTMiddleware(application1, {}, filename=None,
+                             tree=None, read_headers=True)
+        
+        request = Request.blank('/')
+        response = request.get_response(app)
+        
+        self.assertEqual(response.body, HTML)
+        
+        #With headers set, expect transformation
+        def application2(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html'),
+                                ('X-XSLT-Stylesheet', file_path)]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = XSLTMiddleware(application2, {}, filename=None,
+                             tree=None, read_headers=True)
+        
+        request = Request.blank('/')
+        response = request.get_response(app)
+        
+        self.assertTrue('<div id="content">Content content</div>' in response.body)
+        self.assertTrue('<title>Transformed</title>' in response.body)
+        
+    def test_xlst_xsl_header_precedence(self):
+        from lxml import etree
+        
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+        
+        request_file_path = testfile('simple_transform.xsl')[8:]
+        response_file_path = testfile('simple_transform_response.xsl')[8:]
+        
+        #Test that the header from the response takes precendence
+        def application1(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html'),
+                                ('X-XSLT-Stylesheet', response_file_path)]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = XSLTMiddleware(application1, {}, filename=None,
+                             tree=None, read_headers=True)
+        
+        request = Request.blank('/')
+        request.headers['X-XSLT-Stylesheet'] = request_file_path
+        response = request.get_response(app)
+        
+        self.assertTrue('<title>Used response header</title>' in response.body) 
     
     def test_diazo_rules_request_header(self):
         from lxml import etree

@@ -52,8 +52,17 @@ The following options can be passed to ``XSLTMiddleware``:
 ``tree``
     A pre-parsed lxml tree representing the XSLT file
 
-``filename`` and ``tree`` are mutually exclusive. One is required.
+``filename`` and ``tree`` are mutually exclusive. One is required, except in
+the situation when ``read_headers`` is enabled and the XSL location is being
+sent from another part of the pipeline. In this special case, the transform is
+loaded as late as possible after obtaining a WSGI response and after taking
+into account potential situations where transformation should not take place.
 
+``read_headers``
+    Set this to True to allow resolving options from HTTP
+    headers. At present, ``X-XLST-Stylesheet`` is the only such option, which
+    refers to the file path to an XSL file.  *Warning*: beware of enabling 
+    this option if users are able to spoof headers.
 ``read_network``
     Set this to True to allow resolving resources from the network. Defaults
     to False.

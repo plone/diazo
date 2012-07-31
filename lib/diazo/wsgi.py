@@ -17,6 +17,7 @@ from diazo.utils import quote_param
 
 DIAZO_OFF_HEADER = 'X-Diazo-Off'
 DIAZO_RULES_HEADER = 'HTTP_X_DIAZO_RULES'
+XLST_XSL_HEADER = 'X-XSLT-Stylesheet'
 
 def asbool(value):
     if isinstance(value, basestring):
@@ -51,40 +52,40 @@ class NetworkResolver(etree.Resolver):
 class PythonResolver(etree.Resolver):
     """Resolver for python:// urls
     """
-    
+
     def resolve(self, system_url, public_id, context):
         if not system_url.lower().startswith('python://'):
             return None
-        
+
         spec = system_url[9:]
         package, resource_name = spec.split('/', 1)
         filename = pkg_resources.resource_filename(package, resource_name)
-        
+
         return self.resolve_filename(filename, context)
 
 class WSGIResolver(etree.Resolver):
     """Resolver that performs a WSGI subrequest
     """
-    
+
     def __init__(self, app):
         self.app = app
-    
+
     def resolve(self, system_url, public_id, context):
         # Ignore URLs with a scheme
         if '://' in system_url:
             return None
-        
+
         # Ignore the special 'diazo:' resolvers
         if system_url.startswith('diazo:'):
             return None
-        
+
         subrequest = Request.blank(system_url)
         response = subrequest.get_response(self.app)
-        
+
         status_code, reason = response.status.split(None, 1)
         if not status_code == '200':
             return None
-        
+
         charset = response.charset
         if charset is None:
             charset = 'UTF-8' # Maybe this should be latin1?
@@ -102,15 +103,16 @@ class WSGIResolver(etree.Resolver):
                 result,
                 '</style></body></html>',
                 ])
-        
+
         return self.resolve_string(result, context)
 
 class XSLTMiddleware(object):
     """Apply XSLT in middleware
     """
-    
+
     def __init__(self, app, global_conf,
                  filename=None, tree=None,
+                 read_headers=False,
                  read_network=False,
                  read_file=True,
                  update_content_length=False,
@@ -129,14 +131,24 @@ class XSLTMiddleware(object):
                  **params
     ):
         """Initialise, giving a filename or parsed XSLT tree.
-        
+
         The parameters are:
-        
+
         * ``filename``, a filename from which to read the XSLT file
         * ``tree``, a pre-parsed lxml tree representing the XSLT file
-        
-        ``filename`` and ``tree`` are mutually exclusive.
-        
+
+        ``filename`` and ``tree`` are mutually exclusive. In addition, neither
+          may be specified if ``read_headers`` is enabled and the XSL location
+          is being sent from another part of the pipeline. In this latter
+          case, the transform is loaded as late as possible - after taking
+          potential situations where transformation should not happen into
+          account.
+
+        * ``read_headers``, should be set to True to allow resolving options
+          from HTTP headers. At present, ``X-XLST-Stylesheet`` is
+          the only such option, which refers to the file path to an XSL file.
+          *Warning*: beware of enabling this option if users are able to
+          spoof headers.
         * ``read_network``, should be set to True to allow resolving resources
           from the network.
         * ``read_file``, should be set to False to disallow resolving resources
@@ -160,20 +172,61 @@ class XSLTMiddleware(object):
           Content-Type header. By default it is inferred from the stylesheet.
         * ``remove_conditional_headers``, should be set to True if the
         transformed output includes other files.
-        
+
         Additional keyword arguments will be passed to the transformation as
         parameters.
         """
-        
+
         self.app = app
         self.global_conf = global_conf
-        
+
+        self.read_headers = asbool(read_headers)
+        self.read_network = asbool(read_network)
+        self.read_file = asbool(read_file)
+        self.access_control = etree.XSLTAccessControl(read_file=self.read_file, write_file=False, create_dir=False, read_network=self.read_network, write_network=False)
+
+        self.transform = None
+        if not self.read_headers:
+            self._prepare_transform(filename=filename,
+                                    tree=tree,
+                                    content_type=content_type,
+                                    charset=charset)
+
+        self.update_content_length = asbool(update_content_length)
+        self.ignored_extensions = frozenset(ignored_extensions)
+
+        self.ignored_pattern = re.compile("^.*\.(%s)$" % '|'.join(ignored_extensions))
+
+        self.environ_param_map = environ_param_map or {}
+        if isinstance(unquoted_params, basestring):
+            unquoted_params = unquoted_params.split()
+        self.unquoted_params = unquoted_params and frozenset(unquoted_params) or ()
+        self.params = params
+        self.doctype = doctype
+        self.remove_conditional_headers = asbool(remove_conditional_headers)
+
+    def _prepare_transform(self,
+                           filename=None,
+                           tree=None,
+                           content_type=None,
+                           charset=None):
+        """Prepares the XLST transformer given a filename or XLST tree.
+
+        This function allows an XSL file or tree to be loaded at any time.
+        In particular, at object initialisation if an explicit filename
+        or tree is given, or at request time, when considering XSL transforms
+        based upon HTTP headers present.
+        """
         if filename is not None:
-            xslt_file = open(filename)
+            try:
+                xslt_file = open(filename)
+            except:
+                import ipdb; ipdb.set_trace()
+
             source = xslt_file.read()
             tree = etree.fromstring(source)
             xslt_file.close()
-        
+
         if content_type is None:
             mediatype = tree.xpath('/xsl:stylesheet/xsl:output/@media-type',
                                    namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"))
@@ -191,33 +244,17 @@ class XSLTMiddleware(object):
                     elif method.lower() == 'xml':
                         content_type = 'text/xml'
         self.content_type = content_type
-        
+
         if charset is None:
             encoding = tree.xpath('/xsl:stylesheet/xsl:output/@encoding',
-                                  namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"))
+                                   namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"))
             if encoding:
                 charset = encoding[-1]
             else:
                 charset = "UTF-8"
         self.charset = charset
-        
-        self.read_network = asbool(read_network)
-        self.read_file = asbool(read_file)
-        self.access_control = etree.XSLTAccessControl(read_file=self.read_file, write_file=False, create_dir=False, read_network=self.read_network, write_network=False)
         self.transform = etree.XSLT(tree, access_control=self.access_control)
-        self.update_content_length = asbool(update_content_length)
-        self.ignored_extensions = frozenset(ignored_extensions)
-        
-        self.ignored_pattern = re.compile("^.*\.(%s)$" % '|'.join(ignored_extensions))
-        
-        self.environ_param_map = environ_param_map or {}
-        if isinstance(unquoted_params, basestring):
-            unquoted_params = unquoted_params.split()
-        self.unquoted_params = unquoted_params and frozenset(unquoted_params) or ()
-        self.params = params
-        self.doctype = doctype
-        self.remove_conditional_headers = asbool(remove_conditional_headers)
-    
+
     def __call__(self, environ, start_response):
         request = Request(environ)
         if self.should_ignore(request):
@@ -238,8 +275,22 @@ class XSLTMiddleware(object):
         if not self.should_transform(response):
             return response(environ, start_response)
 
+        #Read certain options from headers but only if explicitly allowed
+        if self.read_headers:
+            request_filename = request.headers.get(XLST_XSL_HEADER, None)
+            response_filename = response.headers.get(XLST_XSL_HEADER, None)
+            #Response takes precedence
+            filename = response_filename and response_filename \
+                    or request_filename
+            if filename:
+                self._prepare_transform(filename)
+
+        #If no transform loaded, then bypass
+        if not self.transform:
+            return response(environ, start_response)
+
         input_encoding = response.charset
-        
+
         # Remove any response headers that might change.
         response.content_range = None
         response.accept_ranges = None
@@ -256,9 +307,9 @@ class XSLTMiddleware(object):
         # Note, the Content-Length header will not be set
         if request.method == 'HEAD':
             return response(environ, start_response)
-        
+
         # Set up parameters
-        
+
         params = {}
         for key, value in self.environ_param_map.items():
             if key in environ:
@@ -271,16 +322,16 @@ class XSLTMiddleware(object):
                 params[key] = value
             else:
                 params[key] = quote_param(value)
-        
+
         # Apply the transformation
         try:
             serializer = getHTMLSerializer(response.app_iter, encoding=input_encoding)
         finally:
             if hasattr(response.app_iter, 'close'):
                 response.app_iter.close()
-        
+
         tree = self.transform(serializer.tree, **params)
-        
+
         # Set content type (normally inferred from stylesheet)
         # Unfortunately lxml does not expose docinfo.mediaType
         if self.content_type is None:
@@ -289,61 +340,61 @@ class XSLTMiddleware(object):
             else:
                 response.content_type = 'text/xml'
         response.charset = tree.docinfo.encoding or self.charset
-        
+
         # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
         # the content tree in later middleware stages.
         response.app_iter = XMLSerializer(tree, doctype=self.doctype)
-        
+
         # Calculate the content length - we still return the parsed tree
         # so that other middleware could avoid having to re-parse, even if
         # we take a hit on serialising here
         if self.update_content_length:
             response.content_length = len(str(response.app_iter))
-        
+
         return response(environ, start_response)
-   
+
     def should_ignore(self, request):
         """Determine if we should ignore the request
         """
-        
+
         if asbool(request.headers.get(DIAZO_OFF_HEADER, 'no')):
             return True
-        
+
         path = request.path_info
         if self.ignored_pattern.search(path) is not None:
             return True
-        
+
         return False
-    
+
     def should_transform(self, response):
         """Determine if we should transform the response
         """
-        
+
         if asbool(response.headers.get(DIAZO_OFF_HEADER, 'no')):
             return False
-        
+
         content_type = response.headers.get('Content-Type')
         if not content_type or not (
             content_type.lower().startswith('text/html') or
             content_type.lower().startswith('application/xhtml+xml')
         ):
             return False
-        
+
         content_encoding = response.headers.get('Content-Encoding')
         if content_encoding in ('zip', 'deflate', 'compress',):
             return False
-        
+
         status_code, reason = response.status.split(None, 1)
         if status_code.startswith('3') or status_code == '204' or status_code == '401':
             return False
-        
+
         return True
 
 class DiazoMiddleware(object):
     """Invoke the Diazo transform as middleware
     """
-    
-    def __init__(self, app, global_conf, 
+
+    def __init__(self, app, global_conf,
                  rules=None,
                  theme=None,
                  prefix=None,
@@ -367,8 +418,8 @@ class DiazoMiddleware(object):
                 **params
     ):
         """Create the middleware. The parameters are:
-        
-        * ``rules``, the rules file, which may be omitted if 
+
+        * ``rules``, the rules file, which may be omitted if
           enabling the ``read_headers`` option and reading
           the rules location from the ``X-Diazo-Rules`` HTTP header.
         * ``theme``, a URL to the theme file (may be a file:// URL)
@@ -379,7 +430,7 @@ class DiazoMiddleware(object):
           allows a theme to be written so that it can be opened and views
           standalone on the filesystem, even if at runtime its static
           resources are going to be served from some other location. For
-          example, an ``<img src="images/foo.jpg" />`` can be turned into 
+          example, an ``<img src="images/foo.jpg" />`` can be turned into
           ``<img src="/static/images/foo.jpg" />`` with a ``prefix`` of
           "/static".
         * ``includemode`` can be set to 'document', 'esi' or 'ssi' to change
@@ -415,14 +466,14 @@ class DiazoMiddleware(object):
         transformed output includes other files.
         * ``filter_xpath``, should be set to True to enable filter_xpath support
           for external includes.
-        
+
         Additional keyword arguments will be passed to the theme
         transformation as parameters.
         """
-        
+
         self.app = app
         self.global_conf = global_conf
-        
+
         self.rules = rules
         self.theme = theme
         self.absolute_prefix = prefix
@@ -437,49 +488,49 @@ class DiazoMiddleware(object):
         self.content_type = content_type
         self.unquoted_params = unquoted_params
         self.filter_xpath = asbool(filter_xpath)
-        
+
         self.access_control = etree.XSLTAccessControl(read_file=self.read_file, write_file=False, create_dir=False, read_network=self.read_network, write_network=False)
         self.transform_middleware = None
         self.filter_middleware = self.get_filter_middleware()
-        
+
         self.environ_param_map = environ_param_map or {}
         self.environ_param_map.update({
                 'diazo.path': 'path',
                 'diazo.host': 'host',
                 'diazo.scheme': 'scheme',
             })
-        
+
         self.params = params.copy()
-    
+
     def compile_theme(self):
         """Compile the Diazo theme, returning an lxml tree (containing an XSLT
         document)
         """
-        
+
         filesystem_resolver = FilesystemResolver(self.app)
         wsgi_resolver = WSGIResolver(self.app)
         python_resolver = PythonResolver()
         network_resolver = NetworkResolver()
-        
+
         rules_parser = etree.XMLParser(recover=False)
         rules_parser.resolvers.add(wsgi_resolver)
         rules_parser.resolvers.add(filesystem_resolver)
         rules_parser.resolvers.add(python_resolver)
         if self.read_network:
             rules_parser.resolvers.add(network_resolver)
-        
+
         theme_parser = etree.HTMLParser()
         theme_parser.resolvers.add(wsgi_resolver)
         theme_parser.resolvers.add(filesystem_resolver)
         theme_parser.resolvers.add(python_resolver)
         if self.read_network:
             theme_parser.resolvers.add(network_resolver)
-        
+
         xsl_params = self.params.copy()
         for value in self.environ_param_map.values():
             if value not in xsl_params:
                 xsl_params[value] = None
-        
+
         return compile_theme(self.rules,
                 theme=self.theme,
                 absolute_prefix=self.absolute_prefix,
@@ -490,7 +541,7 @@ class DiazoMiddleware(object):
                 rules_parser=rules_parser,
                 xsl_params=xsl_params,
             )
-    
+
     def get_transform_middleware(self):
         return XSLTMiddleware(self.app, self.global_conf,
                 tree=self.compile_theme(),
@@ -535,20 +586,20 @@ class DiazoMiddleware(object):
                 environ['QUERY_STRING'], xpath = query_string.rsplit(filter_xpath, 1)
                 environ['diazo.filter_xpath'] = unquote_plus(xpath)
                 return self.filter_middleware(environ, start_response)
-        
+
         transform_middleware = self.transform_middleware
         if transform_middleware is None or self.debug:
             transform_middleware = self.get_transform_middleware()
         if transform_middleware is not None and not self.debug:
             self.transform_middleware = transform_middleware
-        
+
         # Set up variables, some of which are used as transform parameters
         request = Request(environ)
-        
+
         environ['diazo.rules'] = self.rules
         environ['diazo.absolute_prefix'] = self.absolute_prefix
         environ['diazo.path'] = request.path
         environ['diazo.host'] = request.host
         environ['diazo.scheme'] = request.host
-            
+
         return transform_middleware(environ, start_response)
