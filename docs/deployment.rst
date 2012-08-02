@@ -49,10 +49,13 @@ The following options can be passed to ``XSLTMiddleware``:
 
 ``filename``
     A filename from which to read the XSLT file
+``egg_resource``
+    A egg resource specification in the form ``egg_name:path/to/file`` from
+    which to read the XSLT file
 ``tree``
     A pre-parsed lxml tree representing the XSLT file
 
-``filename`` and ``tree`` are mutually exclusive. One is required.
+``filename``, ``egg_resource`` and ``tree`` are mutually exclusive. One is required.
 
 ``read_network``
     Set this to True to allow resolving resources from the network. Defaults

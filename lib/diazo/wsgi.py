@@ -109,7 +109,7 @@ class XSLTMiddleware(object):
     """
     
     def __init__(self, app, global_conf,
-                 filename=None, tree=None,
+                 filename=None, egg_resource=None, tree=None,
                  read_network=False,
                  read_file=True,
                  update_content_length=False,
@@ -132,9 +132,11 @@ class XSLTMiddleware(object):
         The parameters are:
         
         * ``filename``, a filename from which to read the XSLT file
+        * ``egg_resource``, a egg resource specification in the form
+          ``egg_name:path/to/file`` from which to read the XSLT file
         * ``tree``, a pre-parsed lxml tree representing the XSLT file
         
-        ``filename`` and ``tree`` are mutually exclusive.
+        ``filename``, ``egg_resource`` and ``tree`` are mutually exclusive.
         
         * ``read_network``, should be set to True to allow resolving resources
           from the network.
@@ -167,6 +169,9 @@ class XSLTMiddleware(object):
         self.app = app
         self.global_conf = global_conf
         
+        if egg_resource is not None:
+            filename = pkg_resources.resource_filename(*egg_resource.split(':'))
+
         if filename is not None:
             xslt_file = open(filename)
             source = xslt_file.read()
