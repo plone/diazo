@@ -52,8 +52,17 @@ The following options can be passed to ``XSLTMiddleware``:
 ``tree``
     A pre-parsed lxml tree representing the XSLT file
 
-``filename`` and ``tree`` are mutually exclusive. One is required.
+``filename`` and ``tree`` are mutually exclusive. One is required, except in
+the situation when ``read_headers`` is enabled and the XSL location is being
+sent from another part of the pipeline. In this special case, the transform is
+loaded as late as possible after obtaining a WSGI response and after taking
+into account potential situations where transformation should not take place.
 
+``read_headers``
+    Set this to True to allow resolving options from HTTP
+    headers. At present, ``X-XLST-Stylesheet`` is the only such option, which
+    refers to the file path to an XSL file.  *Warning*: beware of enabling 
+    this option if users are able to spoof headers.
 ``read_network``
     Set this to True to allow resolving resources from the network. Defaults
     to False.
@@ -77,7 +86,10 @@ using Paste Deploy, they will always be passed as strings.
 The following options can be passed to ``DiazoMiddleware``:
 
 ``rules``
-    Path to the rules file
+    Path to the rules file, which may be omitted if enabling the
+    ``read_headers`` option. In this case, reading the rules location is 
+    expected to be found within the ``X-Diazo-Rules`` HTTP header coming
+    within the ``request``.
 ``theme``
     Path to the theme, if not specified using a ``<theme />`` directive in
     the rules file. May also be a URL to a theme served over the network.
@@ -97,6 +109,12 @@ The following options can be passed to ``DiazoMiddleware``:
 ``includemode``
     Can be set to 'document', 'esi' or 'ssi' to change the way in which
     includes are processed
+``read_headers``
+    Set this to True to allow resolving options from HTTP headers. At
+    present, ``X-Diazo-Rules`` is the only such option, which refers to the
+    location of the rules file.  *Warning*: beware of enabling this option if
+    users are able to spoof headers. This presents a potential security
+    concern if you do not drop or sanitize headers coming from clients.
 ``read_network``
     Set this to True to allow resolving resources from the network. Defaults
     to False.
