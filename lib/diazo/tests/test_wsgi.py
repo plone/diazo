@@ -134,7 +134,7 @@ XSLT_PARAM = """\
 """
 
 class TestXSLTMiddleware(unittest.TestCase):
-    
+
     def test_transform_filename(self):
         import tempfile
         import os
@@ -154,6 +154,25 @@ class TestXSLTMiddleware(unittest.TestCase):
         
         app = XSLTMiddleware(application, {}, filename=filename)
         os.unlink(filename)
+        
+        request = Request.blank('/')
+        response = request.get_response(app)
+        
+        self.assertEqual(response.headers['Content-Type'], 'text/html; charset=UTF-8')
+        self.assertTrue('<div id="content">Content content</div>' in response.body)
+        self.assertTrue('<title>Transformed</title>' in response.body)
+    
+    def test_transform_egg_resource(self):
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+        
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html')]
+            start_response(status, response_headers)
+            return [HTML]
+        
+        app = XSLTMiddleware(application, {}, egg_resource="diazo:tests/test_wsgi_files/egg_resource_test_file.xml")
         
         request = Request.blank('/')
         response = request.get_response(app)
