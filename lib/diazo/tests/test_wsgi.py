@@ -981,6 +981,32 @@ class TestDiazoMiddleware(unittest.TestCase):
         # Strip response body in this test due to https://bugzilla.gnome.org/show_bug.cgi?id=652766
         self.assertEqual('<div id="content">Alternative content</div>', response.body.strip())
 
+    def test_unthemed_empty_response(self):
+        from diazo.wsgi import DiazoMiddleware
+        from webob import Request
+        
+        def application_wrapped(response_body):
+
+            def application(environ, start_response):
+                status = '200 OK'
+                response_headers = [('Content-Type', 'text/html'),
+                                    ('X-Test-Header', 'not-affected')]
+                start_response(status, response_headers)
+                return [response_body]
+
+            return application
+        
+        app = DiazoMiddleware(application_wrapped(response_body=''),
+                              {},
+                              testfile('simple_transform.xml'))
+        request = Request.blank('/')
+        response = request.get_response(app)
+
+        #Result should not throw an exception
+        self.assertEqual(response.body, '')
+        self.assertIn('X-Test-Header', response.headers)
+        self.assertEqual(response.headers['X-Test-Header'], 'not-affected')
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)

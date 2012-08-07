@@ -4,6 +4,10 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+* Handle error when serializing empty responses by returning an unthemed
+  response. Previously, empty text/html responses resulted in an raised
+  exception, resulting in a 500 response and no output.
+  [davidjb]
 * Allow attributes (i.e. xml:id) to pass through on drop @attribute nodes
   [lentinj]
 

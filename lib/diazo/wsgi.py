@@ -238,6 +238,16 @@ class XSLTMiddleware(object):
             return response(environ, start_response)
 
         input_encoding = response.charset
+
+        # Prepare the serializer
+        try:
+            serializer = getHTMLSerializer(response.app_iter, encoding=input_encoding)
+        except etree.XMLSyntaxError:
+            # Abort transform on syntax error for empty response
+            return response(environ, start_response)
+        finally:
+            if hasattr(response.app_iter, 'close'):
+                response.app_iter.close()
         
         # Remove any response headers that might change.
         response.content_range = None
@@ -272,12 +282,6 @@ class XSLTMiddleware(object):
                 params[key] = quote_param(value)
         
         # Apply the transformation
-        try:
-            serializer = getHTMLSerializer(response.app_iter, encoding=input_encoding)
-        finally:
-            if hasattr(response.app_iter, 'close'):
-                response.app_iter.close()
-        
         tree = self.transform(serializer.tree, **params)
         
         # Set content type (normally inferred from stylesheet)
