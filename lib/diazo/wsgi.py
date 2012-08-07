@@ -332,6 +332,9 @@ class XSLTMiddleware(object):
         if status_code.startswith('3') or status_code == '204' or status_code == '401':
             return False
         
+        if response.content_length == 0:
+            return False
+
         return True
 
     def reset_headers(self, response):

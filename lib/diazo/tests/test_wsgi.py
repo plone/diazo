@@ -249,6 +249,27 @@ class TestXSLTMiddleware(unittest.TestCase):
         
         self.assertEqual(response.headers.get('Content-Length'), None)
 
+    def test_content_length_zero(self):
+        from lxml import etree
+
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-Length', '0')]
+            start_response(status, response_headers)
+            return ['']
+
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT),
+                             update_content_length=True)
+
+        request = Request.blank('/')
+        response = request.get_response(app)
+
+        self.assertEqual(response.headers['Content-Length'], '0')
+
     def test_content_range(self):
         from lxml import etree
 
