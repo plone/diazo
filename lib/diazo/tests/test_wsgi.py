@@ -270,6 +270,27 @@ class TestXSLTMiddleware(unittest.TestCase):
 
         self.assertEqual(response.headers['Content-Length'], '0')
 
+    def test_content_empty(self):
+        from lxml import etree
+
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-MD5', 'd41d8cd98f00b204e9800998ecf8427e')]
+            start_response(status, response_headers)
+            return ['']
+
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT),
+                             update_content_length=True)
+
+        request = Request.blank('/')
+        response = request.get_response(app)
+
+        self.assertEqual(response.headers['Content-MD5'], 'd41d8cd98f00b204e9800998ecf8427e')
+
     def test_content_range(self):
         from lxml import etree
 
@@ -1004,32 +1025,6 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
         # Strip response body in this test due to https://bugzilla.gnome.org/show_bug.cgi?id=652766
         self.assertEqual('<div id="content">Alternative content</div>', response.body.strip())
-
-    def test_unthemed_empty_response(self):
-        from diazo.wsgi import DiazoMiddleware
-        from webob import Request
-        
-        def application_wrapped(response_body):
-
-            def application(environ, start_response):
-                status = '200 OK'
-                response_headers = [('Content-Type', 'text/html'),
-                                    ('X-Test-Header', 'not-affected')]
-                start_response(status, response_headers)
-                return [response_body]
-
-            return application
-        
-        app = DiazoMiddleware(application_wrapped(response_body=''),
-                              {},
-                              testfile('simple_transform.xml'))
-        request = Request.blank('/')
-        response = request.get_response(app)
-
-        #Result should not throw an exception
-        self.assertEqual(response.body, '')
-        self.assertIn('X-Test-Header', response.headers)
-        self.assertEqual(response.headers['X-Test-Header'], 'not-affected')
 
 
 def test_suite():
