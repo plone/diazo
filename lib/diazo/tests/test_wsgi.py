@@ -191,9 +191,10 @@ class TestXSLTMiddleware(unittest.TestCase):
         
         def application(environ, start_response):
             status = '200 OK'
-            response_headers = [('Content-Type', 'text/html')]
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-Length', str(len(HTML)))]
             start_response(status, response_headers)
-            return [HTML]
+            return [''] # Empty response for HEAD request
         
         app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
         
@@ -202,7 +203,9 @@ class TestXSLTMiddleware(unittest.TestCase):
         # The *real* test is whether or not an exception is raised here.
         response = request.get_response(app)
         
+        # Response headers for HEAD request must be updated.
         self.assertEqual(response.headers['Content-Type'], 'text/html; charset=UTF-8')
+        self.assertEqual(response.headers.get('Content-Length'), None)
         self.assertFalse(response.body)
     
     def test_update_content_length(self):
@@ -245,6 +248,48 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
         
         self.assertEqual(response.headers.get('Content-Length'), None)
+
+    def test_content_length_zero(self):
+        from lxml import etree
+
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-Length', '0')]
+            start_response(status, response_headers)
+            return ['']
+
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT),
+                             update_content_length=True)
+
+        request = Request.blank('/')
+        response = request.get_response(app)
+
+        self.assertEqual(response.headers['Content-Length'], '0')
+
+    def test_content_empty(self):
+        from lxml import etree
+
+        from diazo.wsgi import XSLTMiddleware
+        from webob import Request
+
+        def application(environ, start_response):
+            status = '200 OK'
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-MD5', 'd41d8cd98f00b204e9800998ecf8427e')]
+            start_response(status, response_headers)
+            return ['']
+
+        app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT),
+                             update_content_length=True)
+
+        request = Request.blank('/')
+        response = request.get_response(app)
+
+        self.assertEqual(response.headers['Content-MD5'], 'd41d8cd98f00b204e9800998ecf8427e')
 
     def test_content_range(self):
         from lxml import etree
