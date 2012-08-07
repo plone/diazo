@@ -234,23 +234,24 @@ class XSLTMiddleware(object):
                 )
 
         response = request.get_response(self.app)
-        if not self.should_transform(response):
-            return response(environ, start_response)
-
-        input_encoding = response.charset
-
-        # Note, the Content-Length header will not be set
-        if request.method == 'HEAD':
-            self.reset_headers(response)
-            return response(environ, start_response)
-
-        # Prepare the serializer
         try:
-            serializer = getHTMLSerializer(response.app_iter, encoding=input_encoding)
-        except etree.XMLSyntaxError:
-            # Abort transform on syntax error for empty response
-            # Headers should be left intact
-            return response(environ, start_response)
+            if not self.should_transform(response):
+                return response(environ, start_response)
+
+            input_encoding = response.charset
+
+            # Note, the Content-Length header will not be set
+            if request.method == 'HEAD':
+                self.reset_headers(response)
+                return response(environ, start_response)
+
+            # Prepare the serializer
+            try:
+                serializer = getHTMLSerializer(response.app_iter, encoding=input_encoding)
+            except etree.XMLSyntaxError:
+                # Abort transform on syntax error for empty response
+                # Headers should be left intact
+                return response(environ, start_response)
         finally:
             if hasattr(response.app_iter, 'close'):
                 response.app_iter.close()
