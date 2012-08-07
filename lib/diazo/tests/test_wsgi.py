@@ -191,9 +191,10 @@ class TestXSLTMiddleware(unittest.TestCase):
         
         def application(environ, start_response):
             status = '200 OK'
-            response_headers = [('Content-Type', 'text/html')]
+            response_headers = [('Content-Type', 'text/html'),
+                                ('Content-Length', str(len(HTML)))]
             start_response(status, response_headers)
-            return [HTML]
+            return [''] # Empty response for HEAD request
         
         app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT))
         
@@ -202,7 +203,9 @@ class TestXSLTMiddleware(unittest.TestCase):
         # The *real* test is whether or not an exception is raised here.
         response = request.get_response(app)
         
+        # Response headers for HEAD request must be updated.
         self.assertEqual(response.headers['Content-Type'], 'text/html; charset=UTF-8')
+        self.assertEqual(response.headers.get('Content-Length'), None)
         self.assertFalse(response.body)
     
     def test_update_content_length(self):
