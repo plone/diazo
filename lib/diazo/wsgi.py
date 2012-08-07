@@ -234,27 +234,29 @@ class XSLTMiddleware(object):
                 )
 
         response = request.get_response(self.app)
-        if not self.should_transform(response):
-            return response(environ, start_response)
+        try:
+            if not self.should_transform(response):
+                return response(environ, start_response)
 
-        input_encoding = response.charset
-        
-        # Remove any response headers that might change.
-        response.content_range = None
-        response.accept_ranges = None
-        response.content_length = None
-        response.content_md5 = None
-        if self.remove_conditional_headers:
-            response.last_modified = None
-            response.etag = None
-        # Set the output Content-Type
-        response.content_type = self.content_type
-        if self.content_type is not None:
-            response.charset = self.charset
+            input_encoding = response.charset
 
-        # Note, the Content-Length header will not be set
-        if request.method == 'HEAD':
-            return response(environ, start_response)
+            # Note, the Content-Length header will not be set
+            if request.method == 'HEAD':
+                self.reset_headers(response)
+                return response(environ, start_response)
+
+            # Prepare the serializer
+            try:
+                serializer = getHTMLSerializer(response.app_iter, encoding=input_encoding)
+            except etree.XMLSyntaxError:
+                # Abort transform on syntax error for empty response
+                # Headers should be left intact
+                return response(environ, start_response)
+        finally:
+            if hasattr(response.app_iter, 'close'):
+                response.app_iter.close()
+
+        self.reset_headers(response)
         
         # Set up parameters
         
@@ -272,12 +274,6 @@ class XSLTMiddleware(object):
                 params[key] = quote_param(value)
         
         # Apply the transformation
-        try:
-            serializer = getHTMLSerializer(response.app_iter, encoding=input_encoding)
-        finally:
-            if hasattr(response.app_iter, 'close'):
-                response.app_iter.close()
-        
         tree = self.transform(serializer.tree, **params)
         
         # Set content type (normally inferred from stylesheet)
@@ -336,7 +332,25 @@ class XSLTMiddleware(object):
         if status_code.startswith('3') or status_code == '204' or status_code == '401':
             return False
         
+        if response.content_length == 0:
+            return False
+
         return True
+
+    def reset_headers(self, response):
+        # Remove any response headers that might change.
+        response.content_range = None
+        response.accept_ranges = None
+        response.content_length = None
+        response.content_md5 = None
+        if self.remove_conditional_headers:
+            response.last_modified = None
+            response.etag = None
+        # Set the output Content-Type
+        response.content_type = self.content_type
+        if self.content_type is not None:
+            response.charset = self.charset
+
 
 class DiazoMiddleware(object):
     """Invoke the Diazo transform as middleware
