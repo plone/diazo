@@ -234,10 +234,9 @@ class XSLTMiddleware(object):
                 )
 
         response = request.get_response(self.app)
+        if not self.should_transform(response):
+            return response(environ, start_response)
         try:
-            if not self.should_transform(response):
-                return response(environ, start_response)
-
             input_encoding = response.charset
 
             # Note, the Content-Length header will not be set
