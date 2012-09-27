@@ -113,6 +113,8 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         url = anchor_safe_urljoin(absolute_prefix, node.get('href'))
         node.set('href', url)
     for node in theme_doc.xpath('//style'):
+        if node.text is None:
+            continue
         node.text = IMPORT_STYLESHEET.sub(
             lambda match: match.group('before') + urljoin(absolute_prefix, match.group('url')) + match.group('after'),
             node.text)
