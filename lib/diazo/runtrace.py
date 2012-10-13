@@ -39,3 +39,39 @@ def generate_runtrace(rules, error_log, rules_parser=None):
 def runtrace_to_html(runtrace_doc):
     """Convert the runtrace document into HTML"""
     return _runtrace_to_html(runtrace_doc)
+
+def generate_debug_html(rules, error_log, rules_parser=None):
+    """Generate an HTML node with debug info"""
+    def newElement(tag, text, **kwargs):
+        n = etree.Element(tag, **kwargs)
+        n.text = text
+        return n
+
+    debug_output = etree.Element('div', id="diazo_debug")
+    debug_output.attrib['style'] = "display:none"
+    debug_output.attrib['data-iframe'] = "diazo_debug"
+    debug_output.attrib['data-style'] = "top:auto;bottom:0px;"
+    debug_output.insert(-1, newElement('style',"""
+    body { background: #EEE; }
+    pre.runtrace {
+        font-size: 0.8em;
+        height: 14em;
+        overflow: scroll;
+    }
+    pre.runtrace span.node { background: #CCC; }
+    pre.runtrace span.node.match { background: #AFA; }
+    pre.runtrace span.node.no-match { background: #FAA; }
+    pre.runtrace span.attr.match { background: #5F5; }
+    pre.runtrace span.attr.no-match { background: #F55; }
+    """))
+    runtrace_doc = generate_runtrace(rules, error_log, rules_parser)
+    debug_output.insert(-1, runtrace_to_html(runtrace_doc).getroot())
+    #debug_output.insert(-1,
+    #    newElement('pre',etree.tostring(compiledTheme,pretty_print=True),
+    #    id="diazo_debug_generated_xslt"
+    #))
+    #debug_output.insert(-1,
+    #    newElement('pre',json.dumps(self._formatErrorLog(transform.error_log)),
+    #    id="diazo_debug_error_log"
+    #))
+    return debug_output
