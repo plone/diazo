@@ -88,9 +88,9 @@
 
     <xsl:template match="comment()">
         <!-- Still want to see comments, so escape the markup -->
-        <xsl:text>&lt;!--</xsl:text>
+        <span class="comment"><xsl:text>&lt;!--</xsl:text>
         <xsl:value-of select="."/>
-        <xsl:text>--&gt;</xsl:text>
+        <xsl:text>--&gt;</xsl:text></span>
     </xsl:template>
 
 </xsl:stylesheet>

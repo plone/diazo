@@ -42,30 +42,44 @@ def runtrace_to_html(runtrace_doc):
 
 def generate_debug_html(rules, error_log, rules_parser=None):
     """Generate an HTML node with debug info"""
-    def newElement(tag, text, **kwargs):
+    def newElement(tag, content, **kwargs):
         n = etree.Element(tag, **kwargs)
-        n.text = text
+        if hasattr(content, 'tag'):
+            n.append(content)
+        else:
+            n.text = text
         return n
 
     debug_output = etree.Element('div', id="diazo_debug")
     debug_output.attrib['style'] = "display:none"
     debug_output.attrib['data-iframe'] = "diazo_debug"
-    debug_output.attrib['data-style'] = "top:auto;bottom:0px;"
-    debug_output.insert(-1, newElement('style',"""
-    body { background: #EEE; }
+    debug_output.attrib['data-iframe-style'] = ""
+    debug_output.attrib['data-iframe-alignment'] = "bottom"
+    debug_output.attrib['data-iframe-docstyles'] = """
+    body {
+        padding: 0;
+        margin: 0;
+    }
+    section {
+        padding: 1em;
+    }
     pre.runtrace {
-        font-size: 0.8em;
         height: 14em;
         overflow: scroll;
+        margin: 0;
+        background-color: rgba(255, 255, 255, 0.8);
     }
-    pre.runtrace span.node { background: #CCC; }
+    pre.runtrace span.node, pre.runtrace span.closing, pre.runtrace span.comment { background: #CCC; }
     pre.runtrace span.node.match { background: #AFA; }
     pre.runtrace span.node.no-match { background: #FAA; }
     pre.runtrace span.attr.match { background: #5F5; }
     pre.runtrace span.attr.no-match { background: #F55; }
-    """))
+    """
     runtrace_doc = generate_runtrace(rules, error_log, rules_parser)
-    debug_output.insert(-1, runtrace_to_html(runtrace_doc).getroot())
+    debug_output.insert(-1, newElement('section',
+        runtrace_to_html(runtrace_doc).getroot(),
+        id="diazo_runtrace"
+    ))
     #debug_output.insert(-1,
     #    newElement('pre',etree.tostring(compiledTheme,pretty_print=True),
     #    id="diazo_debug_generated_xslt"

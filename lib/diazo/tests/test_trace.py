@@ -134,7 +134,7 @@ class TestDebug(unittest.TestCase):
         # Theme tag has no conditions, is a singleton
         self.assertIn("""<span class="node unrelated">&lt;theme <span class="attr">href="index.html"</span> <span class="attr">xml:id="r1"</span>/&gt;</span>""",html_string)
         # Whitespace is preserved
-        self.assertIn("xml:id=\"r4\"</span>&gt;</span>\n        &lt;!-- Rules, lots of rules --&gt;",html_string)
+        self.assertIn("""xml:id=\"r4\"</span>&gt;</span>\n        <span class="comment">&lt;!-- Rules, lots of rules --&gt;</span>""",html_string)
         # Neither theme or content matched
         self.assertIn("""<span class="node no-match" title="Matches: content:0 theme:0 ">&lt;copy <span class="attr">xml:id="r5"</span>""",html_string)
         # Just content matched, still not good enough
