@@ -171,7 +171,7 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True, xinclude=
         rules_doc.xinclude() # XXX read_network limitation not yet supported for xinclude
     if stop == 1: return rules_doc
     rules_doc = add_identifiers(rules_doc)
-    if stop == 2: return rules_doc
+    if stop == 2 or stop == 'add_identifiers': return rules_doc
     if update:
         rules_doc = update_namespace(rules_doc)
     if stop == 3: return rules_doc
