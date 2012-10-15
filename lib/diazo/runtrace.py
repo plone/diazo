@@ -47,17 +47,17 @@ def generate_debug_html(base_url, rules=None, error_log=None, rules_parser=None)
         if hasattr(content, 'tag'):
             n.append(content)
         else:
-            n.text = text
+            n.text = content
         return n
 
     debug_output = etree.Element('div', id="diazo_debug")
     debug_output.attrib['style'] = "display:none"
-    debug_output.attrib['data-iframe'] = "diazo_debug"
+    debug_output.attrib['data-diazoiframe'] = "diazo_debug"
     debug_output.attrib['data-iframe-style'] = ""
     debug_output.attrib['data-iframe-alignment'] = "bottom"
     debug_output.attrib['data-iframe-resources'] = base_url + '/diazo-debug.css'
     runtrace_doc = generate_runtrace(rules, error_log, rules_parser)
-    debug_output.insert(-1, newElement('section',
+    debug_output.append(newElement('section',
         runtrace_to_html(runtrace_doc).getroot(),
         id="diazo_runtrace"
     ))
@@ -69,4 +69,8 @@ def generate_debug_html(base_url, rules=None, error_log=None, rules_parser=None)
     #    newElement('pre',json.dumps(self._formatErrorLog(transform.error_log)),
     #    id="diazo_debug_error_log"
     #))
+    debug_output.append(newElement('script', " ",
+        text="text/javascript",
+        src=base_url + '/diazo-iframe.js',
+    ))
     return debug_output
