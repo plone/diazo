@@ -70,7 +70,7 @@ def update_namespace(rules_doc):
         root.nsmap.update(new.nsmap.items())
         root.attrib.update(new.attrib.items())
         root.text = new.text
-        root[:] = new[:] 
+        root[:] = new[:]
         root.tail = new.tail
     return rules_doc
 
@@ -133,7 +133,7 @@ def add_extra(rules_doc, extra):
     return rules_doc
 
 def add_theme(rules_doc, theme, parser=None, absolute_prefix=None, read_network=False):
-    if isinstance(theme, basestring) and theme[:6] in ('ftp://', 'http:/', 'https:'):
+    if not read_network and isinstance(theme, basestring) and theme[:6] in ('ftp://', 'http:/', 'https:'):
         raise ValueError("Supplied theme '%s', but network access denied." % theme)
     if absolute_prefix is None:
         absolute_prefix = ''
@@ -208,7 +208,7 @@ def main():
     """
     parser = _createOptionParser(usage=usage)
     parser.add_option("-s", "--stop", metavar="n", type="int",
-                      help="Stop preprocessing at stage n", 
+                      help="Stop preprocessing at stage n",
                       dest="stop", default=None)
     (options, args) = parser.parse_args()
 
