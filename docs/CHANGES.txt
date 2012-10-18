@@ -5,8 +5,8 @@ Changelog
 ------------------
 
 * Don't close the response unless Diazo is transforming it. [mitchellrj]
-* fix error caused by empty style tag e.g. <style/> [djay]
 
+* fix error caused by empty style tag e.g. <style/> [djay]
 
 1.0.2 (2012-08-30)
 ------------------
@@ -15,6 +15,7 @@ Changelog
   response. Previously, empty text/html responses resulted in an raised
   exception, resulting in a 500 response and no output.
   [davidjb]
+
 * Allow attributes (i.e. xml:id) to pass through on drop @attribute nodes
   [lentinj]
 
