@@ -4,9 +4,14 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
-* Don't close the response unless Diazo is transforming it. [mitchellrj]
+* Debugging output.
+  [lentinj]
 
-* fix error caused by empty style tag e.g. <style/> [djay]
+* Don't close the response unless Diazo is transforming it.
+  [mitchellrj]
+
+* fix error caused by empty style tag e.g. <style/>
+  [djay]
 
 1.0.2 (2012-08-30)
 ------------------
