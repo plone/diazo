@@ -1,4 +1,13 @@
-include *
+include LICENSE.txt
+include README.txt
+include bootstrap.py
+include buildout.cfg
+include checkdocs.cfg
+include nginx.cfg
+include setup.py
+include tox.ini
+include varnish.cfg
+include versions.cfg
 
 recursive-include docs *
 recursive-include examples *
