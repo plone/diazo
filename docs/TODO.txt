@@ -2,17 +2,32 @@
  TODO
 ======
 
+1.1
+===
+
+ [ ] Move to cssselect
+
+ [ ] Decide what to do with order of drop / replace for top level elements.
+     - https://dev.plone.org/ticket/12503
+
+1.0.x
+=====
+
+ [ ] absolute prefix should respect the path to the theme in rules.xml
+
+ [ ] absolute prefix for inline html in rules.xml
+
 1.0b1
 =====
 
 Definitely
 ----------
 
- [ ] Rename namespaces to:
-    - http://namespaces.plone.org/diazo/1
+ [X] Rename namespaces to:
+    - http://namespaces.plone.org/diazo
     - http://namespaces.plone.org/diazo/css
 
- [ ] <notheme /> directive
+ [X] <notheme /> directive
     - Analogous to <theme />
     - Requires if-path, if-content, if-host or similar
     - Same precedence
@@ -23,11 +38,11 @@ Definitely
     - <theme />
     - Nested <rules />
 
- [ ] Implement theme-children attribute and remove <copy /> directive
+ [X] Implement theme-children attribute and remove <copy /> directive
     - <replace css:theme-children="td#main" css:content="div#content" />
     - <replace theme-children="//td[@id='main']" content="//*[@id='content']" />
 
- [ ] Implement content-children as a way to select all child nodes, including
+ [X] Implement content-children as a way to select all child nodes, including
      text nodes, of a content selector, e.g.:
     - <replace css:theme="#content .placeholder" css:content-children="div#content" />
     - <replace css:theme="#content .placeholder" content-children="//div[@id='content']" />
@@ -35,10 +50,11 @@ Definitely
     - <drop css:theme-children="#foo" />
     - Ditto for other rules as applicable
 
- [ ] Add namespace upgrade from XDV
+ [X] Add namespace upgrade from XDV
     - and also the "old" Diazo namespace?
+    - some problems with resolvers still.
 
- [ ] Put README.txt on diazo.org
+ [X] Put README.txt on diazo.org
 
 Maybe
 -----
@@ -47,7 +63,7 @@ Maybe
 
 [ ] Debugger (see below)
 
-[ ] Fix CSS to XPath translation to be more robust with expressions like
+[X] Fix CSS to XPath translation to be more robust with expressions like
     ".foo div"
 
 Details
