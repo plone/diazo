@@ -18,6 +18,8 @@ from lxml import etree
 from diazo.compiler import compile_theme
 from diazo.utils import AC_READ_NET, AC_READ_FILE, _createOptionParser, split_params, quote_param
 
+import diazo.runtrace
+
 logger = logging.getLogger('diazo')
 
 class RunResolver(etree.Resolver):
@@ -46,6 +48,12 @@ def main():
     op.add_option("--parameters", metavar="param1=val1,param2=val2",
                       help="Set the values of arbitrary parameters",
                       dest="parameters", default=None)
+    op.add_option("--runtrace-xml", metavar="runtrace.xml",
+                      help="Write an xml format runtrace to file",
+                      dest="runtrace_xml", default=None)
+    op.add_option("--runtrace-html", metavar="runtrace.html",
+                      help="Write an html format runtrace to file",
+                      dest="runtrace_html", default=None)
     (options, args) = op.parse_args()
 
     if len(args) > 2:
@@ -68,6 +76,10 @@ def main():
     if options.trace:
         logger.setLevel(logging.DEBUG)
 
+    runtrace = False
+    if options.runtrace_xml or options.runtrace_html:
+        runtrace = True
+
     parser = etree.HTMLParser()
     parser.resolvers.add(RunResolver(os.path.dirname(content)))
 
@@ -89,6 +101,7 @@ def main():
             includemode=options.includemode,
             indent=options.pretty_print,
             xsl_params=xsl_params,
+            runtrace=runtrace,
             )
 
     if content == '-':
@@ -115,8 +128,29 @@ def main():
     else:
         out = options.output
     out.write(str(output_html))
+
+    if runtrace:
+        runtrace_doc = diazo.runtrace.generate_runtrace(
+            rules=options.rules,
+            error_log = transform.error_log,
+            )
+        if options.runtrace_xml:
+            if options.runtrace_xml == '-':
+                out = sys.stdout
+            else:
+                out = open(options.runtrace_xml, 'wt')
+            runtrace_doc.write(out, encoding='utf-8', pretty_print=options.pretty_print)
+        if options.runtrace_html:
+            if options.runtrace_html == '-':
+                out = sys.stdout
+            else:
+                out = open(options.runtrace_html, 'wt')
+            out.write(str(diazo.runtrace.runtrace_to_html(runtrace_doc)))
+
     for msg in transform.error_log:
-        logger.warn(msg)
+        if not msg.message.startswith('<runtrace '):
+            logger.warn(msg)
+
 
 if __name__ == '__main__':
     main()
