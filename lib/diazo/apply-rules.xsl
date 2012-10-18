@@ -381,19 +381,46 @@
                         <xsl:element name="xsl:if">
                             <xsl:attribute name="test"><xsl:value-of select="$merged-condition"/></xsl:attribute>
                             <xsl:element name="xsl:attribute">
-                                <xsl:attribute name="name"><xsl:value-of select="."/></xsl:attribute><xsl:if test="$context-attr"><xsl:value-of select="$context-attr"/><xsl:value-of select="$separator"/></xsl:if><xsl:element name="xsl:value-of">
-                                    <xsl:attribute name="select"><xsl:value-of select="$content"/>/@<xsl:value-of select="."/></xsl:attribute>
+                                <xsl:attribute name="name"><xsl:value-of select="."/></xsl:attribute>
+                                <xsl:if test="$context-attr">
+                                    <xsl:value-of select="$context-attr"/>
+                                    <xsl:value-of select="$separator"/>
+                                </xsl:if>
+                                <xsl:element name="xsl:for-each">
+                                    <xsl:attribute name="select"><xsl:value-of select="$content"/></xsl:attribute>
+                                    <xsl:element name="xsl:value-of">
+                                        <xsl:attribute name="select">@<xsl:value-of select="$attribute"/></xsl:attribute>
                                     </xsl:element>
+                                    <xsl:element name="xsl:if">
+                                        <xsl:attribute name="test">not(position() = last())</xsl:attribute>
+                                        <xsl:element name="xsl:text">
+                                            <xsl:value-of select="$separator"/>
+                                        </xsl:element>
+                                    </xsl:element>
+                                </xsl:element>
                             </xsl:element>
                         </xsl:element>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:element name="xsl:attribute">
-                            <xsl:attribute name="name"><xsl:value-of select="."/></xsl:attribute>
-                            <xsl:if test="$context-attr"><xsl:value-of select="$context-attr"/><xsl:value-of select="$separator"/></xsl:if><xsl:element name="xsl:value-of">
-                                <xsl:attribute name="select"><xsl:value-of select="$content"/>/@<xsl:value-of select="."/></xsl:attribute>
-                              </xsl:element>
-                        </xsl:element>
+                            <xsl:element name="xsl:attribute">
+                                <xsl:attribute name="name"><xsl:value-of select="."/></xsl:attribute>
+                                <xsl:if test="$context-attr">
+                                    <xsl:value-of select="$context-attr"/>
+                                    <xsl:value-of select="$separator"/>
+                                </xsl:if>
+                                <xsl:element name="xsl:for-each">
+                                    <xsl:attribute name="select"><xsl:value-of select="$content"/></xsl:attribute>
+                                    <xsl:element name="xsl:value-of">
+                                        <xsl:attribute name="select">@<xsl:value-of select="$attribute"/></xsl:attribute>
+                                    </xsl:element>
+                                    <xsl:element name="xsl:if">
+                                        <xsl:attribute name="test">not(position() = last())</xsl:attribute>
+                                        <xsl:element name="xsl:text">
+                                            <xsl:value-of select="$separator"/>
+                                        </xsl:element>
+                                    </xsl:element>
+                                </xsl:element>
+                            </xsl:element>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
