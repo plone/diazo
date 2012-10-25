@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo"
+       xmlns:css="http://namespaces.plone.org/diazo/css"
+       xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+    <replace css:theme="#target" css:content="#content" />
+
+    <xsl:template match="a">
+        <xsl:copy>
+            <xsl:attribute name="target">_blank</xsl:attribute>
+            <xsl:copy-of select="@*" />
+            <xsl:apply-templates />
+        </xsl:copy>
+    </xsl:template>
+
+</rules>
