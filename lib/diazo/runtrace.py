@@ -40,6 +40,18 @@ def runtrace_to_html(runtrace_doc):
     """Convert the runtrace document into HTML"""
     return _runtrace_to_html(runtrace_doc)
 
+def error_log_to_html(error_log):
+    """Convert an error log into an HTML representation"""
+    doc = etree.Element('ul')
+    for l in error_log:
+        if l.message.startswith('<runtrace '):
+            continue
+        el = etree.Element('li')
+        el.attrib['class'] = "domain_%s level_%s type_%s" % (l.domain_name, l.level_name, l.type_name)
+        el.text = "%s [%d:%d]" % (l.message, l.line, l.column)
+        doc.append(el)
+    return doc
+
 def generate_debug_html(base_url, rules=None, error_log=None, rules_parser=None):
     """Generate an HTML node with debug info"""
     def newElement(tag, content, **kwargs):
@@ -50,27 +62,35 @@ def generate_debug_html(base_url, rules=None, error_log=None, rules_parser=None)
             n.text = content
         return n
 
-    debug_output = etree.Element('div', id="diazo_debug")
-    debug_output.attrib['style'] = "display:none"
-    debug_output.attrib['data-diazoiframe'] = "diazo_debug"
-    debug_output.attrib['data-iframe-style'] = ""
-    debug_output.attrib['data-iframe-alignment'] = "bottom"
-    debug_output.attrib['data-iframe-resources'] = base_url + '/diazo-debug.css'
-    runtrace_doc = generate_runtrace(rules, error_log, rules_parser)
-    debug_output.append(newElement('section',
-        runtrace_to_html(runtrace_doc).getroot(),
-        id="diazo_runtrace"
-    ))
-    #debug_output.insert(-1,
-    #    newElement('pre',etree.tostring(compiledTheme,pretty_print=True),
-    #    id="diazo_debug_generated_xslt"
-    #))
-    #debug_output.insert(-1,
-    #    newElement('pre',json.dumps(self._formatErrorLog(transform.error_log)),
-    #    id="diazo_debug_error_log"
-    #))
-    debug_output.append(newElement('script', " ",
+    debug_output_iframe = etree.Element('div', id="diazo-debug-iframe")
+    debug_output_iframe.attrib['style'] = "display:none"
+    debug_output_iframe.attrib['data-diazoiframe'] = "diazo_debug"
+    debug_output_iframe.attrib['data-iframe-style'] = ""
+    debug_output_iframe.attrib['data-iframe-alignment'] = "bottom"
+    debug_output_iframe.attrib['data-iframe-resources'] = base_url + '/diazo-debug.css'
+    debug_output = etree.Element('div', id="diazo-debug")
+
+    if error_log:
+        debug_output.append(newElement('section',
+            error_log_to_html(error_log),
+            id="diazo_error_log"
+        ))
+
+    try:
+        runtrace_doc = generate_runtrace(rules, error_log, rules_parser)
+        debug_output.append(newElement('section',
+            runtrace_to_html(runtrace_doc).getroot(),
+            id="diazo_runtrace"
+        ))
+    except etree.XMLSyntaxError as e:
+        debug_output.append(newElement('section',
+            "Rules document could not be parsed!",
+            id="diazo_runtrace"
+        ))
+
+    debug_output_iframe.append(debug_output)
+    debug_output_iframe.append(newElement('script', " ",
         text="text/javascript",
         src=base_url + '/diazo-iframe.js',
     ))
-    return debug_output
+    return debug_output_iframe
