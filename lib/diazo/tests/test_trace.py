@@ -67,14 +67,14 @@ class TestDebug(unittest.TestCase):
             rules=StringIO(self.rules_str),
             error_log = processor.error_log,
         )
-        self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "0")
-        self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "false")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "true")
         # <replace css:content="div.bovine" css:theme="div.cow" css:if-content="body.female" />
-        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "0")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "false")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-theme", "1")
         # <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
-        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "true")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-theme", "1")
         # <replace css:content="div.pig" css:theme="div.pig" />
@@ -95,15 +95,15 @@ class TestDebug(unittest.TestCase):
             rules=StringIO(self.rules_str),
             error_log = processor.error_log,
         )
-        self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "1")
-        self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content", "true")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content", "true")
         # <replace css:content="div.bovine" css:theme="div.cow" css:if-content="body.female" />
-        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "1")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-if-content", "true")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[1]/@runtrace-theme", "1")
         # <replace css:content="div.bovine" css:theme="div.bull" css:if-content="body.male" />
         # The external theme only has the cow slot
-        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "0")
+        self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-if-content", "false")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-content", "1")
         self.assertXPath(runtrace_doc, "/d:rules/d:rules/d:replace[2]/@runtrace-theme", "0")
         # <replace css:content="div.pig" css:theme="div.pig" />
@@ -113,7 +113,7 @@ class TestDebug(unittest.TestCase):
     
     def test_htmlformat(self):
         html_string = etree.tostring(diazo.runtrace.runtrace_to_html(etree.fromstring("""\
-<rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo/css" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" css:if-content="#visual-portal-wrapper" xml:id="r0" runtrace-if-content="1">
+<rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo/css" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" css:if-content="#visual-portal-wrapper" xml:id="r0" runtrace-if-content="true">
 
     <theme href="index.html" xml:id="r1"/>
     <notheme if-path="presentation_view" xml:id="r2"/>
@@ -127,6 +127,8 @@ class TestDebug(unittest.TestCase):
     </rules>
 </rules>
         """)))
+        # First rule has an if-content condition
+        self.assertIn("""<pre class="runtrace"><span class="node match" title="Matches: if-content:true ">&lt;rules""",html_string)
         # HTML comments are included and escaped
         self.assertIn("""&lt;!-- Rules, lots of rules --&gt;""",html_string)
         # Rules tag has children

@@ -4,6 +4,11 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
+* use boolean(), not count() for if-content. Otherwise we
+  generate expressions like "count(nodeset and other_nodeset)",
+  which aren't valid.
+  [lentinj]
+
 * Output contents of error log as part of debugging output
   [lentinj]
 
