@@ -1,16 +1,18 @@
 body {
-    padding: 0;
+    padding: 3px 1em 1em 1em;
     margin: 0;
 }
-section {
-    padding: 1em;
-}
-pre.runtrace {
+
+div#diazo-debug {
     height: 14em;
     overflow: scroll;
-    margin: 0;
     background-color: rgba(255, 255, 255, 0.8);
 }
+
+section {
+    padding: 3px;
+}
+
 pre.runtrace span.node, pre.runtrace span.closing, pre.runtrace span.comment { background: #CCC; }
 pre.runtrace span.node.match { background: #AFA; }
 pre.runtrace span.node.no-match { background: #FAA; }
