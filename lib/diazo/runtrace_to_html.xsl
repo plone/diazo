@@ -18,7 +18,7 @@
             <xsl:attribute name="class">
                 <xsl:text>node</xsl:text>
                 <xsl:choose>
-                    <xsl:when test="@*[starts-with(local-name(),'runtrace-')][. = '0']">
+                    <xsl:when test="@*[starts-with(local-name(),'runtrace-')][contains('false,0',.)]">
                         <!-- At least one runtrace node didn't match -->
                         <xsl:text> no-match</xsl:text>
                     </xsl:when>
@@ -70,7 +70,7 @@
             <xsl:attribute name="class">
                 <xsl:text>attr</xsl:text>
                 <xsl:for-each select="../@*[local-name() = concat('runtrace-',local-name($attr))]"><xsl:choose>
-                    <xsl:when test=". = 0">
+                    <xsl:when test="contains('false,0',.)">
                         <xsl:text> no-match</xsl:text>
                     </xsl:when><xsl:otherwise>
                         <xsl:text> match</xsl:text>
