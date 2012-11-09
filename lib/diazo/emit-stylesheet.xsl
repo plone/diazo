@@ -447,7 +447,7 @@
     <xsl:template match="*" mode="generate-runtrace"><xsl:param name="themeid"/>
         <xsl:if test="namespace-uri() = 'http://namespaces.plone.org/diazo'">
             <!-- For content conditions, generate code to evaluate and count matches -->
-            <xsl:for-each select="@if-content|@content|@content-children|@merged-condition">
+            <xsl:for-each select="@if-not-content|@if-content|@content|@content-children|@merged-condition">
                <xsl:variable name="attr" select="."/>
                <xsl:element name="xsl:message">
                  <xsl:text>&lt;runtrace</xsl:text>
@@ -463,6 +463,9 @@
                  <xsl:choose>
                      <xsl:when test="string($attr) and contains('content,content-children', name($attr))">
                          <xsl:element name="xsl:value-of"><xsl:attribute name="select">count(<xsl:value-of select="$attr"/>)</xsl:attribute></xsl:element>
+                     </xsl:when>
+                     <xsl:when test="string($attr) and name($attr) = 'if-not-content'">
+                         <xsl:element name="xsl:value-of"><xsl:attribute name="select">not(<xsl:value-of select="$attr"/>)</xsl:attribute></xsl:element>
                      </xsl:when>
                      <xsl:when test="string($attr)">
                          <xsl:element name="xsl:value-of"><xsl:attribute name="select">boolean(<xsl:value-of select="$attr"/>)</xsl:attribute></xsl:element>

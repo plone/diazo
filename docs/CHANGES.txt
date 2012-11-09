@@ -4,6 +4,10 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
+* Also evaluate if-not-content. However, we are at risk of replicating
+  apply-conditions.xsl in it's entirety. this needs refactoring.
+  [lentinj]
+
 * Also evaluate merged-condition. This means a rule tag will turn red
   when a condition on an outer rules tag doesn't match.
   [lentinj]
