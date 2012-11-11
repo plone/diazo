@@ -10,6 +10,7 @@ include varnish.cfg
 include versions.cfg
 
 recursive-include docs *
+prune docs/_build
 recursive-include examples *
 recursive-include lib *
 recursive-include templates *
