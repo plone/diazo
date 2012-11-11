@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.3 (unreleased)
+1.0.3 (2012-11-11)
 ------------------
 
 * Support selectors matching multiple elements for merge attributes, e.g.
