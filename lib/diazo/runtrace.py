@@ -64,10 +64,13 @@ def generate_debug_html(base_url, rules=None, error_log=None, rules_parser=None)
 
     debug_output_iframe = etree.Element('div', id="diazo-debug-iframe")
     debug_output_iframe.attrib['style'] = "display:none"
-    debug_output_iframe.attrib['data-diazoiframe'] = "diazo_debug"
+    debug_output_iframe.attrib['data-iframe'] = "diazo-debug"
     debug_output_iframe.attrib['data-iframe-style'] = ""
-    debug_output_iframe.attrib['data-iframe-alignment'] = "bottom"
-    debug_output_iframe.attrib['data-iframe-resources'] = base_url + '/diazo-debug.css'
+    debug_output_iframe.attrib['data-iframe-position'] = "bottom"
+    debug_output_iframe.attrib['data-iframe-resources'] = \
+        base_url + '/diazo-debug.css;' + \
+        base_url + '/jquery-1.8.3.min.js;' + \
+        base_url + '/diazo-debug.js'
     debug_output = etree.Element('div', id="diazo-debug")
 
     if error_log:
