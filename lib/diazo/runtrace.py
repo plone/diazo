@@ -91,6 +91,6 @@ def generate_debug_html(base_url, rules=None, error_log=None, rules_parser=None)
     debug_output_iframe.append(debug_output)
     debug_output_iframe.append(newElement('script', " ",
         text="text/javascript",
-        src=base_url + '/diazo-iframe.js',
+        src=base_url + '/iframe.js',
     ))
     return debug_output_iframe
