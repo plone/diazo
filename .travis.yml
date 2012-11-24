@@ -4,6 +4,8 @@ python:
   - 2.7
 before_install:
 install:
+  - pip install --use-mirrors flake8
+  - flake8 .
   - python bootstrap.py -d
   - bin/buildout -c travis.cfg -q
 script:
