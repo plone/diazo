@@ -33,8 +33,12 @@ def fullname(namespace, name):
     return '{%s}%s' % (namespace, name)
 
 
-AC_READ_FILE = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=False, write_network=False)  # NOQA
-AC_READ_NET = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=True, write_network=False)  # NOQA
+AC_READ_FILE = etree.XSLTAccessControl(
+    read_file=True, write_file=False, create_dir=False, read_network=False,
+    write_network=False)
+AC_READ_NET = etree.XSLTAccessControl(
+    read_file=True, write_file=False, create_dir=False, read_network=True,
+    write_network=False)
 
 
 class CustomResolver(etree.Resolver):

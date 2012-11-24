@@ -17,8 +17,13 @@ from diazo.utils import namespaces, fullname, pkg_xsl, _createOptionParser
 
 logger = logging.getLogger('diazo')
 
-IMPORT_STYLESHEET = re.compile(r'''(?P<before>@import[ \t]+(?P<paren>url\([ \t]?)?(?P<quote>['"]?))(?P<url>\S+)(?P<after>(?P=quote)(?(paren)\)))''', re.IGNORECASE)  # NOQA
-CONDITIONAL_SRC = re.compile(r'''(?P<before><[^>]*?(src|href)=(?P<quote>['"]?))(?P<url>[^ \t\n\r\f\v>]+)(?P<after>(?P=quote)[^>]*?>)''', re.IGNORECASE)  # NOQA
+IMPORT_STYLESHEET = re.compile(
+    r'''(?P<before>@import[ \t]+(?P<paren>url\([ \t]?)?(?P<quote>['"]?))'''
+    r'''(?P<url>\S+)(?P<after>(?P=quote)(?(paren)\)))''', re.IGNORECASE)
+CONDITIONAL_SRC = re.compile(
+    r'''(?P<before><[^>]*?(src|href)=(?P<quote>['"]?))'''
+    r'''(?P<url>[^ \t\n\r\f\v>]+)(?P<after>(?P=quote)[^>]*?>)''',
+    re.IGNORECASE)
 
 
 update_transform = pkg_xsl('update-namespace.xsl')
