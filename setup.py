@@ -9,8 +9,10 @@ setup(
         step, then use a superfast/simple transform on each request thereafter.
         Alternatively, compile your theme during development, check it into
         Subversion, and not touch Diazo during deployment.''',
-    long_description=open("README.txt").read() + "\n\n" +
-                     open(os.path.join("docs", "CHANGES.txt")).read(),
+    long_description=
+            open("README.txt").read() +
+            "\n\n" +
+            open(os.path.join("docs", "CHANGES.txt")).read(),
     packages=find_packages('lib'),
     package_dir={'': 'lib'},
     include_package_data=True,
@@ -23,11 +25,11 @@ setup(
         'setuptools',
         'lxml',
         'experimental.cssselect',
-        ],
+    ],
     extras_require={
         'wsgi': ['repoze.xmliter>=0.3', 'WebOb'],
         'test': ['repoze.xmliter>=0.3', 'WebOb', 'unittest2'],
-        },
+    },
     entry_points="""
         [console_scripts]
         diazocompiler = diazo.compiler:main
@@ -38,4 +40,4 @@ setup(
         xslt = diazo.wsgi:XSLTMiddleware
         main = diazo.wsgi:DiazoMiddleware
         """,
-    )
+)
