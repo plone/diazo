@@ -7,7 +7,7 @@ from optparse import OptionParser
 
 strparam = etree.XSLT.strparam
 
-logger=logging.getLogger('diazo')
+logger = logging.getLogger('diazo')
 
 namespaces = dict(
     diazo="http://namespaces.plone.org/diazo",
@@ -18,24 +18,29 @@ namespaces = dict(
     oldcss2="http://namespaces.plone.org/diazo+css",
     xml="http://www.w3.org/XML/1998/namespace",
     xsl="http://www.w3.org/1999/XSL/Transform",
-    )
+)
+
 
 def localname(name):
     return name.rsplit('}', 1)[1]
 
+
 def namespace(name):
     return name.rsplit('}', 1)[0][1:]
+
 
 def fullname(namespace, name):
     return '{%s}%s' % (namespace, name)
 
-AC_READ_FILE = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=False, write_network=False)
-AC_READ_NET = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=True, write_network=False)
+
+AC_READ_FILE = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=False, write_network=False)  # NOQA
+AC_READ_NET = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=True, write_network=False)  # NOQA
+
 
 class CustomResolver(etree.Resolver):
     def __init__(self, data):
         self.data = data
-        
+
     def resolve(self, url, pubid, context):
         output = self.data.get(url)
         if output is not None:
@@ -46,6 +51,7 @@ class LoggingXSLTWrapper:
     def __init__(self, xslt, logger):
         self.xslt = xslt
         self.logger = logger
+
     def __call__(self, *args, **kw):
         result = self.xslt(*args, **kw)
         for msg in self.xslt.error_log:
@@ -55,18 +61,22 @@ class LoggingXSLTWrapper:
                 self.logger.debug(msg)
         return result
 
+
 def pkg_parse(name, parser=None):
-    return etree.parse(open(pkg_resources.resource_filename('diazo', name)), parser=parser)
+    return etree.parse(open(pkg_resources.resource_filename('diazo', name)),
+                       parser=parser)
+
 
 def pkg_xsl(name, parser=None):
     return LoggingXSLTWrapper(etree.XSLT(pkg_parse(name, parser)), logger)
 
+
 def quote_param(value):
     """Quote for passing as an XSL parameter.
-    
+
     Works with strings, booleans, numbers and None.
     """
-    
+
     if isinstance(value, basestring):
         return strparam(value)
     elif isinstance(value, bool):
@@ -78,15 +88,17 @@ def quote_param(value):
     else:
         raise ValueError("Cannot convert %s", value)
 
+
 def split_params(s):
     """Turn foo,bar=baz into {'foo': None, 'bar': 'baz'}
     """
-    
+
     xsl_params = {}
     for param in s.split(','):
         tokens = [t.strip() for t in param.split('=')]
         xsl_params[tokens[0]] = len(tokens) > 1 and tokens[1] or None
     return xsl_params
+
 
 def _createOptionParser(usage):
     parser = OptionParser(usage=usage)
@@ -94,13 +106,15 @@ def _createOptionParser(usage):
                       help="Output filename (instead of stdout)",
                       dest="output", default=sys.stdout)
     parser.add_option("-p", "--pretty-print", action="store_true",
-                      help="Pretty print output (may alter rendering in browser)",
+                      help="Pretty print output (may alter rendering in "
+                           "browser)",
                       dest="pretty_print", default=False)
     parser.add_option("--trace", action="store_true",
                       help="Compiler trace logging",
                       dest="trace", default=False)
     parser.add_option("-a", "--absolute-prefix", metavar="/",
-                      help="relative urls in the theme file will be made into absolute links with this prefix.",
+                      help="relative urls in the theme file will be made into "
+                           "absolute links with this prefix.",
                       dest="absolute_prefix", default=None)
     parser.add_option("-i", "--includemode", metavar="INC",
                       help="include mode (document, ssi, ssiwait or esi)",
@@ -112,12 +126,16 @@ def _createOptionParser(usage):
                       help="Theme file",
                       dest="theme", default=None)
     parser.add_option("-r", "--rules", metavar="rules.xml",
-                      help="Diazo rules file", 
+                      help="Diazo rules file",
                       dest="rules", default=None)
-    parser.add_option("-c", "--custom-parameters", metavar="param1,param2=defaultval",
-                      help="Comma-separated list of custom parameter names with optional default values that the compiled theme will be able accept when run",
+    parser.add_option("-c", "--custom-parameters",
+                      metavar="param1,param2=defaultval",
+                      help="Comma-separated list of custom parameter names "
+                           "with optional default values that the compiled "
+                           "theme will be able accept when run",
                       dest="xsl_params", default=None)
     parser.add_option("-e", "--extra", metavar="extra.xsl",
-                      help="Extra XSL to be included in the transform (depracated, use inline xsl in the rules instead)",
+                      help="Extra XSL to be included in the transform "
+                           "(depracated, use inline xsl in the rules instead)",
                       dest="extra", default=None)
     return parser
