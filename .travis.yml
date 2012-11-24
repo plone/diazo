@@ -5,9 +5,9 @@ python:
 before_install:
 install:
   - pip install --use-mirrors flake8
-  - flake8 setup.py
-  - flake8 lib
   - python bootstrap.py -d
   - bin/buildout -c travis.cfg -q
 script:
+  - flake8 setup.py
+  - flake8 lib
   - bin/test -s diazo
