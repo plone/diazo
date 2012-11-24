@@ -6,6 +6,7 @@ dist
 *.pyc
 *.pyo
 *.egg-info
+.installed.cfg
 .tox
 include
 lib/python2.7
