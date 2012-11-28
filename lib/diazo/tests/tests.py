@@ -19,14 +19,17 @@ from diazo.utils import quote_param
 if __name__ == '__main__':
     __file__ = sys.argv[0]
 
-defaultsfn = pkg_resources.resource_filename('diazo.tests', 'default-options.cfg')
+defaultsfn = pkg_resources.resource_filename('diazo.tests',
+                                             'default-options.cfg')
+
 
 class DiazoTestCase(unittest.TestCase):
-    
-    writefiles = os.environ.get('DiazoTESTS_WRITE_FILES', False)
-    warnings = os.environ.get('DiazoTESTS_WARN', "1").lower() not in ('0', 'false', 'off') 
 
-    testdir = None # override
+    writefiles = os.environ.get('DiazoTESTS_WRITE_FILES', False)
+    warnings = os.environ.get(
+        'DiazoTESTS_WARN', "1").lower() not in ('0', 'false', 'off')
+
+    testdir = None  # override
 
     @classmethod
     def suiteForParent(cls, parent, prefix):
@@ -44,7 +47,8 @@ class DiazoTestCase(unittest.TestCase):
             if not os.path.isfile(contentpath):
                 continue
 
-            test_cls = type('%s-%s'%(prefix, name), (DiazoTestCase,), dict(testdir=path))
+            test_cls = type('%s-%s' % (prefix, name), (DiazoTestCase,),
+                            dict(testdir=path))
             suite.addTest(unittest.makeSuite(test_cls))
         return suite
 
@@ -52,28 +56,30 @@ class DiazoTestCase(unittest.TestCase):
         self.errors = StringIO()
         config = ConfigParser.ConfigParser()
         config.read([defaultsfn, os.path.join(self.testdir, "options.cfg")])
-        
+
         themefn = None
         if config.get('diazotest', 'theme'):
-            themefn = os.path.join(self.testdir, config.get('diazotest', 'theme'))
+            themefn = os.path.join(self.testdir, config.get('diazotest',
+                                                            'theme'))
         contentfn = os.path.join(self.testdir, "content.html")
         rulesfn = os.path.join(self.testdir, "rules.xml")
         xpathsfn = os.path.join(self.testdir, "xpaths.txt")
         xslfn = os.path.join(self.testdir, "compiled.xsl")
         outputfn = os.path.join(self.testdir, "output.html")
-        
+
         xsl_params = {}
         extra_params = config.get('diazotest', 'extra-params')
         if extra_params:
             for token in extra_params.split(' '):
                 token_split = token.split(':')
-                xsl_params[token_split[0]] = len(token_split) > 1 and token_split[1] or None
-        
+                xsl_params[token_split[0]] = len(token_split) > 1 and \
+                    token_split[1] or None
+
         if not os.path.exists(rulesfn):
             return
-        
+
         contentdoc = etree.parse(source=contentfn, base_url=contentfn,
-                                       parser=etree.HTMLParser())
+                                 parser=etree.HTMLParser())
 
         # Make a compiled version
         theme_parser = etree.HTMLParser()
@@ -84,8 +90,8 @@ class DiazoTestCase(unittest.TestCase):
             absolute_prefix=config.get('diazotest', 'absolute-prefix'),
             indent=config.getboolean('diazotest', 'pretty-print'),
             xsl_params=xsl_params,
-            )
-        
+        )
+
         # Serialize / parse the theme - this can catch problems with escaping.
         cts = etree.tostring(ct)
         parser = etree.XMLParser()
@@ -100,7 +106,9 @@ class DiazoTestCase(unittest.TestCase):
                     open(xslfn + '.old', 'w').write(old)
                 if self.warnings:
                     print "WARNING:", "compiled.xsl has CHANGED"
-                    for line in difflib.unified_diff(old.split('\n'), new.split('\n'), xslfn, 'now'):
+                    for line in difflib.unified_diff(old.split('\n'),
+                                                     new.split('\n'),
+                                                     xslfn, 'now'):
                         print line
 
         # Write the compiled xsl out to catch unexpected changes
@@ -112,24 +120,25 @@ class DiazoTestCase(unittest.TestCase):
         processor = etree.XSLT(ct)
         params = {}
         params['path'] = "'%s'" % config.get('diazotest', 'path')
-        
+
         for key in xsl_params:
             try:
                 params[key] = quote_param(config.get('diazotest', key))
             except ConfigParser.NoOptionError:
                 pass
-        
+
         result = processor(contentdoc, **params)
 
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
         self.themed_string = str(result)
-        self.themed_content = etree.ElementTree(file=StringIO(self.themed_string), 
-                                                parser=etree.HTMLParser())
+        self.themed_content = etree.ElementTree(
+            file=StringIO(self.themed_string), parser=etree.HTMLParser())
 
         # remove the extra meta content type
 
-        metas = self.themed_content.xpath("/html/head/meta[@http-equiv='Content-Type']")
+        metas = self.themed_content.xpath(
+            "/html/head/meta[@http-equiv='Content-Type']")
         if metas:
             meta = metas[0]
             meta.getparent().remove(meta)
@@ -141,7 +150,8 @@ class DiazoTestCase(unittest.TestCase):
                 this_xpath = xpath.strip()
                 if not this_xpath or this_xpath[0] == '#':
                     continue
-                assert self.themed_content.xpath(this_xpath), "%s: %s" % (xpathsfn, this_xpath)
+                assert self.themed_content.xpath(this_xpath), "%s: %s" % (
+                    xpathsfn, this_xpath)
 
         # Compare to previous version
         if os.path.exists(outputfn):
@@ -150,7 +160,9 @@ class DiazoTestCase(unittest.TestCase):
             if old != new:
                 #if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
-                for line in difflib.unified_diff(old.split('\n'), new.split('\n'), outputfn, 'now'):
+                for line in difflib.unified_diff(old.split('\n'),
+                                                 new.split('\n'),
+                                                 outputfn, 'now'):
                     print  line
                 assert old == new, "output.html has CHANGED"
 
@@ -165,7 +177,9 @@ def test_suite():
     tests_dir = os.path.join(dist.location, 'diazo', 'tests')
     suite.addTest(DiazoTestCase.suiteForParent(tests_dir, 'Test'))
     if dist.precedence == pkg_resources.DEVELOP_DIST:
-        recipes_dir = os.path.join(os.path.dirname(dist.location), 'docs', 'recipes')
-        if os.path.exists(os.path.join(recipes_dir, 'diazo-tests-marker.txt')): # Could still be a 'System' package.
+        recipes_dir = os.path.join(os.path.dirname(dist.location),
+                                   'docs', 'recipes')
+        if os.path.exists(os.path.join(recipes_dir, 'diazo-tests-marker.txt')):
+            # Could still be a 'System' package.
             suite.addTest(DiazoTestCase.suiteForParent(recipes_dir, 'Recipe'))
     return suite
