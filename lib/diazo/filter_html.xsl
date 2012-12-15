@@ -34,7 +34,7 @@
         <xsl:value-of select="str:replace(., '&#13;&#10;', '&#10;')" disable-output-escaping="yes"/>
     </xsl:template>
 
-    <xsl:template match="/html/@xmlns">
+    <xsl:template match="/html/@xmlns|/html/@*[local-name()='xml:lang']">
         <!-- Filter out -->
     </xsl:template>
 
