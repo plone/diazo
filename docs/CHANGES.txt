@@ -4,6 +4,10 @@ Changelog
 1.0.4 (unreleased)
 ------------------
 
+* Provide the request's query string as the ``$query_string`` variable
+  for use in the rules file.
+  [davidjb]
+
 1.0.3 (2012-11-11)
 ------------------
 
