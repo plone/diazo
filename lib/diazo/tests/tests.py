@@ -163,7 +163,7 @@ class DiazoTestCase(unittest.TestCase):
                 for line in difflib.unified_diff(old.split('\n'),
                                                  new.split('\n'),
                                                  outputfn, 'now'):
-                    print  line
+                    print line
                 assert old == new, "output.html has CHANGED"
 
         # Write out the result to catch unexpected changes
