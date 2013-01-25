@@ -561,6 +561,6 @@ class DiazoMiddleware(object):
         environ['diazo.path'] = request.path
         environ['diazo.query_string'] = request.query_string
         environ['diazo.host'] = request.host
-        environ['diazo.scheme'] = request.host
+        environ['diazo.scheme'] = request.scheme
 
         return transform_middleware(environ, start_response)
