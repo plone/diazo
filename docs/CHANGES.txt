@@ -4,6 +4,9 @@ Changelog
 1.0.4 (unreleased)
 ------------------
 
+* Provide the request's query string as the ``$query_string`` variable
+  for use in the rules file.
+  [davidjb]
 * Fix ``diazo.scheme`` definition to be correct. Previously, this was
   defined as ``request.host``.
   [davidjb]

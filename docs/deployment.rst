@@ -122,8 +122,11 @@ WSGI ``environ``:
 ``diazo.absolute_prefix``
     The absolute prefix as set with the ``prefix`` argument
 ``diazo.path``
-    The path portion of the inbound request, which will be mapped to the the
+    The path portion of the inbound request, which will be mapped to the
     ``$path`` rules variable and so enables ``if-path`` expressions.
+``diazo.query_string``
+    The query string of the inbound request, which will be
+    available in the rules file as the variable ``$query_string``.
 ``diazo.host``
     The inbound hostname, which will be available in the rules file as the
     variable ``$host``.
