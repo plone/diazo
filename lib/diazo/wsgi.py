@@ -559,6 +559,6 @@ class DiazoMiddleware(object):
         environ['diazo.absolute_prefix'] = self.absolute_prefix
         environ['diazo.path'] = request.path
         environ['diazo.host'] = request.host
-        environ['diazo.scheme'] = request.host
+        environ['diazo.scheme'] = request.scheme
 
         return transform_middleware(environ, start_response)
