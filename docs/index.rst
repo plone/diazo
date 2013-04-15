@@ -1,4 +1,4 @@
-Diazo theming manual
+Diazo theme engine guide
 ====================================
 
 .. image:: images/diazo-concept.png
@@ -38,9 +38,4 @@ Contents:
    :maxdepth: 2
 
    recipes/index
-
-Search
-======
-
-* :ref:`search`
 
