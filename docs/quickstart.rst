@@ -194,9 +194,11 @@ To set up the proxy, we will use `Buildout`_.
     debug = true
     
     # Proxy http://diazo.org as the content
+    # not using root level since there's a redirect in place 
+    # to http://docs.diazo.org/en/latest/index.html
     [app:content]
     use = egg:Paste#proxy
-    address = http://diazo.org/
+    address = http://docs.diazo.org/en/latest/index.html
     suppress_http_headers = accept-encoding
 
 9. Run the proxy::
