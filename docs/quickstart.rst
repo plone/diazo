@@ -212,4 +212,4 @@ To set up the proxy, we will use `Buildout`_.
 .. _plone.app.theming: http://pypi.python.org/pypi/plone.app.theming
 .. _nginx: http://wiki.nginx.org
 .. _Buildout: http://www.buildout.org
-.. _bootstrap.py: http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py
+.. _bootstrap.py: http://downloads.buildout.org/2/bootstrap.py
