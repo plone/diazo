@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.4 (unreleased)
+1.0.4 (2013-08-14)
 ------------------
 
 * Provide the request's query string as the ``$query_string`` variable
