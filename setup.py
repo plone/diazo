@@ -8,7 +8,7 @@ setup(
         XSLT engine. With Diazo, you "compile" your theme and ruleset in one
         step, then use a superfast/simple transform on each request thereafter.
         Alternatively, compile your theme during development, check it into
-        Subversion, and not touch Diazo during deployment.''',
+        version control, and not touch Diazo during deployment.''',
     long_description=
             open("README.txt").read() +
             "\n\n" +
