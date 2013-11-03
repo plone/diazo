@@ -83,9 +83,19 @@ def update_namespace(rules_doc):
     return rules_doc
 
 
+def escape_curly_brackets(theme_doc):
+    for node in theme_doc.iter():
+        for attr in node.attrib:
+            if '{' in node.attrib[attr]:
+                node.attrib[attr] = node.attrib[attr].replace('{', '{{')
+            if '}' in node.attrib[attr]:
+                node.attrib[attr] = node.attrib[attr].replace('}', '}}')
+
+
 def expand_theme(element, theme_doc, absolute_prefix):
     prefix = urljoin(absolute_prefix, element.get('prefix', ''))
     apply_absolute_prefix(theme_doc, prefix)
+    escape_curly_brackets(theme_doc)
     theme_root = theme_doc.getroot()
     preceding = list(theme_root.itersiblings(preceding=True))
     preceding.reverse()
