@@ -25,7 +25,7 @@ logger = logging.getLogger('diazo')
 def convert_css_selectors(rules):
     """Convert css rules to xpath rules element tree in place
     """
-    #XXX: There is a
+    # XXX: There is a
     # :root pseudo-class - http://www.w3.org/TR/css3-selectors/#root-pseudo
     # We may wish to add support to lxml.cssselect for it some day.
     for element in rules.xpath("//@*[namespace-uri()='%s']/.." %
