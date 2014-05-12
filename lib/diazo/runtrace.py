@@ -93,8 +93,8 @@ def generate_debug_html(base_url, rules=None, error_log=None,
                             id="diazo_runtrace"))
     except etree.XMLSyntaxError:
         debug_output.append(newElement('section',
-                            "Rules document could not be parsed!",
-                            id="diazo_runtrace"))
+                                       "Rules document could not be parsed!",
+                                       id="diazo_runtrace"))
 
     debug_output_iframe.append(debug_output)
     debug_output_iframe.append(newElement('script', " ",
