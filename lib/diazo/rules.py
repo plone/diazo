@@ -208,8 +208,9 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True,
     if parser is None:
         parser = etree.HTMLParser()
     if xinclude:
-        rules_doc.xinclude()    # XXX read_network limitation not yet supported
-                                # for xinclude
+        # XXX: read_network limitation not yet supported
+        #   for xinclude
+        rules_doc.xinclude()
     if stop == 1:
         return rules_doc
     rules_doc = add_identifiers(rules_doc)
