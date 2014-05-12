@@ -158,7 +158,7 @@ class DiazoTestCase(unittest.TestCase):
             old = open(outputfn).read()
             new = self.themed_string
             if old != new:
-                #if self.writefiles:
+                # if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
                 for line in difflib.unified_diff(old.split('\n'),
                                                  new.split('\n'),
