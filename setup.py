@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 import os.path
 
-long_desc = "{}\n\n{}".format(open("README.txt").read(),
-                              open(os.path.join("docs", "CHANGES.txt")).read())
+
+readme = open("README.txt").read()
+changes = open(os.path.join("docs", "CHANGES.txt")).read()
+long_desc = readme + '\n\n' + changes
 
 setup(
     name='diazo',
