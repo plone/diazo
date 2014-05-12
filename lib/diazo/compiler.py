@@ -40,7 +40,7 @@ def set_parser(stylesheet, parser, compiler_parser=None):
 def build_xsl_params_document(xsl_params):
     if xsl_params is None:
         xsl_params = {}
-    if not 'path' in xsl_params:
+    if 'path' not in xsl_params:
         xsl_params['path'] = ''
     known_params = etree.XML(
         '<xsl:stylesheet version="1.0" '

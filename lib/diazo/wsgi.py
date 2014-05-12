@@ -35,7 +35,7 @@ class FilesystemResolver(etree.Resolver):
     """Resolver for filesystem paths
     """
     def resolve(self, system_url, public_id, context):
-        if not '://' in system_url and os.path.exists(system_url):
+        if '://' not in system_url and os.path.exists(system_url):
             return self.resolve_filename(system_url, context)
         else:
             return None
