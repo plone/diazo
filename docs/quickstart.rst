@@ -22,16 +22,12 @@ To set up the proxy, we will use `Buildout`_.
 2. Download the latest Buildout `bootstrap.py`_ and put it in this directory::
 
     $ cd diazo-test
-    $ wget http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py
+    $ wget http://downloads.buildout.org/2/bootstrap.py
 
 3. Create a ``buildout.cfg`` in this directory with the following contents.
    Please read the inline comments and adjust your copy as necessary::
    
-    [buildout]
-    # Adjust the version number as required. See
-    # http://good-py.appspot.com/release/diazo for a full list
-    
-    extends = http://good-py.appspot.com/release/diazo/1.0b1
+    [buildout]   
     versions = versions
     
     # Uncomment the `lxml` line if you are on OS X or want to compile your
@@ -50,6 +46,30 @@ To set up the proxy, we will use `Buildout`_.
     [lxml]
     recipe = z3c.recipe.staticlxml
     egg = lxml
+
+    [versions]
+    # latest versions dumped as of 2013-07-12
+    Paste = 1.7.5.1
+    PasteScript = 1.7.5
+    WebOb = 1.2.3
+    diazo = 1.0.3
+    repoze.xmliter = 0.5
+    setuptools = 0.8
+    zc.recipe.egg = 2.0.0
+
+    # Required by:
+    # PasteScript==1.7.5
+    PasteDeploy = 1.5.0
+
+    # Required by:
+    # diazo==1.0.3
+    experimental.cssselect = 0.3
+
+    # Required by:
+    # diazo==1.0.3
+    # experimental.cssselect==0.3
+    lxml = 3.2.1
+
 
 4. Bootstrap the buildout (this is only required once)::
 
@@ -174,9 +194,11 @@ To set up the proxy, we will use `Buildout`_.
     debug = true
     
     # Proxy http://diazo.org as the content
+    # not using root level since there's a redirect in place 
+    # to http://docs.diazo.org/en/latest/index.html
     [app:content]
     use = egg:Paste#proxy
-    address = http://diazo.org/
+    address = http://docs.diazo.org/en/latest/index.html
     suppress_http_headers = accept-encoding
 
 9. Run the proxy::
@@ -190,4 +212,4 @@ To set up the proxy, we will use `Buildout`_.
 .. _plone.app.theming: http://pypi.python.org/pypi/plone.app.theming
 .. _nginx: http://wiki.nginx.org
 .. _Buildout: http://www.buildout.org
-.. _bootstrap.py: http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py
+.. _bootstrap.py: http://downloads.buildout.org/2/bootstrap.py

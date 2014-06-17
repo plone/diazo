@@ -1,13 +1,13 @@
-We Write XSLT, So You Don't Have To™
+Diazo theme engine guide
 ====================================
 
 .. image:: images/diazo-concept.png
-    :align: right  
+    :align: right
 
 | *di-az-o (also di-az-o-type)*
 |   *noun*
 |   *a copying or coloring process using a diazo compound decomposed by ultraviolet light*
-  
+
 Diazo allows you to apply a theme contained in a static HTML web page to a
 dynamic website created using any server-side technology. With Diazo, you can
 take an HTML wireframe created by a web designer and turn it into a theme for
@@ -38,9 +38,4 @@ Contents:
    :maxdepth: 2
 
    recipes/index
-
-Search
-======
-
-* :ref:`search`
 

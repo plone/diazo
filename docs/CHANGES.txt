@@ -1,12 +1,33 @@
 Changelog
 =========
 
-1.0.4 (unreleased)
+1.0.6 (unreleased)
 ------------------
 
 * Also evaluate if-not-content. However, we are at risk of replicating
   apply-conditions.xsl in it's entirety. this needs refactoring.
   [lentinj]
+
+* Remove any xml:lang attribute from content to prevent multiple
+  xml:lang attributes when the html tag's attributes are copied.
+  [danjacka]
+
+1.0.5 (2014-01-27)
+------------------
+
+* Escape curly brackets on theme attributes.
+  [TracyWebTech]
+
+1.0.4 (2013-08-14)
+------------------
+
+* Provide the request's query string as the ``$query_string`` variable
+  for use in the rules file.
+  [davidjb]
+
+* Fix ``diazo.scheme`` definition to be correct. Previously, this was
+  defined as ``request.host``.
+  [davidjb]
 
 1.0.3 (2012-11-11)
 ------------------

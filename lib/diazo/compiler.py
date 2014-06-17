@@ -17,47 +17,54 @@ import pkg_resources
 from lxml import etree
 
 from diazo.rules import process_rules
-from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver, quote_param, split_params
+from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver
+from diazo.utils import quote_param, split_params
 
 logger = logging.getLogger('diazo')
 
+
 def set_parser(stylesheet, parser, compiler_parser=None):
-    dummy_doc = etree.parse(open(pkg_resources.resource_filename('diazo', 'dummy.html')), parser=parser)
+    dummy_doc = etree.parse(open(
+        pkg_resources.resource_filename('diazo', 'dummy.html')), parser=parser)
     name = 'file:///__diazo__'
     resolver = CustomResolver({name: stylesheet})
     if compiler_parser is None:
         compiler_parser = etree.XMLParser()
     compiler_parser.resolvers.add(resolver)
     identity = pkg_xsl('identity.xsl', compiler_parser)
-    output_doc = identity(dummy_doc, docurl="'%s'"%name)
+    output_doc = identity(dummy_doc, docurl="'%s'" % name)
     compiler_parser.resolvers.remove(resolver)
     return output_doc
+
 
 def build_xsl_params_document(xsl_params):
     if xsl_params is None:
         xsl_params = {}
-    if not 'path' in xsl_params:
+    if 'path' not in xsl_params:
         xsl_params['path'] = ''
-    known_params = etree.XML('<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" />')
+    known_params = etree.XML(
+        '<xsl:stylesheet version="1.0" '
+        'xmlns:xsl="http://www.w3.org/1999/XSL/Transform" />')
     for param_name, param_value in xsl_params.items():
-        param_element = etree.SubElement(known_params, "{http://www.w3.org/1999/XSL/Transform}param")
+        param_element = etree.SubElement(
+            known_params, "{http://www.w3.org/1999/XSL/Transform}param")
         param_element.attrib['name'] = param_name
         if isinstance(param_value, basestring):
             param_element.text = param_value
         else:
             param_element.attrib['select'] = str(quote_param(param_value))
         param_element.tail = '\n'
-    
-    return known_params    
+
+    return known_params
+
 
 def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
-    absolute_prefix=None, update=True, trace=False, includemode=None,
-    parser=None, compiler_parser=None, rules_parser=None,
-    access_control=None, read_network=False, indent=None,
-    xsl_params=None, runtrace=False
-):
+                  absolute_prefix=None, update=True, trace=False,
+                  includemode=None, parser=None, compiler_parser=None,
+                  rules_parser=None, access_control=None, read_network=False,
+                  indent=None, xsl_params=None, runtrace=False):
     """Invoke the diazo compiler.
-    
+
     * ``rules`` is the rules file
     * ``theme`` is the theme file
     * ``extra`` is an optional XSLT file with Diazo extensions (depracated, use
@@ -72,18 +79,19 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
       theme to be written so that it can be opened and views standalone on the
       filesystem, even if at runtime its static resources are going to be
       served from some other location. For example, an
-      ``<img src="images/foo.jpg" />`` can be turned into 
+      ``<img src="images/foo.jpg" />`` can be turned into
       ``<img src="/static/images/foo.jpg" />`` with an ``absolute_prefix`` of
       "/static".
-    * ``update`` can be set to False to disable the automatic update support for
-      the old Deliverance 0.2 namespace (for a moderate speed gain)
+    * ``update`` can be set to False to disable the automatic update support
+      for the old Deliverance 0.2 namespace (for a moderate speed gain)
     * ``trace`` can be set to True to enable compiler trace information
     * ``runtrace`` can be set to True to add tracing into the XSL output
     * ``includemode`` can be set to 'document', 'esi' or 'ssi' to change the
       way in which includes are processed
-    * ``parser`` can be set to an lxml parser instance; the default is an HTMLParser
-    * ``compiler_parser``` can be set to an lxml parser instance; the default is a
-      XMLParser
+    * ``parser`` can be set to an lxml parser instance; the default is an
+      HTMLParser
+    * ``compiler_parser``` can be set to an lxml parser instance; the default
+      is a XMLParser
     * ``rules_parser`` can be set to an lxml parser instance; the default is a
       XMLParser.
     * ``xsl_params`` can be set to a dictionary of parameters that will be
@@ -105,30 +113,33 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
         parser=parser,
         rules_parser=rules_parser,
         read_network=read_network,
-        )
-    
+    )
+
     # Build a document with all the <xsl:param /> values to set the defaults
     # for every value passed in as xsl_params
     known_params = build_xsl_params_document(xsl_params)
-    
+
     # Create a pseudo resolver for this
     known_params_url = 'file:///__diazo_known_params__'
-    emit_stylesheet_resolver = CustomResolver({known_params_url: etree.tostring(known_params)})
+    emit_stylesheet_resolver = CustomResolver({
+        known_params_url: etree.tostring(known_params)})
     emit_stylesheet_parser = etree.XMLParser()
     emit_stylesheet_parser.resolvers.add(emit_stylesheet_resolver)
-    
+
     # Set up parameters
     params = {}
     if indent is not None:
         params['indent'] = indent and "'yes'" or "'no'"
     params['known_params_url'] = quote_param(known_params_url)
     params['runtrace'] = '1' if runtrace else '0'
-    
+
     # Run the final stage compiler
-    emit_stylesheet = pkg_xsl('emit-stylesheet.xsl', parser=emit_stylesheet_parser)
+    emit_stylesheet = pkg_xsl(
+        'emit-stylesheet.xsl', parser=emit_stylesheet_parser)
     compiled_doc = emit_stylesheet(rules_doc, **params)
-    compiled_doc = set_parser(etree.tostring(compiled_doc), parser, compiler_parser)
-    
+    compiled_doc = set_parser(etree.tostring(compiled_doc), parser,
+                              compiler_parser)
+
     return compiled_doc
 
 
@@ -150,11 +161,11 @@ def main():
 
     if options.trace:
         logger.setLevel(logging.DEBUG)
-    
-    xsl_params=None
+
+    xsl_params = None
     if options.xsl_params:
         xsl_params = split_params(options.xsl_params)
-    
+
     output_xslt = compile_theme(
         rules=options.rules,
         theme=options.theme,
@@ -164,11 +175,13 @@ def main():
         includemode=options.includemode,
         read_network=options.read_network,
         xsl_params=xsl_params
-        )
+    )
     root = output_xslt.getroot()
     if not root.tail:
         root.tail = '\n'
-    output_xslt.write(options.output, encoding='utf-8', pretty_print=options.pretty_print)
+    output_xslt.write(options.output, encoding='utf-8',
+                      pretty_print=options.pretty_print)
+
 
 if __name__ == '__main__':
     main()

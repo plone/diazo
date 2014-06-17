@@ -4,7 +4,9 @@ python:
   - 2.7
 before_install:
 install:
-  - python bootstrap.py -d
-  - bin/buildout -c travis.cfg -q
+  - pip install --use-mirrors flake8 zc.buildout
+  - buildout -c travis.cfg -q
 script:
+  - flake8 setup.py
+  - flake8 lib
   - bin/test -s diazo

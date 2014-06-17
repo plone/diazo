@@ -1,0 +1,22 @@
+<rules
+  xmlns="http://namespaces.plone.org/diazo"
+  xmlns:css="http://namespaces.plone.org/diazo/css"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  >
+  <replace css:content-children="#content" css:theme-children="#content"/>
+  <xsl:template css:match=".listingBar > span,.listingBar > a">
+    <li>
+      <xsl:copy>
+        <xsl:copy-of select="@*" />
+        <xsl:apply-templates />
+      </xsl:copy>
+    </li>
+  </xsl:template>
+  <xsl:template css:match=".listingBar">
+    <div class="pagination-centered">
+      <ul class="pagination">
+        <xsl:apply-templates />
+      </ul>
+    </div>
+  </xsl:template>
+</rules>
