@@ -230,9 +230,14 @@ page would still be parsed and serialized through libxml2.
 Better debugging support
 ------------------------
 
-There needs to be some mechanism to feedback to the integrator which rules are
-being matched, probably by writing out information into comments.
+The runtrace output needs to be improved by
 
+ [ ] Refactoring it can reuse logic in apply-conditions.xsl
+ [ ] Adding extra runtrace messages when rules are actually doing something
+     Then can say when a rule isn't
+ [ ] Style the xsl:message output a bit
+ [ ] Move iframe.js into it's own package, rely on p.a.theming to include
+     it for us?
 
 Omit directive
 --------------
