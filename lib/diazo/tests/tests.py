@@ -15,7 +15,8 @@ import diazo.compiler
 import diazo.run
 
 from diazo.utils import quote_param
-from diazo.tests.utils import xml_compare
+from formencode.doctest_xml_compare import xml_compare
+
 
 if __name__ == '__main__':
     __file__ = sys.argv[0]
