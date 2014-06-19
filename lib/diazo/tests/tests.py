@@ -15,6 +15,7 @@ import diazo.compiler
 import diazo.run
 
 from diazo.utils import quote_param
+from diazo.tests.utils import xml_compare
 
 if __name__ == '__main__':
     __file__ = sys.argv[0]
@@ -157,7 +158,7 @@ class DiazoTestCase(unittest.TestCase):
         if os.path.exists(outputfn):
             old = open(outputfn).read()
             new = self.themed_string
-            if old != new:
+            if not xml_compare(etree.fromstring(old.strip()), etree.fromstring(new.strip())):
                 # if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
                 for line in difflib.unified_diff(old.split('\n'),
