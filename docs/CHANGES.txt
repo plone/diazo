@@ -4,6 +4,10 @@ Changelog
 1.0.6 (unreleased)
 ------------------
 
+* Use formencode's xml_compare method to compare test results. This solves test
+  failures on several systems.
+  [timo]
+
 * Also evaluate if-not-content. However, we are at risk of replicating
   apply-conditions.xsl in it's entirety. this needs refactoring.
   [lentinj]

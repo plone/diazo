@@ -29,7 +29,12 @@ setup(
         'experimental.cssselect'],
     extras_require={
         'wsgi': ['repoze.xmliter>=0.3', 'WebOb'],
-        'test': ['repoze.xmliter>=0.3', 'WebOb', 'unittest2']},
+        'test': [
+            'formencode',
+            'repoze.xmliter>=0.3',
+            'WebOb',
+            'unittest2'
+        ]},
     entry_points="""
         [console_scripts]
         diazocompiler = diazo.compiler:main
