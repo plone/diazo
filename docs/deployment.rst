@@ -141,9 +141,22 @@ To deploy an Diazo theme to the Nginx_ web server, you
 will need to compile Nginx with a special version of the XSLT module that
 can (optionally) use the HTML parser from libxml2.
 
+If you expect the source content to be xhtml well-formed and valid, then you
+should be able to avoid the ``xslt_html_parser on;`` directive. You can 
+achieve this if you generate the source content.
+
+Otherwise, if you expect non-xhtml compliant html, you need to compile Nginx 
+from source. At the time of this writing, the html-xslt_ project proposes 
+full Nginx sources for Nginx 0.7 and 0.8, whereas Nginx is now 1.6 and 1.7. 
+Here is an alternative `patch
+<https://github.com/jcu-eresearch/nginx-custom-build/blob/master/nginx-xslt-html-parser.patch>`_
+you should be able to apply to any Nginx source code with the command-line
+``patch src/http/modules/ngx_http_xslt_filter_module.c nginx-xslt-html-parser.patch``.
+
 In the future, the necessary patches to enable HTML mode parsing will
-hopefully be part of the standard Nginx distribution. In the meantime, they
-are maintained in the html-xslt_ project.
+hopefully be part of the standard Nginx distribution. There also is a
+`Nginx ticket <http://trac.nginx.org/nginx/ticket/609>`_ asking for the 
+xslt_html_parser in the http_xslt_module.
 
 Using a properly patched Nginx, you can configure it with XSLT support like
 so::
