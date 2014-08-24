@@ -15,6 +15,7 @@ import logging
 import pkg_resources
 
 from lxml import etree
+from six import string_types
 
 from diazo.rules import process_rules
 from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver
@@ -49,7 +50,7 @@ def build_xsl_params_document(xsl_params):
         param_element = etree.SubElement(
             known_params, "{http://www.w3.org/1999/XSL/Transform}param")
         param_element.attrib['name'] = param_name
-        if isinstance(param_value, basestring):
+        if isinstance(param_value, string_types):
             param_element.text = param_value
         else:
             param_element.attrib['select'] = str(quote_param(param_value))

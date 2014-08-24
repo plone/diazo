@@ -1,12 +1,16 @@
+from future import standard_library
+standard_library.install_hooks()
 import re
 import pkg_resources
 import os.path
 
-from urllib import unquote_plus
+from urllib.parse import unquote_plus
 
 from webob import Request
 
 from lxml import etree
+
+from six import string_types
 
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
@@ -19,7 +23,7 @@ DIAZO_OFF_HEADER = 'X-Diazo-Off'
 
 
 def asbool(value):
-    if isinstance(value, basestring):
+    if isinstance(value, string_types):
         value = value.strip().lower()
         if value in ('true', 'yes', 'on', 'y', 't', '1',):
             return True
@@ -92,7 +96,7 @@ class WSGIResolver(etree.Resolver):
         charset = response.charset
         if charset is None:
             charset = 'UTF-8'  # Maybe this should be latin1?
-        result = response.body.decode(charset).encode('ascii',
+        result = response.body.encode('ascii',
                                                       'xmlcharrefreplace')
 
         if response.content_type in ('text/javascript',
@@ -223,7 +227,7 @@ class XSLTMiddleware(object):
             "^.*\.(%s)$" % '|'.join(ignored_extensions))
 
         self.environ_param_map = environ_param_map or {}
-        if isinstance(unquoted_params, basestring):
+        if isinstance(unquoted_params, string_types):
             unquoted_params = unquoted_params.split()
         self.unquoted_params = unquoted_params and \
             frozenset(unquoted_params) or ()
@@ -307,7 +311,7 @@ class XSLTMiddleware(object):
         # so that other middleware could avoid having to re-parse, even if
         # we take a hit on serialising here
         if self.update_content_length:
-            response.content_length = len(str(response.app_iter))
+            response.content_length = len(bytes(response.app_iter))
 
         return response(environ, start_response)
 

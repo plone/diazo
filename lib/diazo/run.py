@@ -14,6 +14,7 @@ import sys
 import os.path
 
 from lxml import etree
+from six import string_types
 
 from diazo.compiler import compile_theme
 from diazo.utils import AC_READ_NET, AC_READ_FILE, _createOptionParser
@@ -136,7 +137,7 @@ def main():
             params[key] = quote_param(value)
 
     output_html = transform(content_doc, **params)
-    if isinstance(options.output, basestring):
+    if isinstance(options.output, string_types):
         out = open(options.output, 'wt')
     else:
         out = options.output

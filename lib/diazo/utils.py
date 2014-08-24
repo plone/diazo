@@ -4,6 +4,7 @@ import sys
 
 from lxml import etree
 from optparse import OptionParser
+from six import string_types, integer_types
 
 strparam = etree.XSLT.strparam
 
@@ -81,11 +82,11 @@ def quote_param(value):
     Works with strings, booleans, numbers and None.
     """
 
-    if isinstance(value, basestring):
+    if isinstance(value, string_types):
         return strparam(value)
     elif isinstance(value, bool):
         return value and 'true()' or 'false()'
-    elif isinstance(value, (int, long, float)):
+    elif isinstance(value, integer_types + (float,)):
         value = repr(value)
     elif value is None:
         return '/..'

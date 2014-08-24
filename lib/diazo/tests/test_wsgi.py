@@ -1,7 +1,10 @@
 import sys
 import os.path
 
-import unittest2 as unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 if __name__ == '__main__':
     __file__ = sys.argv[0]
@@ -171,8 +174,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertEqual(response.headers['Content-Type'],
                          'text/html; charset=UTF-8')
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_transform_tree(self):
         from lxml import etree
@@ -194,8 +197,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertEqual(response.headers['Content-Type'],
                          'text/html; charset=UTF-8')
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_head_request(self):
         from lxml import etree
@@ -413,7 +416,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
 
-        self.assertTrue(response.body.startswith("<!DOCTYPE html>\n<html"))
+        self.assertTrue(response.body.startswith(b"<!DOCTYPE html>\n<html"))
 
     def test_ignored_extension(self):
         from lxml import etree
@@ -439,8 +442,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_diazo_off_request_header(self):
         from lxml import etree
@@ -467,8 +470,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_diazo_off_response_header(self):
         from lxml import etree
@@ -503,8 +506,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_non_html_content_type(self):
         from lxml import etree
@@ -537,8 +540,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_content_encoding(self):
         from lxml import etree
@@ -572,8 +575,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_301(self):
         from lxml import etree
@@ -606,8 +609,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_302(self):
         from lxml import etree
@@ -640,8 +643,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_304(self):
         from lxml import etree
@@ -674,8 +677,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_204(self):
         from lxml import etree
@@ -708,8 +711,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_401(self):
         from lxml import etree
@@ -742,8 +745,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_html_serialization(self):
         from lxml import etree
@@ -763,9 +766,9 @@ class TestXSLTMiddleware(unittest.TestCase):
 
         # HTML serialisation
         self.assertTrue(
-            '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" '
-            '"http://www.w3.org/TR/html4/strict.dtd">' in response.body)
-        self.assertTrue('<br>' in response.body)
+            b'<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" '
+            b'"http://www.w3.org/TR/html4/strict.dtd">' in response.body)
+        self.assertTrue(b'<br>' in response.body)
 
         app = XSLTMiddleware(application, {},
                              tree=etree.fromstring(XSLT_XHTML))
@@ -774,10 +777,10 @@ class TestXSLTMiddleware(unittest.TestCase):
 
         # XHTML serialisation
         self.assertTrue(
-            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '
-            '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+            b'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '
+            b'"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
             in response.body)
-        self.assertTrue('<br />' in response.body)
+        self.assertTrue(b'<br />' in response.body)
 
         app = XSLTMiddleware(application, {},
                              tree=etree.fromstring(XSLT_HTML5))
@@ -785,8 +788,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         # HTML 5 serialisation
-        self.assertTrue('<!DOCTYPE html>' in response.body)
-        self.assertTrue('<br/>' in response.body)
+        self.assertTrue(b'<!DOCTYPE html>' in response.body)
+        self.assertTrue(b'<br/>' in response.body)
 
     def test_environ_param(self):
         from lxml import etree
@@ -807,13 +810,13 @@ class TestXSLTMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
 
-        self.assertTrue('<p>defaultvalue</p>' in response.body)
+        self.assertTrue(b'<p>defaultvalue</p>' in response.body)
 
         request = Request.blank('/')
         request.environ['test.param1'] = 'value1'
         response = request.get_response(app)
 
-        self.assertTrue('<p>value1</p>' in response.body)
+        self.assertTrue(b'<p>value1</p>' in response.body)
 
     def test_params(self):
         from lxml import etree
@@ -832,7 +835,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
 
-        self.assertTrue('<p>defaultvalue</p>' in response.body)
+        self.assertTrue(b'<p>defaultvalue</p>' in response.body)
 
         app = XSLTMiddleware(application, {},
                              tree=etree.fromstring(XSLT_PARAM),
@@ -840,7 +843,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
 
-        self.assertTrue('<p>value1</p>' in response.body)
+        self.assertTrue(b'<p>value1</p>' in response.body)
 
 
 class TestDiazoMiddleware(unittest.TestCase):
@@ -861,10 +864,10 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_doctype_html5(self):
         from diazo.wsgi import DiazoMiddleware
@@ -882,7 +885,7 @@ class TestDiazoMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
 
-        self.assertTrue(response.body.startswith("<!DOCTYPE html>\n<html"))
+        self.assertTrue(response.body.startswith(b"<!DOCTYPE html>\n<html"))
 
     def test_with_theme(self):
         from diazo.wsgi import DiazoMiddleware
@@ -900,10 +903,10 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_absolute_prefix(self):
         from diazo.wsgi import DiazoMiddleware
@@ -921,12 +924,12 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
         self.assertTrue(
-            '<link rel="stylesheet" href="./theme.css" />' in response.body)
+            b'<link rel="stylesheet" href="./theme.css" />' in response.body)
 
         app = DiazoMiddleware(application, {},
                               testfile('simple_transform.xml'),
@@ -935,12 +938,12 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
         self.assertTrue(
-            '<link rel="stylesheet" href="/static/theme.css" />'
+            b'<link rel="stylesheet" href="/static/theme.css" />'
             in response.body)
 
     def test_path_param(self):
@@ -958,19 +961,19 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertFalse(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertTrue(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
         request = Request.blank('/index.html')
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_custom_environ_param(self):
         from diazo.wsgi import DiazoMiddleware
@@ -989,30 +992,30 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertFalse(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertTrue(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
         request = Request.blank('/')
         request.environ['test.param1'] = 'value1'
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
         request = Request.blank('/')
         request.environ['test.param1'] = 'value2'
         response = request.get_response(app)
 
         self.assertFalse(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertTrue(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_custom_param(self):
         from diazo.wsgi import DiazoMiddleware
@@ -1030,10 +1033,10 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
         app = DiazoMiddleware(application, {}, testfile('custom_param.xml'),
                               someparam='value2')
@@ -1041,10 +1044,10 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertFalse(
-            '<div id="content">Content content</div>' in response.body)
+            b'<div id="content">Content content</div>' in response.body)
         self.assertTrue(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_subrequest(self):
         from diazo.wsgi import DiazoMiddleware
@@ -1066,10 +1069,10 @@ class TestDiazoMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         self.assertTrue(
-            '<div id="content">Alternative content</div>' in response.body)
+            b'<div id="content">Alternative content</div>' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_esi(self):
         from diazo.wsgi import DiazoMiddleware
@@ -1091,19 +1094,19 @@ class TestDiazoMiddleware(unittest.TestCase):
         request = Request.blank('/')
         response = request.get_response(app)
 
-        self.assertTrue('''<esi:include src="/other.html?;'''
-                        '''filter_xpath=//*[@id%20=%20'content']">'''
-                        '''</esi:include>''' in response.body)
+        self.assertTrue(b'''<esi:include src="/other.html?;'''
+                        b'''filter_xpath=//*[@id%20=%20'content']">'''
+                        b'''</esi:include>''' in response.body)
         self.assertFalse(
-            '<div id="content">Theme content</div>' in response.body)
-        self.assertTrue('<title>Transformed</title>' in response.body)
+            b'<div id="content">Theme content</div>' in response.body)
+        self.assertTrue(b'<title>Transformed</title>' in response.body)
 
         request = Request.blank(
             '''/other.html?;filter_xpath=//*[@id%20=%20'content']''')
         response = request.get_response(app)
         # Strip response body in this test due too
         # https://bugzilla.gnome.org/show_bug.cgi?id=652766
-        self.assertEqual('<div id="content">Alternative content</div>',
+        self.assertEqual(b'<div id="content">Alternative content</div>',
                          response.body.strip())
 
 

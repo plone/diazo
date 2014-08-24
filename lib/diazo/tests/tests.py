@@ -1,3 +1,6 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_hooks()
 #
 # Simple test runner for validating different diazo scenarios
 #
@@ -6,9 +9,9 @@ from lxml import etree
 import os
 import sys
 import difflib
-from StringIO import StringIO
+from io import BytesIO
 import unittest
-import ConfigParser
+import configparser
 import pkg_resources
 
 import diazo.compiler
@@ -55,8 +58,8 @@ class DiazoTestCase(unittest.TestCase):
         return suite
 
     def testAll(self):
-        self.errors = StringIO()
-        config = ConfigParser.ConfigParser()
+        self.errors = BytesIO()
+        config = configparser.ConfigParser()
         config.read([defaultsfn, os.path.join(self.testdir, "options.cfg")])
 
         themefn = None
@@ -107,11 +110,11 @@ class DiazoTestCase(unittest.TestCase):
                 if self.writefiles:
                     open(xslfn + '.old', 'w').write(old)
                 if self.warnings:
-                    print "WARNING:", "compiled.xsl has CHANGED"
+                    print("WARNING:", "compiled.xsl has CHANGED")
                     for line in difflib.unified_diff(old.split('\n'),
                                                      new.split('\n'),
                                                      xslfn, 'now'):
-                        print line
+                        print(line)
 
         # Write the compiled xsl out to catch unexpected changes
         if self.writefiles:
@@ -126,17 +129,17 @@ class DiazoTestCase(unittest.TestCase):
         for key in xsl_params:
             try:
                 params[key] = quote_param(config.get('diazotest', key))
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 pass
 
         result = processor(contentdoc, **params)
 
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = str(result)
+        self.themed_string = bytes(result)
         self.themed_content = etree.ElementTree(
-            file=StringIO(self.themed_string), parser=etree.HTMLParser())
-
+            file=BytesIO(self.themed_string), parser=etree.HTMLParser())
+            
         # remove the extra meta content type
 
         metas = self.themed_content.xpath(
@@ -165,7 +168,7 @@ class DiazoTestCase(unittest.TestCase):
                 for line in difflib.unified_diff(old.split('\n'),
                                                  new.split('\n'),
                                                  outputfn, 'now'):
-                    print line
+                    print(line)
                 assert old == new, "output.html has CHANGED"
 
         # Write out the result to catch unexpected changes
