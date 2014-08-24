@@ -1,6 +1,18 @@
 from setuptools import setup, find_packages
 import os.path
+import sys
+PY3 = sys.version_info > (3,)
 
+extras_require={
+    'wsgi': ['repoze.xmliter>=0.3', 'WebOb'],
+    'test': [
+        'formencode',
+        'repoze.xmliter>=0.3',
+        'WebOb',
+    ]}
+
+if not PY3:
+    extras_require['test'].append('unittest2')
 
 readme = open("README.txt").read()
 changes = open(os.path.join("docs", "CHANGES.txt")).read()
@@ -27,14 +39,7 @@ setup(
         'setuptools',
         'lxml',
         'experimental.cssselect'],
-    extras_require={
-        'wsgi': ['repoze.xmliter>=0.3', 'WebOb'],
-        'test': [
-            'formencode',
-            'repoze.xmliter>=0.3',
-            'WebOb',
-            'unittest2'
-        ]},
+    extras_require=extras_require,
     entry_points="""
         [console_scripts]
         diazocompiler = diazo.compiler:main
