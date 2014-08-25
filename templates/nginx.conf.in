@@ -21,22 +21,22 @@ http {
             # rewrite args to avoid looping
             rewrite    ^(.*)$    /_include$1?$newargs?;
         }
-        
+
         location @include500 { return 500; }
         location @include404 { return 404; }
-        
+
         location ^~ /_include {
             # Restrict to subrequests
             internal;
             error_page 404 = @include404;
-            
+
             # Cache in Varnish for 1h
             expires 1h;
-            
+
             # Proxy
             rewrite    ^/_include(.*)$    $1    break;
             proxy_pass http://127.0.0.1:${port};
-            
+
             # Our safety belt.
             proxy_set_header X-Loop 1$http_X_Loop; # unary count
             proxy_set_header Accept-Encoding "";
@@ -44,7 +44,7 @@ http {
             if ($http_X_Loop ~ "11111") {
                 return 500;
             }
-            
+
             # Filter by xpath
             xslt_stylesheet ${filter.xsl}
                 xpath=$filter_xpath
@@ -52,7 +52,7 @@ http {
             xslt_html_parser on;
             xslt_types text/html;
         }
-        
+
         # Our styled location.
         location /styled {
             alias ${root};

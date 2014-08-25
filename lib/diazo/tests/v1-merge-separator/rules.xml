@@ -3,12 +3,12 @@
     xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
-    
+
     <merge
         attributes="id"
         separator="-"
         css:theme="#alpha"
         css:content="#one"
         />
-    
+
 </rules>

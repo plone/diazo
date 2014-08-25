@@ -1,7 +1,7 @@
 Create an unordered list from a series of elements
 ==================================================
 
-This recipe demonstrates how you can create an unordered list from a 
+This recipe demonstrates how you can create an unordered list from a
 series of elements.
 
 Rules

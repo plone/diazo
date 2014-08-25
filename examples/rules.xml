@@ -4,13 +4,13 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
     <drop css:content="#byline" if="$mode = 'live'"/>
-    
+
     <replace theme="/html/head/title" content="/html/head/title"/>
-    
+
     <replace css:theme-content="#pageheading" content="/html/head/title/text()"/>
     <replace css:theme-content="#pagecontent" css:content="body > pre" if-content=""/>
     <replace css:theme-content="#pagecontent" css:content-children="#content"/>
-    
+
     <before css:theme-children="#left-column" css:content="#portlet" href="/extra.html" if='not($offline)' />
 
 </rules>

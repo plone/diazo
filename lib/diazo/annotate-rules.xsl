@@ -97,7 +97,7 @@
                 <xsl:value-of select="@xml:id"/>
             </diazo:xmlid>
         </xsl:for-each>
-    </xsl:template>        
+    </xsl:template>
 
     <xsl:template match="*[not(@href)]" mode="include" priority="5">
       <diazo:synthetic>
@@ -111,7 +111,7 @@
         </xsl:element>
       </diazo:synthetic>
     </xsl:template>
-    
+
     <xsl:template match="*[@method = 'document']" mode="include">
       <diazo:synthetic>
         <xsl:element name="xsl:apply-templates">
@@ -127,7 +127,7 @@
         </xsl:element>
       </diazo:synthetic>
     </xsl:template>
-    
+
     <xsl:template match="*[@method = 'transform']" mode="include">
       <diazo:synthetic>
         <xsl:element name="xsl:apply-templates">
@@ -135,7 +135,7 @@
         </xsl:element>
       </diazo:synthetic>
     </xsl:template>
-    
+
     <xsl:template match="*[@method = 'ssi' or @method = 'ssiwait']" mode="include">
         <!-- Assumptions:
             * When using ssiprefix, @href should be an absolute local path (i.e.  /foo/bar)
@@ -149,7 +149,7 @@
             </xsl:choose>"<xsl:if test="@method = 'ssiwait'"> wait="yes"</xsl:if></xsl:element>
       </diazo:synthetic>
     </xsl:template>
-    
+
     <xsl:template match="*[@method = 'esi']" mode="include">
         <!-- Assumptions:
             * When using esiprefix, @href should be an absolute local path (i.e.  /foo/bar)
@@ -163,7 +163,7 @@
             </xsl:choose></xsl:attribute></esi:include>
       </diazo:synthetic>
     </xsl:template>
-    
+
     <xsl:template match="diazo:attributes[@href]" mode="include">
         <xsl:if test="@method != 'document'">
             <xsl:call-template name="error-message" select=".">
@@ -172,7 +172,7 @@
         </xsl:if>
         <xsl:attribute name="content">document('<xsl:value-of select="@href"/>', $diazo-base-document)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/></xsl:attribute>
     </xsl:template>
-    
+
     <xsl:template match="*" mode="include">
         <xsl:call-template name="error-message" select=".">
             <xsl:with-param name="message">Unknown includemode or @method attribute</xsl:with-param>

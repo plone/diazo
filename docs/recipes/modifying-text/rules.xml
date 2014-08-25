@@ -5,6 +5,6 @@
 
     <replace css:theme="#target" css:content="#content" />
 
-    <xsl:template match="h2/text()"><xsl:copy /> - Some extra text</xsl:template> 
+    <xsl:template match="h2/text()"><xsl:copy /> - Some extra text</xsl:template>
 
 </rules>

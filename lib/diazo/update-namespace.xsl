@@ -15,7 +15,7 @@
             <xsl:apply-templates select="@*|node()" />
         </xsl:element>
     </xsl:template>
-    
+
     <xsl:template match="@nocontent">
         <!-- remove this -->
     </xsl:template>

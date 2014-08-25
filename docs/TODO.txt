@@ -32,7 +32,7 @@ Definitely
     - Requires if-path, if-content, if-host or similar
     - Same precedence
     - Can turn off the theme for a given condition
- 
+
  [ ] Add if-host condition for
     - All rules
     - <theme />

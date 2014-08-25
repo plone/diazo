@@ -1,4 +1,4 @@
-# 
+#
 # External includes. Using @href to specify what to include
 # content is empty. This time there are no portlets.
 #

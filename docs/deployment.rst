@@ -88,7 +88,7 @@ The following options can be passed to ``DiazoMiddleware``:
     Can be set to a string that will be prefixed to any *relative* URL
     referenced in an image, link or stylesheet in the theme HTML file before
     the theme is passed to the compiler.
-    
+
     This allows a theme to be written so that it can be opened and views
     standalone on the filesystem, even if at runtime its static resources are
     going to be served from some other location. For example, an
@@ -157,9 +157,9 @@ with the following example::
     parts =
         ...
         Nginx
-    
+
     ...
-        
+
     [Nginx]
     recipe = zc.recipe.cmmi
     url = http://html-xslt.googlecode.com/files/Nginx-0.7.67-html-xslt-4.tar.gz

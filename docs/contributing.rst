@@ -22,7 +22,7 @@ Contributing to this documentation is easy, just follow these steps*:
 
     $ cd diazo/docs
 
-5. Make your changes. If you don't know Sphinx or reStructuredText, 
+5. Make your changes. If you don't know Sphinx or reStructuredText,
    you can read about them respectively here_, `and here`_.
 
    To see the final result you can run::
@@ -51,8 +51,8 @@ Diazo is maintained by the Plone project. The canonical source code
 repository can be found at::
 
     https://github.com/plone/diazo
-    
-You can follow the same 
+
+You can follow the same
 :ref:`fork & pull request <contributing-to-this-documentation>`
 procedure described above to contribute to the source.
 

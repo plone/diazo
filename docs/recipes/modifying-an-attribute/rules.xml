@@ -7,6 +7,6 @@
 
     <xsl:template match="img/@src[not(contains(., '@@'))]">
         <xsl:attribute name="src"><xsl:value-of select="." />/@@/images/image/thumb</xsl:attribute>
-    </xsl:template> 
+    </xsl:template>
 
 </rules>

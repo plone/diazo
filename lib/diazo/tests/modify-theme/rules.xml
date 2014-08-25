@@ -11,14 +11,14 @@
             Check that a stray xmlns does not end up in the output
         </p>
     </diazo:before>
-    
+
     <diazo:append css:theme="head">
         <style type="text/css">
             /* From the rules */
             body > h1 { color: red; }
         </style>
     </diazo:append>
-    
+
     <diazo:replace css:theme="#details">
         <dl id="details">
             <xsl:for-each css:select="table#details > tr">
@@ -30,7 +30,7 @@
     <!--
         Note that css expressions are converted to `placeless` xpath expressions,
         so css:select="table#details > tr" converts to select="//table[@id='details]/tr".
-        
+
         This means it would not be possible to use css:select="td:first-child > *" as
         you want a relative selector here.
     -->

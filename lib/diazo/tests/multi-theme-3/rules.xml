@@ -2,7 +2,7 @@
     xmlns="http://namespaces.plone.org/diazo"
     xmlns:css="http://namespaces.plone.org/diazo/css"
     >
-    
+
     <theme css:if-content="body.theme1" href="theme1.html"/>
     <theme css:if-content="body.theme2" href="theme2.html"/>
     <copy css:theme="#content" css:content="body > *"/>

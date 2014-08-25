@@ -11,5 +11,5 @@
     <!-- TinyMCE empty paras include a non breaking space -->
     <drop content="p[not(*) and (not(normalize-space()) or text() = '&#160;')]"/>
 
-    <replace css:theme="#target" css:content="#content" />            
+    <replace css:theme="#target" css:content="#content" />
 </rules>

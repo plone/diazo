@@ -4,7 +4,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
     <theme href="theme.html" />
-    
+
     <replace css:theme="#content" css:content="#content" href="/other.html" method="esi" />
-    
+
 </rules>

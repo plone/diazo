@@ -3,23 +3,23 @@
     xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
-    
+
     <replace
         if="$foo = 'omega'"
         css:theme="#alpha"
         css:content="#one"
         />
-    
+
     <replace
         if="$foo = 'baz'"
         css:theme="#beta"
         css:content="#two"
         />
-    
+
     <after
         if="$bar = 'baz'"
         css:theme="#beta"
         css:content="#two"
         />
-        
+
 </rules>
