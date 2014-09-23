@@ -1,5 +1,3 @@
-from future import standard_library
-standard_library.install_hooks()
 from io import BytesIO
 import sys
 import os.path

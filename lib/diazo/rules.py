@@ -4,8 +4,6 @@ Usage: %prog [-r] RULES
 
 Preprocess RULES, an diazo rules file
 """
-from future import standard_library
-standard_library.install_hooks()
 usage = __doc__
 
 import logging

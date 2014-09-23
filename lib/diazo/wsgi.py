@@ -1,5 +1,3 @@
-from future import standard_library
-standard_library.install_hooks()
 import re
 import pkg_resources
 import os.path
