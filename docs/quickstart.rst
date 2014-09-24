@@ -41,34 +41,37 @@ To set up the proxy, we will use `Buildout`_.
     recipe = zc.recipe.egg
     eggs =
         diazo [wsgi]
-        PasteScript
+        gearbox
+        rutter
+        webobentrypoints
 
     [lxml]
     recipe = z3c.recipe.staticlxml
     egg = lxml
 
     [versions]
-    # latest versions dumped as of 2013-07-12
-    Paste = 1.7.5.1
-    PasteScript = 1.7.5
-    WebOb = 1.2.3
-    diazo = 1.0.3
-    repoze.xmliter = 0.5
-    setuptools = 0.8
-    zc.recipe.egg = 2.0.0
-
-    # Required by:
-    # PasteScript==1.7.5
-    PasteDeploy = 1.5.0
-
-    # Required by:
-    # diazo==1.0.3
+    # Lastest versions as of 2014-09-24
+    PasteDeploy = 1.5.2
+    Tempita = 0.5.2
+    WebOb = 1.4
+    argparse = 1.2.1
+    cliff = 1.7.0
+    cmd2 = 0.6.7
+    diazo = 1.0.6
     experimental.cssselect = 0.3
-
-    # Required by:
-    # diazo==1.0.3
-    # experimental.cssselect==0.3
-    lxml = 3.2.1
+    future = 0.13.1
+    gearbox = 0.0.6
+    lxml = 3.4.0
+    prettytable = 0.7.2
+    pyparsing = 2.0.2
+    repoze.xmliter = 0.6
+    rutter = 0.2
+    setuptools = 5.8
+    six = 1.8.0
+    stevedore = 1.0.0
+    webobentrypoints = 0.1.0
+    zc.buildout = 2.2.1
+    zc.recipe.egg = 2.0.1
 
 
 4. Bootstrap the buildout (this is only required once)::
@@ -164,18 +167,18 @@ To set up the proxy, we will use `Buildout`_.
    At the top level (next to ``buildout.cfg``), we create ``proxy.ini``::
 
     [server:main]
-    use = egg:Paste#http
+    use = egg:gearbox#wsgiref
     host = 0.0.0.0
     port = 5000
 
     [composite:main]
-    use = egg:Paste#urlmap
+    use = egg:rutter#urlmap
     /static = static
     / = default
 
     # Serve the theme from disk from /static (as set up in [composite:main])
     [app:static]
-    use = egg:Paste#static
+    use = egg:webobentrypoints#staticdir
     document_root = %(here)s/theme
 
     # Serve the Diazo-transformed content everywhere else
@@ -197,13 +200,13 @@ To set up the proxy, we will use `Buildout`_.
     # not using root level since there's a redirect in place
     # to http://docs.diazo.org/en/latest/index.html
     [app:content]
-    use = egg:Paste#proxy
+    use = egg:webobentrypoints#proxy
     address = http://docs.diazo.org/en/latest/index.html
     suppress_http_headers = accept-encoding
 
 9. Run the proxy::
 
-    $ bin/paster serve --reload proxy.ini
+    $ bin/gearbox serve --reload -c proxy.ini
 
 10. Test, by opening up ``http://localhost:5000/`` in your favourite web
     browser.
