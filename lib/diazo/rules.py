@@ -11,7 +11,7 @@ import re
 
 from lxml import etree
 from six import string_types
-from urllib.parse import urljoin
+from future.moves.urllib.parse import urljoin
 
 from diazo.cssrules import convert_css_selectors
 from diazo.utils import namespaces, fullname, pkg_xsl, _createOptionParser

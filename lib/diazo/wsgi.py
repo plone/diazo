@@ -2,7 +2,7 @@ import re
 import pkg_resources
 import os.path
 
-from urllib.parse import unquote_plus
+from future.moves.urllib.parse import unquote_plus
 
 from webob import Request
 
