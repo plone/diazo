@@ -14,7 +14,7 @@ import sys
 import os.path
 
 from lxml import etree
-from six import string_types
+from future.utils.six import string_types
 
 from diazo.compiler import compile_theme
 from diazo.utils import AC_READ_NET, AC_READ_FILE, _createOptionParser

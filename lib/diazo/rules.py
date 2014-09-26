@@ -10,7 +10,7 @@ import logging
 import re
 
 from lxml import etree
-from six import string_types
+from future.utils.six import string_types
 from future.moves.urllib.parse import urljoin
 
 from diazo.cssrules import convert_css_selectors

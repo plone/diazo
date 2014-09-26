@@ -8,7 +8,7 @@ from webob import Request
 
 from lxml import etree
 
-from six import string_types
+from future.utils.six import string_types
 
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
