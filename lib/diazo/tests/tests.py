@@ -9,7 +9,9 @@ import sys
 import difflib
 from io import BytesIO
 import unittest
-import configparser
+import future.standard_library
+with future.standard_library.hooks():
+    import configparser
 import pkg_resources
 
 import diazo.compiler
