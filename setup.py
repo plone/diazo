@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 import os.path
 import sys
-PY3 = sys.version_info > (3,)
 
 extras_require={
     'wsgi': ['repoze.xmliter>=0.3', 'WebOb'],
@@ -11,7 +10,7 @@ extras_require={
         'WebOb',
     ]}
 
-if not PY3:
+if sys.version_info < (2, 7):
     extras_require['test'].append('unittest2')
 
 readme = open("README.txt").read()
@@ -48,12 +47,14 @@ setup(
       "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
       "Topic :: Text Processing :: Markup :: XML",
       ],
-   install_requires=[
+    install_requires=[
         'setuptools',
         'lxml',
         'experimental.cssselect',
         'future'],
     extras_require=extras_require,
+    test_suite="diazo.tests.alltests",
+    tests_require=extras_require['test'],
     entry_points="""
         [console_scripts]
         diazocompiler = diazo.compiler:main
