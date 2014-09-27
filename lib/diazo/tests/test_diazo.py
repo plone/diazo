@@ -104,11 +104,13 @@ class DiazoTestCase(unittest.TestCase):
 
         # Compare to previous version
         if os.path.exists(xslfn):
-            old = open(xslfn).read()
+            with open(xslfn) as f:
+                old = f.read()
             new = cts
             if old != new:
                 if self.writefiles:
-                    open(xslfn + '.old', 'w').write(old)
+                    with open(xslfn + '.old', 'w') as f:
+                        f.write(old)
                 if self.warnings:
                     print("WARNING:", "compiled.xsl has CHANGED")
                     for line in difflib.unified_diff(old.split('\n'),
@@ -118,7 +120,8 @@ class DiazoTestCase(unittest.TestCase):
 
         # Write the compiled xsl out to catch unexpected changes
         if self.writefiles:
-            open(xslfn, 'w').write(cts)
+            with open(xslfn, 'w') as f:
+                f.write(cts)
 
         # Apply the compiled version, then test against desired output
         theme_parser.resolvers.add(diazo.run.RunResolver(self.testdir))
@@ -149,18 +152,20 @@ class DiazoTestCase(unittest.TestCase):
             meta.getparent().remove(meta)
 
         if os.path.exists(xpathsfn):
-            for xpath in open(xpathsfn).readlines():
-                # Read the XPaths from the file, skipping blank lines and
-                # comments
-                this_xpath = xpath.strip()
-                if not this_xpath or this_xpath[0] == '#':
-                    continue
-                assert self.themed_content.xpath(this_xpath), "%s: %s" % (
-                    xpathsfn, this_xpath)
+            with open(xpathsfn) as f:
+                for xpath in f.readlines():
+                    # Read the XPaths from the file, skipping blank lines and
+                    # comments
+                    this_xpath = xpath.strip()
+                    if not this_xpath or this_xpath[0] == '#':
+                        continue
+                    assert self.themed_content.xpath(this_xpath), "%s: %s" % (
+                        xpathsfn, this_xpath)
 
         # Compare to previous version
         if os.path.exists(outputfn):
-            old = open(outputfn).read()
+            with open(outputfn) as f:
+                old = f.read()
             new = self.themed_string
             if not xml_compare(etree.fromstring(old.strip()), etree.fromstring(new.strip())):
                 # if self.writefiles:
@@ -173,7 +178,8 @@ class DiazoTestCase(unittest.TestCase):
 
         # Write out the result to catch unexpected changes
         if self.writefiles:
-            open(outputfn, 'w').write(self.themed_string)
+            with open(outputfn, 'w') as f:
+                f.write(self.themed_string)
 
 
 def test_suite():
