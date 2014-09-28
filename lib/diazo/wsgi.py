@@ -91,24 +91,23 @@ class WSGIResolver(etree.Resolver):
         if not status_code == '200':
             return None
 
-        charset = response.charset
-        if charset is None:
-            charset = 'UTF-8'  # Maybe this should be latin1?
-        result = response.body.encode('ascii',
-                                                      'xmlcharrefreplace')
+        if response.charset is None:
+            response.charset = 'UTF-8'  # Maybe this should be latin1?
+
+        result = response.text
 
         if response.content_type in ('text/javascript',
                                      'application/x-javascript'):
-            result = ''.join([
-                '<html><body><script type="text/javascript">',
+            result = u''.join([
+                u'<html><body><script type="text/javascript">',
                 result,
-                '</script></body></html>',
+                u'</script></body></html>',
             ])
         elif response.content_type == 'text/css':
-            result = ''.join([
-                '<html><body><style type="text/css">',
+            result = u''.join([
+                u'<html><body><style type="text/css">',
                 result,
-                '</style></body></html>',
+                u'</style></body></html>',
             ])
 
         return self.resolve_string(result, context)
