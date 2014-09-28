@@ -3,10 +3,10 @@ import os.path
 import sys
 
 extras_require={
-    'wsgi': ['repoze.xmliter>=0.3', 'WebOb'],
+    'wsgi': ['repoze.xmliter>=0.6', 'WebOb'],
     'test': [
         'formencode',
-        'repoze.xmliter>=0.3',
+        'repoze.xmliter>=0.6',
         'WebOb',
     ]}
 
