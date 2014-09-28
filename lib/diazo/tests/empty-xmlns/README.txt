@@ -1,9 +1,9 @@
 UPDATE: The problems with xpath="" are now fixed. The duplicate xmlns seemed to be an artefact of the test runner.
 
-This test demonstrates the problem with xmlns="" and incidentally an issue with 
+This test demonstrates the problem with xmlns="" and incidentally an issue with
 the way test_nodes.py works vis-a-vis xsltproc / mod_transform / dv.diazoserver.
 
-diazo$ xsltproc --nonet --html --stringparam rulesuri tests/008/rules.xml compiler.xsl tests/008/theme.html | xsltproc --nonet --html - tests/008/content.html 
+diazo$ xsltproc --nonet --html --stringparam rulesuri tests/008/rules.xml compiler.xsl tests/008/theme.html | xsltproc --nonet --html - tests/008/content.html
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>

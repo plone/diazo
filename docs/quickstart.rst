@@ -26,13 +26,13 @@ To set up the proxy, we will use `Buildout`_.
 
 3. Create a ``buildout.cfg`` in this directory with the following contents.
    Please read the inline comments and adjust your copy as necessary::
-   
-    [buildout]   
+
+    [buildout]
     versions = versions
-    
+
     # Uncomment the `lxml` line if you are on OS X or want to compile your
     # own lxml binary egg on Linux. This will not work on Windows.
-    
+
     parts =
     #   lxml
         diazo
@@ -41,34 +41,37 @@ To set up the proxy, we will use `Buildout`_.
     recipe = zc.recipe.egg
     eggs =
         diazo [wsgi]
-        PasteScript
-    
+        gearbox
+        rutter
+        webobentrypoints
+
     [lxml]
     recipe = z3c.recipe.staticlxml
     egg = lxml
 
     [versions]
-    # latest versions dumped as of 2013-07-12
-    Paste = 1.7.5.1
-    PasteScript = 1.7.5
-    WebOb = 1.2.3
-    diazo = 1.0.3
-    repoze.xmliter = 0.5
-    setuptools = 0.8
-    zc.recipe.egg = 2.0.0
-
-    # Required by:
-    # PasteScript==1.7.5
-    PasteDeploy = 1.5.0
-
-    # Required by:
-    # diazo==1.0.3
+    # Lastest versions as of 2014-09-24
+    PasteDeploy = 1.5.2
+    Tempita = 0.5.2
+    WebOb = 1.4
+    argparse = 1.2.1
+    cliff = 1.7.0
+    cmd2 = 0.6.7
+    diazo = 1.0.6
     experimental.cssselect = 0.3
-
-    # Required by:
-    # diazo==1.0.3
-    # experimental.cssselect==0.3
-    lxml = 3.2.1
+    future = 0.13.1
+    gearbox = 0.0.6
+    lxml = 3.4.0
+    prettytable = 0.7.2
+    pyparsing = 2.0.2
+    repoze.xmliter = 0.6
+    rutter = 0.2
+    setuptools = 5.8
+    six = 1.8.0
+    stevedore = 1.0.0
+    webobentrypoints = 0.1.0
+    zc.buildout = 2.2.1
+    zc.recipe.egg = 2.0.1
 
 
 4. Bootstrap the buildout (this is only required once)::
@@ -89,14 +92,14 @@ To set up the proxy, we will use `Buildout`_.
    with placeholder content and images, stylesheets and JavaScript resources
    included via relative links. You would normally be able to test the theme
    by opening it from the filesystem.
-   
+
    For the purposes of this quick-start guide, we'll create a very simple
    theme::
-   
+
     $ mkdir theme
-    
+
    In the ``theme`` directory, we place a ``theme.html``::
-   
+
     <html>
         <head>
             <title>My own Diazo</title>
@@ -112,7 +115,7 @@ To set up the proxy, we will use `Buildout`_.
     </html>
 
    We also create ``theme.css``::
-   
+
     h1 {
         font-size: 18pt;
         font-weight: bold;
@@ -124,7 +127,7 @@ To set up the proxy, we will use `Buildout`_.
         text-decoration: none;
         vertical-align: top;
     }
-    
+
     .align-right {
         float: right;
         margin: 0 10px;
@@ -134,76 +137,76 @@ To set up the proxy, we will use `Buildout`_.
 7. Create the rules file. The rules file contains the Diazo directives that
    merge the content (the thing we are applying the theme to) into the theme,
    replacing placeholders with real content.
-   
+
    For this example, we'll theme diazo.org, copying in the ``.content``
    area and dropping the indices and tables.
-   
+
    We create ``rules.xml`` at the top level (next to ``buildout.cfg``)::
-   
+
     <rules
         xmlns="http://namespaces.plone.org/diazo"
         xmlns:css="http://namespaces.plone.org/diazo/css"
         xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    
+
         <theme href="theme/theme.html" />
-    
+
         <drop css:content="#indices-and-tables" />
         <replace css:theme-children="#content" css:content-children=".content" />
-    
+
     </rules>
 
   See :doc:`basic` for details about the rules syntax.
-  
+
    **Hint:** Use tools like Firefox's Firebug or Chrome's Developer Tools to
    inspect the theme and content pages, looking for suitable ids and classes
    to build the rules from.
 
 8. Create the configuration file for the proxy server. This uses the Paste
    Deploy toolset to set up a WSGI application.
-   
+
    At the top level (next to ``buildout.cfg``), we create ``proxy.ini``::
-   
+
     [server:main]
-    use = egg:Paste#http
+    use = egg:gearbox#wsgiref
     host = 0.0.0.0
     port = 5000
 
     [composite:main]
-    use = egg:Paste#urlmap
+    use = egg:rutter#urlmap
     /static = static
     / = default
-    
+
     # Serve the theme from disk from /static (as set up in [composite:main])
     [app:static]
-    use = egg:Paste#static
+    use = egg:webobentrypoints#staticdir
     document_root = %(here)s/theme
-    
+
     # Serve the Diazo-transformed content everywhere else
     [pipeline:default]
     pipeline = theme
                content
-    
+
     # Reference the rules file and the prefix applied to relative links
     # (e.g. the stylesheet). We turn on debug mode so that the theme is
     # re-built on each request, making it easy to experiment.
-    
+
     [filter:theme]
     use = egg:diazo
     rules = %(here)s/rules.xml
     prefix = /static
     debug = true
-    
+
     # Proxy http://diazo.org as the content
-    # not using root level since there's a redirect in place 
+    # not using root level since there's a redirect in place
     # to http://docs.diazo.org/en/latest/index.html
     [app:content]
-    use = egg:Paste#proxy
+    use = egg:webobentrypoints#proxy
     address = http://docs.diazo.org/en/latest/index.html
     suppress_http_headers = accept-encoding
 
 9. Run the proxy::
 
-    $ bin/paster serve --reload proxy.ini
+    $ bin/gearbox serve --reload -c proxy.ini
 
 10. Test, by opening up ``http://localhost:5000/`` in your favourite web
     browser.

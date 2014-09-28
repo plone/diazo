@@ -11,5 +11,5 @@
       </div>
   </before>
   <drop css:content="#title"/>
-  <drop css:content="#description"/>  
+  <drop css:content="#description"/>
 </rules>

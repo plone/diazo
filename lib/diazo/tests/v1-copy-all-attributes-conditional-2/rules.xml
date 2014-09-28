@@ -3,12 +3,12 @@
     xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
-    
+
     <copy
         css:if-content="#nothing"
         attributes="*"
         css:theme="body"
         css:content="body"
         />
-    
+
 </rules>

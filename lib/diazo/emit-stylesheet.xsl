@@ -16,7 +16,7 @@
     <xsl:param name="indent"/>
     <xsl:param name="known_params_url">file:///__diazo_known_params__</xsl:param>
     <xsl:param name="runtrace">0</xsl:param>
-    
+
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
@@ -58,10 +58,10 @@
     <xsl:template match="xsl:stylesheet">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
-            
+
             <xsl:text>&#10;&#10;</xsl:text>
             <xsl:apply-templates select="document($known_params_url)/xsl:stylesheet/node()" />
-            
+
             <xsl:if test="$rules[@method='document']">
                 <xsl:choose>
                     <xsl:when test="$usebase">
@@ -190,16 +190,16 @@
                 </xsl:element>
                 <xsl:text>&#10;</xsl:text>
             </xsl:for-each>
-            <!-- If there are any <drop @content> rules, put it in 
+            <!-- If there are any <drop @content> rules, put it in
             here. -->
             <xsl:call-template name="drop-content"/>
-            <!-- If there are any <strip @content> rules, put it in 
+            <!-- If there are any <strip @content> rules, put it in
             here. -->
             <xsl:call-template name="strip-content"/>
-            <!-- If there are any <replace @content> rules, put it in 
+            <!-- If there are any <replace @content> rules, put it in
             here. -->
             <xsl:call-template name="replace-content"/>
-            <!-- If there are any <replace @content-children> rules, put it in 
+            <!-- If there are any <replace @content-children> rules, put it in
             here. -->
             <xsl:call-template name="replace-content-children"/>
             <!-- Copy the inline xsl from rules (usually xsl:output) -->

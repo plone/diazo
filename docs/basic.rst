@@ -11,9 +11,9 @@ The rules file contains an XML document that is is rooted in a tag called
         xmlns="http://namespaces.plone.org/diazo"
         xmlns:css="http://namespaces.plone.org/diazo/css"
         xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-           
+
            ...
-           
+
     </rules>
 
 Here we have defined three namespaces: the default namespace is used for rules
@@ -111,7 +111,7 @@ The following attributes are allowed:
     ``theme-children``, all elements inside the tag that matches the XPath
     or CSS expression will be replaced, but the matched tag itself will remain
     intact.
-``content`` or ``content-children`` or ``css:content`` or ``css:content-children`` (required)    
+``content`` or ``content-children`` or ``css:content`` or ``css:content-children`` (required)
     Used to specify the node in the content that is to replace the matched
     node(s) in the theme. When using ``content-children``, all elements inside
     the tag that matches the XPath or CSS expression will be used, but the
@@ -123,22 +123,22 @@ The following attributes are allowed:
     ``attributes="class"`` the ``class`` attribute on the matched theme
     node(s) will be replaced by the ``class`` attribute of the matched content
     node(s).
-    
+
     **Note:** As with ``<replace />`` rules working on tags, if the named
     attribute(s) do not exist on the both the theme and content nodes, nothing
     will happen. If you want to copy attributes regardless of whether they
     exist on the theme node(s) or not, you can use ``<copy />`` instead.
-    
+
     Using ``attributes="class id"``, the ``class`` and ``id`` attributes will
     be replaced.
-    
+
     As a special case, you can write ``attributes="*"`` to drop all attributes
     on the matched theme node and copy over all attributes from the matched
     content node.
-    
+
     **Note:** You should not use ``theme-children`` or ``content-children``
     or their CSS equivalents when using ``attributes``.
-    
+
     See also ``<merge />``, ``<copy />`` and ``<drop />``
 ``method``
     If you have any ``<drop />`` or other rules that manipulate the *content*,
@@ -155,7 +155,7 @@ The following attributes are allowed:
     Used to specify an element that must be present in the content for the
     replacement to be performed.
 
-For more advanced usage of ``<replace>``, 
+For more advanced usage of ``<replace>``,
 see :ref:`modifying-the-theme-on-the-fly`
 and :ref:`modifying-the-content-on-the-fly`.
 
@@ -165,7 +165,7 @@ and :ref:`modifying-the-content-on-the-fly`.
 These are equivalent to ``<replace />`` except that the node(s) matched in
 the content are inserted before or after the node(s) matched in the theme,
 respectively. For example::
-    
+
     <before css:theme="#content" css:content="#info-box" />
 
 This would place the element with id ``info-box`` from the content
@@ -223,13 +223,13 @@ The following attributes are allowed:
     ``attributes="class"`` the ``class`` attribute will be dropped from the
     matched node(s). Using ``attributes="class id"``, the ``class`` and ``id``
     attributes will both be dropped.
-    
+
     As a special case, you can write ``attributes="*"`` to drop all attributes
     on the matched theme node.
-    
+
     **Note:** You should not use ``theme-children`` or ``content-children``
     or their CSS equivalents when using ``attributes``.
-    
+
     See also ``<merge />`` and ``<replace />``
 ``if``
     Used to specify an arbitrary condition for when to perform the
@@ -322,12 +322,12 @@ The following attributes are allowed:
 ``theme`` or ``css:theme`` (required)
     Used to specify the node(s) in the theme where the attribute should be
     copied.
-``content`` or ``css:content`` (required)    
+``content`` or ``css:content`` (required)
     Used to specify the node(s) in the content from which the attribute should
     be copied.
 ``attributes`` (required)
     A space-separated list of attributes that should be copied to the theme.
-    
+
     As a special case, you can write ``attributes="*"`` to drop all attributes
     on the matched theme node and copy over all attributes from the matched
     content node.

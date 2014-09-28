@@ -4,5 +4,5 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
     <replace css:theme="#content" css:content="#content"/>
-    
+
 </rules>

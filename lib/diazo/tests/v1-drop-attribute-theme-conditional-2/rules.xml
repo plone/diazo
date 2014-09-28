@@ -3,11 +3,11 @@
     xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
-    
+
     <drop
         css:if-content="#nothing"
         attributes="id"
         css:theme="#alpha"
         />
-    
+
 </rules>

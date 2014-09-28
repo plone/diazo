@@ -6,7 +6,7 @@
     <replace css:theme="#target">
         <xsl:apply-templates css:select="#content"/>
     </replace>
-    
-    <xsl:template match="h2/text()"><xsl:copy /> - Some extra text</xsl:template> 
+
+    <xsl:template match="h2/text()"><xsl:copy /> - Some extra text</xsl:template>
 
 </rules>

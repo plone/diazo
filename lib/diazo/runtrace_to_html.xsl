@@ -32,7 +32,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
-            
+
             <xsl:if test="@*[starts-with(local-name(),'runtrace-')]">
                 <xsl:attribute name="title">
                     <xsl:text>Matches: </xsl:text>
@@ -41,7 +41,7 @@
                     </xsl:for-each>
                 </xsl:attribute>
             </xsl:if>
-            
+
             <!-- Escaped tag itself, processing attributes to go along with it -->
             <xsl:text>&lt;</xsl:text>
             <xsl:value-of select="name()"/>

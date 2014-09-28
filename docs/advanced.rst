@@ -29,7 +29,7 @@ element. If there are no matching elements in the content we drop the
 
 Here is another example using CSS selectors::
 
-    <replace css:theme-children="#header" css:content-children="#header-box" 
+    <replace css:theme-children="#header" css:content-children="#header-box"
           css:if-content="#personal-bar"/>
 
 This will copy the children of the element with id ``header-box`` in the
@@ -42,7 +42,7 @@ Hence the following two rules are equivalent::
 
     <replace css:theme-children="#header" css:content="#header-box"
           css:if-content="#header-box"/>
-    <copy css:theme-children="#header" css:content="#header-box" 
+    <copy css:theme-children="#header" css:content="#header-box"
           css:if-content=""/>
 
 If multiple rules of the same type match the same theme node but have
@@ -312,9 +312,9 @@ Inclusions use standard XInclude syntax. For example::
         xmlns:css="http://namespaces.plone.org/diazo/css"
         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
         xmlns:xi="http://www.w3.org/2001/XInclude">
-        
+
         <xi:include href="standard-rules.xml" />
-    
+
     </rules>
 
 Including external content
@@ -347,14 +347,14 @@ Using a Server Side Include directive
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This can be specified by setting the ``method`` attribute to ``ssi``::
-  
+
     <after css:theme-children="#left-column" css:content="#portlet"
             href="/extra.html" method="ssi"/>
 
 The output will render like this::
-  
+
     <!--#include virtual="/extra.html?;filter_xpath=descendant-or-self::*[@id%20=%20'portlet']"-->
-  
+
 This SSI instruction would need to be processed by a fronting web server such
 as Apache or Nginx. Also note the ``;filter_xpath`` query string parameter.
 Since we are deferring resolution of the referenced document until SSI
@@ -365,11 +365,11 @@ configuration. An example for Nginx is included below.
 
 For simple SSI includes of a whole document, you may omit the ``content``
 selector from the rule::
-  
+
     <append css:theme="#left-column" href="/extra.html" method="ssi"/>
-  
+
 The output then renders like this::
-  
+
     <!--#include virtual="/extra.html"-->
 
 Some versions of Nginx have required the ``wait="yes"`` ssi option to be
@@ -380,14 +380,14 @@ Using an Edge Side Includes directive
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This can be specified by setting the ``method`` attribute to ``esi``::
-  
+
     <after css:theme-content="#left-column" css:content="#portlet"
             href="/extra.html" method="esi"/>
 
 The output is similar to that for the SSI mode::
 
     <esi:include src="/extra.html?;filter_xpath=descendant-or-self::*[@id%20=%20'portlet']"></esi:include>
-  
+
 Again, the directive would need to be processed by a fronting server, such as
 Varnish. Chances are an ESI-aware cache server would not support arbitrary
 XPath filtering. If the referenced file is served by a dynamic web server, it
@@ -400,9 +400,9 @@ For simple ESI includes of a whole document, you may omit the ``content``
 selector from the rule::
 
     <append css:theme="#left-column" href="/extra.html" method="esi"/>
-  
+
 The output then renders like this::
-  
+
     <esi:include src="/extra.html"></esi:include>
 
 .. _`obsolete permitted doctype string`: http://dev.w3.org/html5/spec/Overview.html#obsolete-permitted-doctype-string

@@ -3,21 +3,21 @@
     xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
-    
+
     <xsl:variable name="foo">bar</xsl:variable>
-    
+
     <replace
         if="$foo = 'bar'"
         css:if-content="#two"
         css:theme="#alpha"
         css:content="#one"
         />
-    
+
     <replace
         if="$foo = 'bar'"
         css:if-content="#three"
         css:theme="#beta"
         css:content="#two"
         />
-        
+
 </rules>

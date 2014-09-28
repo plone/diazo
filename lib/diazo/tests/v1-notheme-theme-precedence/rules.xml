@@ -3,18 +3,18 @@
     xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
-    
+
     <xsl:variable name="foo">bar</xsl:variable>
-    
+
     <theme href="theme.html" />
     <theme href="theme.html" css:if-content="#one" />
-    
+
     <!-- <notheme /> always takes precedence -->
     <notheme css:if-content="#one" />
-    
+
     <replace
         css:theme="#alpha"
         css:content="#one"
         />
-    
+
 </rules>

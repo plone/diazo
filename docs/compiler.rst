@@ -104,7 +104,7 @@ them on the command line:
         content.html
 
 To see the built-in help for this command, run::
-    
+
     $ bin/diazorun --help
 
 Compiling the theme in Python code
@@ -123,22 +123,22 @@ format. To set up a transform representing the theme and rules, you can do::
 
     from lxml import etree
     from diazo.compiler import compile_theme
-    
+
     absolute_prefix = "/static"
-            
+
     rules = "rules.xml"
     theme = "theme.html"
-            
+
     compiled_theme = compile_theme(rules, theme,
                                    absolute_prefix=absolute_prefix)
-            
+
     transform = etree.XSLT(compiled_theme)
-    
+
 You can now use this transformation::
 
     content = etree.parse(some_content)
     transformed = transform(content)
-    
+
     output = etree.tostring(transformed)
 
 Please see the ``lxml`` documentation for more details.

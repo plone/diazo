@@ -5,7 +5,7 @@
        >
 
     <replace css:theme="body" css:content="body"/>
-       
+
     <xsl:template css:match="body div.modify">
          <p>Content modified</p>
     </xsl:template>

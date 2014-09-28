@@ -48,7 +48,7 @@
                 -->
                 <xsl:call-template name="drop">
                     <xsl:with-param name="matching-rules" select="$matching-rules"/>
-                    
+
                 </xsl:call-template>
                 <!-- After -->
                 <xsl:call-template name="trace"><xsl:with-param name="rule-name">after</xsl:with-param><xsl:with-param name="matching" select="$matching-rules[local-name()='after']"/></xsl:call-template>
@@ -107,7 +107,7 @@
                     <xsl:element name="xsl:otherwise">
                         <xsl:call-template name="replace">
                             <xsl:with-param name="matching-rules" select="$matching-other"/>
-                            
+
                         </xsl:call-template>
                     </xsl:element>
                 </xsl:element>
@@ -115,7 +115,7 @@
             <xsl:otherwise>
                 <xsl:call-template name="replace">
                     <xsl:with-param name="matching-rules" select="$matching-other"/>
-                    
+
                 </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>
@@ -163,7 +163,7 @@
                             <xsl:element name="xsl:otherwise">
                                 <xsl:call-template name="strip">
                                     <xsl:with-param name="matching-rules" select="$matching-other"/>
-                                    
+
                                 </xsl:call-template>
                             </xsl:element>
                         </xsl:otherwise>
@@ -178,7 +178,7 @@
             <xsl:otherwise>
                 <xsl:call-template name="strip">
                     <xsl:with-param name="matching-rules" select="$matching-other"/>
-                    
+
                 </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>
@@ -251,12 +251,12 @@
         <xsl:variable name="matching-this" select="$matching-rules[local-name()=$rule-name]"/>
         <xsl:variable name="matching-other" select="set:difference($matching-rules, $matching-this)"/>
         <xsl:call-template name="trace"><xsl:with-param name="rule-name" select="$rule-name"/><xsl:with-param name="matching" select="$matching-this"/></xsl:call-template>
-        
+
         <xsl:variable name="context-attrs" select="@*[not(name()='xml:id')]"/>
         <xsl:variable name="drop-theme" select="$matching-this[@action='drop']"/>
-        <xsl:variable name="drop-all" select="$drop-theme[contains(@attributes, ' * ')]"/>    
+        <xsl:variable name="drop-all" select="$drop-theme[contains(@attributes, ' * ')]"/>
         <xsl:variable name="unconditional-drop-all" select="$drop-all[not(@merged-condition)]"/>
-        <xsl:variable name="drop-some" select="$drop-theme[not(contains(@attributes, ' * '))]"/>    
+        <xsl:variable name="drop-some" select="$drop-theme[not(contains(@attributes, ' * '))]"/>
         <xsl:variable name="conditional-drop-all" select="$drop-all[@merged-condition]"/>
         <xsl:variable name="conditional-drop-some" select="$drop-some[@merged-condition]"/>
         <xsl:variable name="conditional-drop-some-list" select="str:concat($conditional-drop-some/@attributes)"/>
@@ -482,7 +482,7 @@
                                         <xsl:text>&#10;</xsl:text>
                                         <xsl:element name="xsl:otherwise">
                                             <xsl:apply-templates select="node()">
-                                                
+
                                             </xsl:apply-templates>
                                         </xsl:element>
                                         <xsl:text>&#10;</xsl:text>
@@ -496,7 +496,7 @@
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:apply-templates select="node()">
-                                
+
                             </xsl:apply-templates>
                         </xsl:otherwise>
                     </xsl:choose>
@@ -545,7 +545,7 @@
         <xsl:element name="xsl:value-of">
             <xsl:attribute name="select">$tag_text</xsl:attribute>
             <xsl:attribute name="disable-output-escaping">yes</xsl:attribute>
-        </xsl:element>        
+        </xsl:element>
     </xsl:template>
 
     <xsl:template match="@*|node()" mode="include-synthetic">

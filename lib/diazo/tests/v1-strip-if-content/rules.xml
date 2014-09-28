@@ -3,17 +3,17 @@
     xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
-    
+
     <replace
         css:theme="#alpha"
         css:content="#one"
         />
-    
+
     <replace
         css:theme="#beta"
         css:content="#two"
         />
-    
+
     <strip
         css:content="#one"
         css:if-content="#two"
@@ -24,5 +24,5 @@
         css:if-content="#three"
         />
 
-    
+
 </rules>

@@ -10,7 +10,7 @@ To install Diazo, you should install the ``diazo`` Python distribution.
 You can install the ``diazo`` distribution using ``easy_install``, ``pip`` or
 ``zc.buildout``. For example, using ``easy_install`` (ideally in a
 ``virtualenv``)::
-    
+
     $ easy_install -U diazo
 
 If using ``zc.buildout``, you can use the following ``buildout.cfg`` as a
@@ -42,11 +42,11 @@ compile a static ``lxml`` egg using the following buildout recipe::
     parts =
         lxml
         diazo
-    
+
     [lxml]
     recipe = z3c.recipe.staticlxml
     egg = lxml
-    
+
     [diazo]
     recipe = zc.recipe.egg
     eggs = diazo
@@ -54,5 +54,5 @@ compile a static ``lxml`` egg using the following buildout recipe::
 Once installed, you should find ``diazocompiler`` and ``diazorun`` in your
 ``bin`` directory.
 
-If you want to use the WSGI middleware filter, you should use the ``[wsgi]`` 
+If you want to use the WSGI middleware filter, you should use the ``[wsgi]``
 extra when installing the Diazo egg. See :doc:`quickstart` for an example.
