@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/plone/diazo.svg?branch=master
+    :target: https://travis-ci.org/plone/diazo
+
 ==============================================
 Diazo - We Write XSLT, So You Don't Have To™
 ==============================================
