@@ -14,7 +14,7 @@ def testfile(filename):
     return '/'.join(('file://',) + os.path.split(os.path.abspath(
         os.path.dirname(__file__))) + ('test_wsgi_files', filename,))
 
-HTML = """\
+HTML = b"""\
 <html>
     <body>
         <h1>Content title</h1>
@@ -23,7 +23,7 @@ HTML = """\
 </html>
 """
 
-HTML_ALTERNATIVE = """\
+HTML_ALTERNATIVE = b"""\
 <html>
     <body>
         <h1>Content title</h1>
@@ -32,7 +32,7 @@ HTML_ALTERNATIVE = """\
 </html>
 """
 
-XSLT = """\
+XSLT = b"""\
 <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -51,7 +51,7 @@ XSLT = """\
 </xsl:stylesheet>
 """
 
-XSLT_XHTML = """\
+XSLT_XHTML = b"""\
 <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -75,7 +75,7 @@ XSLT_XHTML = """\
 </xsl:stylesheet>
 """
 
-XSLT_HTML = """\
+XSLT_HTML = b"""\
 <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -102,7 +102,7 @@ XSLT_HTML = """\
 # Note that this can only work with an html output method. Setting the doctype
 # on the middleware along with the xml output method and an XHTML 1.0 doctype
 # in the stylesheet is required for XHTML compatible output.
-XSLT_HTML5 = """\
+XSLT_HTML5 = b"""\
 <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -124,7 +124,7 @@ XSLT_HTML5 = """\
 </xsl:stylesheet>
 """
 
-XSLT_PARAM = """\
+XSLT_PARAM = b"""\
 <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -156,7 +156,7 @@ class TestXSLTMiddleware(unittest.TestCase):
         from webob import Request
 
         _, filename = tempfile.mkstemp()
-        with open(filename, 'w') as fp:
+        with open(filename, 'wb') as fp:
             fp.write(XSLT)
 
         def application(environ, start_response):
@@ -300,7 +300,7 @@ class TestXSLTMiddleware(unittest.TestCase):
                                 ('Content-MD5',
                                     'd41d8cd98f00b204e9800998ecf8427e')]
             start_response(status, response_headers)
-            return ['']
+            return [b'']
 
         app = XSLTMiddleware(application, {}, tree=etree.fromstring(XSLT),
                              update_content_length=True)
