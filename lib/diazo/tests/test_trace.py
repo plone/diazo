@@ -11,7 +11,7 @@ try:
     import unittest2 as unittest
 except ImportError:
     import unittest
-    
+
 if __name__ == '__main__':
     __file__ = sys.argv[0]
 
@@ -135,7 +135,8 @@ class TestDebug(unittest.TestCase):
             runtrace_doc,
             "/d:rules/d:rules/d:replace[4]/@runtrace-merged-condition",
             "true")
-        # <replace css:content="div.iguana" css:theme="div.bull" css:if-not-content="body.male" />
+        # <replace css:content="div.iguana" css:theme="div.bull"
+        #          css:if-not-content="body.male" />
         self.assertXPath(
             runtrace_doc,
             "/d:rules/d:rules/d:replace[6]/@runtrace-if-not-content",
@@ -206,7 +207,8 @@ class TestDebug(unittest.TestCase):
         self.assertXPath(
             runtrace_doc,
             "/d:rules/d:rules/d:replace[4]/@runtrace-merged-condition", "true")
-        # <replace css:content="div.iguana" css:theme="div.bull" css:if-not-content="body.male" />
+        # <replace css:content="div.iguana" css:theme="div.bull"
+        #          css:if-not-content="body.male" />
         self.assertXPath(
             runtrace_doc,
             "/d:rules/d:rules/d:replace[6]/@runtrace-if-not-content",

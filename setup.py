@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import os.path
 import sys
 
-extras_require={
+extras_require = {
     'wsgi': ['repoze.xmliter>=0.6', 'WebOb'],
     'test': [
         'formencode',
@@ -36,17 +36,17 @@ setup(
     url="http://diazo.org",
     license='New BSD',
     classifiers=[
-      "Development Status :: 6 - Mature",
-      "Programming Language :: Python",
-      "Programming Language :: Python :: 2.6",
-      "Programming Language :: Python :: 2.7",
-      "Programming Language :: Python :: 3",
-      "Programming Language :: Python :: 3.4",
-      "Topic :: Internet :: WWW/HTTP",
-      "Topic :: Internet :: WWW/HTTP :: WSGI",
-      "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
-      "Topic :: Text Processing :: Markup :: XML",
-      ],
+        "Development Status :: 6 - Mature",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Internet :: WWW/HTTP :: WSGI",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
+        "Topic :: Text Processing :: Markup :: XML",
+        ],
     install_requires=[
         'setuptools',
         'lxml',

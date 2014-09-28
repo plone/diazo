@@ -142,7 +142,7 @@ class DiazoTestCase(unittest.TestCase):
         self.themed_string = bytes(result)
         self.themed_content = etree.ElementTree(
             file=BytesIO(self.themed_string), parser=etree.HTMLParser())
-            
+
         # remove the extra meta content type
 
         metas = self.themed_content.xpath(
@@ -167,7 +167,9 @@ class DiazoTestCase(unittest.TestCase):
             with open(outputfn) as f:
                 old = f.read()
             new = self.themed_string
-            if not xml_compare(etree.fromstring(old.strip()), etree.fromstring(new.strip())):
+            if not xml_compare(
+                    etree.fromstring(old.strip()),
+                    etree.fromstring(new.strip())):
                 # if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
                 for line in difflib.unified_diff(old.split('\n'),
