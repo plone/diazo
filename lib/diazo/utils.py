@@ -4,6 +4,7 @@ import sys
 
 from lxml import etree
 from optparse import OptionParser
+from future.utils.six import string_types, integer_types
 
 strparam = etree.XSLT.strparam
 
@@ -67,8 +68,8 @@ class LoggingXSLTWrapper:
 
 
 def pkg_parse(name, parser=None):
-    return etree.parse(open(pkg_resources.resource_filename('diazo', name)),
-                       parser=parser)
+    with open(pkg_resources.resource_filename('diazo', name)) as f:
+        return etree.parse(f, parser=parser)
 
 
 def pkg_xsl(name, parser=None):
@@ -81,11 +82,11 @@ def quote_param(value):
     Works with strings, booleans, numbers and None.
     """
 
-    if isinstance(value, basestring):
+    if isinstance(value, string_types):
         return strparam(value)
     elif isinstance(value, bool):
         return value and 'true()' or 'false()'
-    elif isinstance(value, (int, long, float)):
+    elif isinstance(value, integer_types + (float,)):
         value = repr(value)
     elif value is None:
         return '/..'

@@ -2,11 +2,13 @@ import re
 import pkg_resources
 import os.path
 
-from urllib import unquote_plus
+from future.moves.urllib.parse import unquote_plus
 
 from webob import Request
 
 from lxml import etree
+
+from future.utils.six import string_types
 
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
@@ -19,7 +21,7 @@ DIAZO_OFF_HEADER = 'X-Diazo-Off'
 
 
 def asbool(value):
-    if isinstance(value, basestring):
+    if isinstance(value, string_types):
         value = value.strip().lower()
         if value in ('true', 'yes', 'on', 'y', 't', '1',):
             return True
@@ -89,24 +91,23 @@ class WSGIResolver(etree.Resolver):
         if not status_code == '200':
             return None
 
-        charset = response.charset
-        if charset is None:
-            charset = 'UTF-8'  # Maybe this should be latin1?
-        result = response.body.decode(charset).encode('ascii',
-                                                      'xmlcharrefreplace')
+        if response.charset is None:
+            response.charset = 'UTF-8'  # Maybe this should be latin1?
+
+        result = response.text
 
         if response.content_type in ('text/javascript',
                                      'application/x-javascript'):
-            result = ''.join([
-                '<html><body><script type="text/javascript">',
+            result = u''.join([
+                u'<html><body><script type="text/javascript">',
                 result,
-                '</script></body></html>',
+                u'</script></body></html>',
             ])
         elif response.content_type == 'text/css':
-            result = ''.join([
-                '<html><body><style type="text/css">',
+            result = u''.join([
+                u'<html><body><style type="text/css">',
                 result,
-                '</style></body></html>',
+                u'</style></body></html>',
             ])
 
         return self.resolve_string(result, context)
@@ -223,7 +224,7 @@ class XSLTMiddleware(object):
             "^.*\.(%s)$" % '|'.join(ignored_extensions))
 
         self.environ_param_map = environ_param_map or {}
-        if isinstance(unquoted_params, basestring):
+        if isinstance(unquoted_params, string_types):
             unquoted_params = unquoted_params.split()
         self.unquoted_params = unquoted_params and \
             frozenset(unquoted_params) or ()
@@ -307,7 +308,7 @@ class XSLTMiddleware(object):
         # so that other middleware could avoid having to re-parse, even if
         # we take a hit on serialising here
         if self.update_content_length:
-            response.content_length = len(str(response.app_iter))
+            response.content_length = len(bytes(response.app_iter))
 
         return response(environ, start_response)
 

@@ -9,13 +9,14 @@ RULES is a file defining a set of diazo rules in css syntax, e.g:
        <copy css:content="#content-wrapper" css:theme="#page-content"/>
 </rules>\
 """
+from __future__ import absolute_import
 usage = __doc__
 
 from optparse import OptionParser
 from lxml import etree
 from experimental.cssselect import css_to_xpath
 
-import utils
+from . import utils
 
 import sys
 import logging

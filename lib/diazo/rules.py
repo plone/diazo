@@ -10,7 +10,8 @@ import logging
 import re
 
 from lxml import etree
-from urlparse import urljoin
+from future.utils.six import string_types
+from future.moves.urllib.parse import urljoin
 
 from diazo.cssrules import convert_css_selectors
 from diazo.utils import namespaces, fullname, pkg_xsl, _createOptionParser
@@ -165,7 +166,7 @@ def add_extra(rules_doc, extra):
 def add_theme(rules_doc, theme, parser=None, absolute_prefix=None,
               read_network=False):
     if not read_network and \
-            isinstance(theme, basestring) and \
+            isinstance(theme, string_types) and \
             theme[:6] in ('ftp://', 'http:/', 'https:'):
         raise ValueError("Supplied theme '%s', "
                          "but network access denied." % theme)
