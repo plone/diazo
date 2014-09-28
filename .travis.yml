@@ -4,10 +4,8 @@ python:
   - 2.7
   - 3.3
   - 3.4
-before_install:
 install:
   - pip install --use-mirrors flake8
 script:
-  - flake8 setup.py
-  - flake8 lib
+  - flake8 lib setup.py
   - python setup.py test
