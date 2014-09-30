@@ -3,11 +3,11 @@ import os.path
 import sys
 
 extras_require = {
-    'wsgi': ['repoze.xmliter>=0.6', 'WebOb'],
+    'wsgi': ['repoze.xmliter>=0.6', 'WebOb>=1.4'],
     'test': [
         'formencode',
         'repoze.xmliter>=0.6',
-        'WebOb',
+        'WebOb>=1.4',
     ]}
 
 if sys.version_info < (2, 7):
