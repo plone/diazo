@@ -2,7 +2,7 @@
     :target: https://travis-ci.org/plone/diazo
 
 ==============================================
-Diazo - We Write XSLT, So You Don't Have To™
+Diazo - We Write XSLT, So You Don't Have To
 ==============================================
 
 Diazo allows you to apply a theme contained in a static HTML web page to a
