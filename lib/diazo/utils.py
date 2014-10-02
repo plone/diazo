@@ -4,7 +4,7 @@ import sys
 
 from lxml import etree
 from optparse import OptionParser
-from future.utils.six import string_types, integer_types
+from six import string_types, integer_types
 
 strparam = etree.XSLT.strparam
 

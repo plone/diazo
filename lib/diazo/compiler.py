@@ -15,7 +15,7 @@ import logging
 import pkg_resources
 
 from lxml import etree
-from future.utils.six import string_types
+from six import string_types
 
 from diazo.rules import process_rules
 from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver
