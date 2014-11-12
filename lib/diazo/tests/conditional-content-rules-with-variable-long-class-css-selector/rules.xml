@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+    <xsl:variable name="maecenas" select="//p[contains(@class, 'maecenas')]"/>
+    <xsl:variable name="document" css:select="p.template-document_view"/>
+    
+    <rules if-content="$maecenas">
+        <append theme="/html/body">
+            <p>maecenas</p>
+        </append>
+    </rules>
+    <rules if-content="$document">
+        <append theme="/html/body">
+            <p>document</p>
+        </append>
+    </rules>    
+</rules>
