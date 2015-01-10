@@ -8,6 +8,8 @@
     xmlns:exsl="http://exslt.org/common"
     xmlns:str="http://exslt.org/strings"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:dvext="dvext"
+    extension-element-prefixes="dvext"
     exclude-result-prefixes="exsl str css dv dyn xhtml">
 
     <xsl:variable name="normalized_path"><xsl:value-of select="$path"/><xsl:if test="substring($path, string-length($path)) != '/'">/</xsl:if></xsl:variable>

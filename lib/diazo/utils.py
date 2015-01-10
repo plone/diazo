@@ -12,6 +12,7 @@ logger = logging.getLogger('diazo')
 
 namespaces = dict(
     diazo="http://namespaces.plone.org/diazo",
+    diazoext="diazoext",
     css="http://namespaces.plone.org/diazo/css",
     old1="http://openplans.org/deliverance",
     old2="http://namespaces.plone.org/xdv",

@@ -105,13 +105,14 @@ def expand_theme(element, theme_doc, absolute_prefix):
     #
     if element.get('path'):
         theme_root = theme_doc.xpath(element.get('path'))[0]
-
-    preceding = list(theme_root.itersiblings(preceding=True))
-    preceding.reverse()
-    following = list(theme_root.itersiblings(preceding=False))
-    element.extend(preceding)
-    element.append(theme_root)
-    element.extend(following)
+        element.append(theme_root)
+    else:
+        preceding = list(theme_root.itersiblings(preceding=True))
+        preceding.reverse()
+        following = list(theme_root.itersiblings(preceding=False))
+        element.extend(preceding)
+        element.append(theme_root)
+        element.extend(following)
 
 
 def expand_themes(rules_doc, parser=None, absolute_prefix=None,
