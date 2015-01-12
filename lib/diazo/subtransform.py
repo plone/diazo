@@ -23,4 +23,4 @@ class SubTransform(etree.XSLTExtension):
 
         transformed = transformer(deepcopy(input_node))
 
-        output_parent.extend(transformed.getiterator())
+        output_parent.append(transformed.getroot())
