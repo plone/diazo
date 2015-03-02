@@ -119,7 +119,8 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None,
     for element in rules_doc.xpath('//diazo:theme[@href]',
                                    namespaces=namespaces):
         url = urljoin(base, element.get('href'))
-        if not read_network and url[:6] in ('ftp://', 'http:/', 'https:'):
+        if not read_network and \
+           url.startswith(('ftp://', 'http://', 'https://')):
             raise ValueError("Supplied theme '%s', "
                              "but network access denied." % url)
         if '://' in url:
