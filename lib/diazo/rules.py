@@ -10,8 +10,11 @@ import logging
 import re
 
 from lxml import etree
+from lxml import html
 from six import string_types
 from future.moves.urllib.parse import urljoin
+from urllib2 import urlopen  # For Python 2
+#from urllib.requests import urlopen  # For Python 3
 
 from diazo.cssrules import convert_css_selectors
 from diazo.utils import namespaces, fullname, pkg_xsl, _createOptionParser
@@ -121,7 +124,10 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None,
         if not read_network and url[:6] in ('ftp://', 'http:/', 'https:'):
             raise ValueError("Supplied theme '%s', "
                              "but network access denied." % url)
-        theme_doc = etree.parse(url, parser=parser)
+        if url.startswith('https://'):
+            theme_doc = html.parse(urlopen(url))
+        else:
+            theme_doc = etree.parse(url, parser=parser)
         expand_theme(element, theme_doc, absolute_prefix)
     return rules_doc
 
