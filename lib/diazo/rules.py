@@ -22,7 +22,7 @@ from diazo.utils import namespaces, fullname, pkg_xsl, _createOptionParser
 if sys.version.startswith('2'):
     from urllib2 import urlopen  # For Python 2
 else:
-    from urllib.requests import urlopen  # For Python 3
+    from urllib.request import urlopen  # For Python 3
 
 logger = logging.getLogger('diazo')
 
