@@ -8,21 +8,15 @@ usage = __doc__
 
 import logging
 import re
-import sys
 
 from lxml import etree
 from lxml import html
 from six import string_types
 from future.moves.urllib.parse import urljoin
+from future.moves.urllib.request import urlopen
 
 from diazo.cssrules import convert_css_selectors
 from diazo.utils import namespaces, fullname, pkg_xsl, _createOptionParser
-
-# Conditional Imports
-if sys.version.startswith('2'):
-    from urllib2 import urlopen  # For Python 2
-else:
-    from urllib.request import urlopen  # For Python 3
 
 logger = logging.getLogger('diazo')
 
