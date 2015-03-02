@@ -10,7 +10,6 @@ import logging
 import re
 
 from lxml import etree
-from lxml import html
 from six import string_types
 from future.moves.urllib.parse import urljoin
 from future.moves.urllib.request import urlopen
@@ -123,10 +122,11 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None,
         if not read_network and url[:6] in ('ftp://', 'http:/', 'https:'):
             raise ValueError("Supplied theme '%s', "
                              "but network access denied." % url)
-        if url.startswith('https://'):
-            theme_doc = html.parse(urlopen(url))
+        if '://' in url:
+            theme = urlopen(url)
         else:
-            theme_doc = etree.parse(url, parser=parser)
+            theme = url
+        theme_doc = etree.parse(theme, parser=parser, base_url=url)
         expand_theme(element, theme_doc, absolute_prefix)
     return rules_doc
 
