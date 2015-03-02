@@ -10,17 +10,15 @@ RULES is a file defining a set of diazo rules in css syntax, e.g:
 </rules>\
 """
 from __future__ import absolute_import
-usage = __doc__
-
 from optparse import OptionParser
 from lxml import etree
 from experimental.cssselect import css_to_xpath
-
 from . import utils
-
 import sys
 import logging
+
 logger = logging.getLogger('diazo')
+usage = __doc__
 
 
 def convert_css_selectors(rules):
