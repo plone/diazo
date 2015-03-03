@@ -117,10 +117,11 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None,
                                    namespaces=namespaces):
         url = urljoin(base, element.get('href'))
         if not read_network and \
-           url.startswith(('ftp://', 'http://', 'https://')):
+                url.startswith(('ftp://', 'ftps://', 'http://', 'https://')):
             raise ValueError("Supplied theme '%s', "
                              "but network access denied." % url)
-        if url.startswith(('ftp://', 'ftps://', 'http://', 'https://')):
+        elif read_network and \
+                url.startswith(('ftp://', 'ftps://', 'http://', 'https://')):
             theme = urlopen(url)
         else:
             theme = url
