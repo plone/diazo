@@ -9,19 +9,16 @@ Usage: %prog [options] [-r] RULES [-t] THEME
               theme="//div[@id='page-content']"/>
     </rules>\
 """
-usage = __doc__
-
 import logging
 import pkg_resources
-
 from lxml import etree
 from six import string_types
-
 from diazo.rules import process_rules
 from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver
 from diazo.utils import quote_param, split_params
 
 logger = logging.getLogger('diazo')
+usage = __doc__
 
 
 def set_parser(stylesheet, parser, compiler_parser=None):

@@ -7,22 +7,18 @@ Usage: %prog -x TRANSFORM CONTENT
 
 Usage: %prog -r RULES [options] CONTENT
 """
-usage = __doc__
-
 import logging
 import sys
 import os.path
-
 from lxml import etree
 from six import string_types
-
 from diazo.compiler import compile_theme
 from diazo.utils import AC_READ_NET, AC_READ_FILE, _createOptionParser
 from diazo.utils import split_params, quote_param
-
 import diazo.runtrace
 
 logger = logging.getLogger('diazo')
+usage = __doc__
 
 
 class RunResolver(etree.Resolver):
