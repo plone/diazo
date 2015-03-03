@@ -123,7 +123,7 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None,
            url.startswith(('ftp://', 'http://', 'https://')):
             raise ValueError("Supplied theme '%s', "
                              "but network access denied." % url)
-        if '://' in url:
+        if url.startswith(('ftp://', 'ftps://', 'http://', 'https://')):
             theme = urlopen(url)
         else:
             theme = url
