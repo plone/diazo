@@ -86,6 +86,13 @@
         </xsl:copy>
     </xsl:template>
 
+    <xsl:template match="diazo:insert[@href]">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+            <xsl:apply-templates select="." mode="include"/>
+        </xsl:copy>
+    </xsl:template>
+
     <xsl:template match="/" mode="matches">
         <xsl:param name="themexpath"/>
         <xsl:param name="themeid"/>

@@ -17,7 +17,7 @@
     <xsl:param name="known_params_url">file:///__diazo_known_params__</xsl:param>
     <xsl:param name="runtrace">0</xsl:param>
 
-    <xsl:variable name="rules" select="//dv:*[@theme]"/>
+    <xsl:variable name="rules" select="//dv:*[@theme]|//dv:insert"/>
     <xsl:variable name="insert-content-rules" select="//dv:insert"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
@@ -63,9 +63,6 @@
             <xsl:text>&#10;&#10;</xsl:text>
             <xsl:apply-templates select="document($known_params_url)/xsl:stylesheet/node()" />
 
-            <!-- If there are any <insert> rules, put it in here. -->
-            <xsl:call-template name="insert-content"/>
-
             <xsl:if test="$rules[@method='document']">
                 <xsl:choose>
                     <xsl:when test="$usebase">
@@ -94,6 +91,10 @@
                 </xsl:choose>
             </xsl:if>
             <xsl:apply-templates select="node()"/>
+
+            <!-- If there are any <insert> rules, put it in here. -->
+            <xsl:call-template name="insert-content"/>
+
             <xsl:if test="$themes">
                 <xsl:text>&#10;    </xsl:text>
                 <xsl:element name="xsl:template">
@@ -479,9 +480,16 @@
                         <xsl:attribute name="select">@*|node()</xsl:attribute>
                     </xsl:element>
                     <xsl:text>&#10;            </xsl:text>
-                    <xsl:element name="xsl:apply-templates">
-                        <xsl:attribute name="select"><xsl:value-of select="@content"/></xsl:attribute>
-                    </xsl:element>
+                    <xsl:choose>
+                        <xsl:when test="dv:synthetic">
+                            <xsl:copy-of select="dv:synthetic/node()"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:element name="xsl:apply-templates">
+                                <xsl:attribute name="select"><xsl:value-of select="@content"/></xsl:attribute>
+                            </xsl:element>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <xsl:text>&#10;        </xsl:text>
                 </xsl:element>
                 <xsl:text>&#10;    </xsl:text>
