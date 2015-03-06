@@ -93,7 +93,34 @@
             <xsl:if test="$themes">
                 <xsl:text>&#10;    </xsl:text>
                 <xsl:element name="xsl:template">
+                    <xsl:attribute name="match">@*|node()</xsl:attribute>
+                    <xsl:attribute name="mode">content2content</xsl:attribute>
+                    <xsl:element name="xsl:copy">
+                        <xsl:element name="xsl:apply-templates">
+                            <xsl:attribute name="select">@*|node()</xsl:attribute>
+                            <xsl:attribute name="mode">content2content</xsl:attribute>
+                        </xsl:element>
+                    </xsl:element>
+                </xsl:element>
+
+                <xsl:text>&#10;    </xsl:text>
+                <xsl:element name="xsl:template">
                     <xsl:attribute name="match">/</xsl:attribute>
+                    <xsl:element name="xsl:variable">
+                        <xsl:attribute name="name">content</xsl:attribute>
+                        <xsl:element name="xsl:apply-templates">
+                            <xsl:attribute name="mode">content2content</xsl:attribute>
+                        </xsl:element>
+                    </xsl:element>
+                    <xsl:element name="xsl:apply-templates">
+                        <xsl:attribute name="select">exsl:node-set($content)</xsl:attribute>
+                        <xsl:attribute name="mode">content2style</xsl:attribute>
+                    </xsl:element>
+                </xsl:element>
+                <xsl:text>&#10;    </xsl:text>
+                <xsl:element name="xsl:template">
+                    <xsl:attribute name="match">/</xsl:attribute>
+                    <xsl:attribute name="mode">content2style</xsl:attribute>
                     <xsl:choose>
                         <xsl:when test="$conditional">
                             <xsl:element name="xsl:choose">
