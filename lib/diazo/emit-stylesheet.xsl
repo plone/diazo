@@ -18,6 +18,7 @@
     <xsl:param name="runtrace">0</xsl:param>
 
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
+    <xsl:variable name="insert-content-rules" select="//dv:insert"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
     <xsl:variable name="replace-content-rules" select="//dv:replace[@content and not(@theme)]"/>
@@ -61,6 +62,9 @@
 
             <xsl:text>&#10;&#10;</xsl:text>
             <xsl:apply-templates select="document($known_params_url)/xsl:stylesheet/node()" />
+
+            <!-- If there are any <insert> rules, put it in here. -->
+            <xsl:call-template name="insert-content"/>
 
             <xsl:if test="$rules[@method='document']">
                 <xsl:choose>
@@ -462,6 +466,29 @@
         </xsl:choose>
     </xsl:template>
 
+    <xsl:template name="insert-content">
+        <xsl:for-each select="$insert-content-rules">
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:template">
+                <xsl:attribute name="match"><xsl:value-of select="@to-content"/></xsl:attribute>
+                <xsl:attribute name="mode">content2content</xsl:attribute>
+                <xsl:text>&#10;        </xsl:text>
+                <xsl:element name="xsl:copy">
+                    <xsl:text>&#10;            </xsl:text>
+                    <xsl:element name="xsl:apply-templates">
+                        <xsl:attribute name="select">@*|node()</xsl:attribute>
+                    </xsl:element>
+                    <xsl:text>&#10;            </xsl:text>
+                    <xsl:element name="xsl:apply-templates">
+                        <xsl:attribute name="select"><xsl:value-of select="@content"/></xsl:attribute>
+                    </xsl:element>
+                    <xsl:text>&#10;        </xsl:text>
+                </xsl:element>
+                <xsl:text>&#10;    </xsl:text>
+            </xsl:element>
+            <xsl:text>&#10;</xsl:text>
+        </xsl:for-each>
+    </xsl:template>
     <!--
         Debugging support
     -->
