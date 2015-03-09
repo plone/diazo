@@ -86,7 +86,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="diazo:insert[@href]">
+    <xsl:template match="diazo:append-content[@href]">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
             <xsl:apply-templates select="." mode="include"/>

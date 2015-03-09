@@ -3,10 +3,10 @@
        xmlns:css="http://namespaces.plone.org/diazo/css">
 
     <!-- local insert -->
-    <insert css:to-content="#header" css:content="h2" />
+    <append-content css:to-content="#header" css:content="h2" />
 
     <!-- insert from external content to content -->
-    <insert css:to-content="#footer" css:content="#external1" href="extra.html"/>
+    <append-content css:to-content="#footer" css:content="#external1" href="extra.html"/>
 
     <!-- the resulting content can be used in regular theme rules -->
     <copy css:theme="nav" css:content="h2" />

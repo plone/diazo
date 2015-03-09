@@ -17,8 +17,8 @@
     <xsl:param name="known_params_url">file:///__diazo_known_params__</xsl:param>
     <xsl:param name="runtrace">0</xsl:param>
 
-    <xsl:variable name="rules" select="//dv:*[@theme]|//dv:insert"/>
-    <xsl:variable name="insert-content-rules" select="//dv:insert"/>
+    <xsl:variable name="rules" select="//dv:*[@theme]|//dv:append-content"/>
+    <xsl:variable name="append-content2content-rules" select="//dv:append-content"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
     <xsl:variable name="replace-content-rules" select="//dv:replace[@content and not(@theme)]"/>
@@ -92,8 +92,8 @@
             </xsl:if>
             <xsl:apply-templates select="node()"/>
 
-            <!-- If there are any <insert> rules, put it in here. -->
-            <xsl:call-template name="insert-content"/>
+            <!-- If there are any <append-content> rules, put it in here. -->
+            <xsl:call-template name="append-content"/>
 
             <xsl:if test="$themes">
                 <xsl:text>&#10;    </xsl:text>
@@ -467,8 +467,8 @@
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template name="insert-content">
-        <xsl:for-each select="$insert-content-rules">
+    <xsl:template name="append-content">
+        <xsl:for-each select="$append-content2content-rules">
             <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
                 <xsl:attribute name="match"><xsl:value-of select="@to-content"/></xsl:attribute>
