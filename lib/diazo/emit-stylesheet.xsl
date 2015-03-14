@@ -481,13 +481,36 @@
                     </xsl:element>
                     <xsl:text>&#10;            </xsl:text>
                     <xsl:choose>
-                        <xsl:when test="dv:synthetic">
-                            <xsl:copy-of select="dv:synthetic/node()"/>
+                        <xsl:when test="@merged-condition">
+                            <xsl:element name="xsl:if">
+                                <xsl:attribute name="test">
+                                    <xsl:value-of select="@merged-condition"/>
+                                </xsl:attribute>
+                                <xsl:text>&#10;                </xsl:text>
+                                <xsl:choose>
+                                    <xsl:when test="dv:synthetic">
+                                        <xsl:copy-of select="dv:synthetic/node()"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:element name="xsl:apply-templates">
+                                            <xsl:attribute name="select"><xsl:value-of select="@content"/></xsl:attribute>
+                                        </xsl:element>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                                <xsl:text>&#10;            </xsl:text>
+                            </xsl:element>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:element name="xsl:apply-templates">
-                                <xsl:attribute name="select"><xsl:value-of select="@content"/></xsl:attribute>
-                            </xsl:element>
+                            <xsl:choose>
+                                <xsl:when test="dv:synthetic">
+                                    <xsl:copy-of select="dv:synthetic/node()"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:element name="xsl:apply-templates">
+                                        <xsl:attribute name="select"><xsl:value-of select="@content"/></xsl:attribute>
+                                    </xsl:element>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:otherwise>
                     </xsl:choose>
                     <xsl:text>&#10;        </xsl:text>
