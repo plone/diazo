@@ -3,7 +3,7 @@
        xmlns:css="http://namespaces.plone.org/diazo/css">
 
     <!-- local insert -->
-    <append-content css:to-content="#header" css:content="h2" />
+    <prepend-content css:to-content="#header" css:content="h2" />
 
     <!-- insert from external content to content -->
     <append-content css:to-content="#footer" css:content="#external1" href="extra.html"/>
