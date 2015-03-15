@@ -241,6 +241,81 @@ The following attributes are allowed:
     Used to specify an element that must be present in the content for the
     drop to be performed.
 
+``<replace-content />``
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Used to replace an element in the content entirely with another element from the
+content. For example::
+
+    <replace-content content="/html/body/h2" to-content="/html/body/h1"/>
+
+The (near-)equivalent using CSS selectors would be::
+
+    <replace-content css:content="h2" to-content="h1"/>
+
+The result of either is that the ``<h1 />`` element in the content is
+replaced with the ``<h2 />`` element from the same content.
+
+It might be used to re-structure content before applying the theme, but it will
+also be very useful with external content (see Advanced).
+
+The following attributes are allowed:
+
+``to-content`` or ``to-content-children`` or ``css:to-content`` or ``css:to-content-children`` (required)
+    Used to specify the node(s) in the content that is to be replaced. When using
+    ``to-content-children``, all elements inside the tag that matches the XPath
+    or CSS expression will be replaced, but the matched tag itself will remain
+    intact.
+``content`` or ``content-children`` or ``css:content`` or ``css:content-children`` (required)
+    Used to specify the node in the content that is to replace the matched
+    node(s). When using ``content-children``, all elements inside
+    the tag that matches the XPath or CSS expression will be used, but the
+    matched tag itself will be left out.
+``if``
+    Used to specify an arbitrary condition for when to perform the
+    replacement.
+``if-path``
+    Used to specify a URL path segment that must be matched by the current
+    request for the replacement to be performed
+``if-content`` or ``css:if-content``
+    Used to specify an element that must be present in the content for the
+    replacement to be performed.
+
+``<before-content />`` and ``<before-content />``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These are equivalent to ``<replace-content />`` except that the node(s) matched in
+the content are inserted before or after the target node(s), respectively.
+For example::
+
+    <before-content css:content="#article" css:content="#author" />
+
+This would place the element with id ``author`` from the content
+immediately before the element with id ``article``. If we wanted the box below the
+content instead, we could do::
+
+    <after-content css:content="#article" css:content="#author" />
+
+``<before-content />`` and ``<after-content />`` have the same required and optional
+attributes as ``<replace-content />``.
+
+``<prepend-content />`` and ``<append-content />``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These are equivalent to ``<replace-content />`` except that the node(s) matched in
+the content are inserted at the begining or the end of the target node(s), respectively.
+For example::
+
+    <prepend-content css:content="#article" css:content="#author" />
+
+This would place the element with id ``author`` from the content as first element of the
+element with id ``article``. If we wanted the box as last element, we could do::
+
+    <append-content css:content="#article" css:content="#author" />
+
+``<append-content />`` and ``<append-content />`` have the same required and optional
+attributes as ``<replace-content />``.
+
 ``<strip />``
 ~~~~~~~~~~~~~
 
@@ -348,20 +423,22 @@ In most cases, you should not care too much about the inner workings of the
 Diazo compiler. However, it can sometimes be useful to understand the order
 in which rules are applied.
 
-1. ``<before />`` rules using ``theme`` (but not ``theme-children``) are
-   always executed first.
-2. ``<drop />`` rules are executed next.
-3. ``<replace />`` rules using ``theme`` (but not ``theme-children``) are
+1. ``<replace-content />``, ``<before-content />``, ``<after-content />``,
+   ``<prepend-content />``, ``<append-content />`` are always executed first.
+2. ``<before />`` rules using ``theme`` (but not ``theme-children``) are
+   executed next.
+3. ``<drop />`` rules are executed next.
+4. ``<replace />`` rules using ``theme`` (but not ``theme-children``) are
    executed next, provided no ``<drop />`` rule was applied to the same theme
    node or ``method="raw"`` was used.
-4. ``<strip />`` rules are executed next. Note that ``<strip />`` rules do
+5. ``<strip />`` rules are executed next. Note that ``<strip />`` rules do
    not prevent other rules from firing, even if the content or theme node
    is going to be stripped.
-5. Rules that operate on attributes.
-6. ``<before />`` and ``<replace />`` and ``<after />`` rules using
+6. Rules that operate on attributes.
+7. ``<before />`` and ``<replace />`` and ``<after />`` rules using
    ``theme-children`` execute next, provided no ``<replace />`` rule using
    ``theme`` was applied to the same theme node previously.
-7. ``<after />`` rules using ``theme`` (but not ``theme-children``) are
+8. ``<after />`` rules using ``theme`` (but not ``theme-children``) are
    executed last.
 
 Behaviour if theme or content is not matched
