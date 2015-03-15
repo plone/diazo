@@ -131,7 +131,7 @@
         <xsl:attribute name="mode">raw</xsl:attribute>
     </xsl:template>
 
-    <xsl:template match="//diazo:rules/diazo:*[local-name()='append-content' or local-name()='prepend-content'][@href and not(@method)]">
+    <xsl:template match="//diazo:rules/diazo:*[local-name()='append-content' or local-name()='prepend-content' or local-name()='after-content' or local-name()='before-content' or local-name()='replace-content'][@href and not(@method)]">
         <xsl:element name="diazo:{local-name()}">
             <xsl:apply-templates select="@*"/>
             <xsl:attribute name="method"><xsl:value-of select="$includemode"/></xsl:attribute>

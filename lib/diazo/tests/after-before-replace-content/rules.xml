@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo"
+       xmlns:css="http://namespaces.plone.org/diazo/css">
+
+    <replace-content css:to-content="#header" css:content="#extra h1" />
+    <before-content css:to-content="h2" css:content="#extra span" />
+    <after-content css:to-content="p" css:content="#extra strong" />
+
+    <after theme="//*[@id='marker2']" css:content="#content"/>
+
+</rules>
