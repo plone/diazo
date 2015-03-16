@@ -18,7 +18,7 @@
     <xsl:param name="runtrace">0</xsl:param>
 
     <xsl:variable name="rules" select="//dv:*[@theme or local-name()='append-content' or local-name()='prepend-content' or local-name()='after-content' or local-name()='before-content' or local-name()='replace-content']"/>
-    <xsl:variable name="content2content-rules" select="//dv:*[local-name()='append-content' or local-name()='prepend-content' or local-name()='after-content' or local-name()='before-content' or local-name()='replace-content']"/>
+    <xsl:variable name="unique-content2content-rules" select="//dv:*[local-name()='append-content' or local-name()='prepend-content' or local-name()='after-content' or local-name()='before-content' or local-name()='replace-content'][not(@to-content=preceding::*/@to-content)]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
     <xsl:variable name="replace-content-rules" select="//dv:replace[@content and not(@theme)]"/>
@@ -468,51 +468,41 @@
     </xsl:template>
 
     <xsl:template name="content2content">
-        <xsl:for-each select="$content2content-rules">
+        <xsl:for-each select="$unique-content2content-rules">
+            <xsl:variable name="current" select="@to-content"/>
             <xsl:text>&#10;    </xsl:text>
             <xsl:element name="xsl:template">
-                <xsl:attribute name="match"><xsl:value-of select="@to-content"/></xsl:attribute>
+                <xsl:attribute name="match"><xsl:value-of select="$current"/></xsl:attribute>
                 <xsl:attribute name="mode">content2content</xsl:attribute>
-                <xsl:if test="local-name()='before-content' or local-name()='replace-content'">
+                <xsl:for-each select="//dv:*[local-name()='before-content' or local-name()='replace-content'][@to-content=$current]">
                     <xsl:text>&#10;        </xsl:text>
                     <xsl:call-template name="insert-into-content" />
-                </xsl:if>
-                <xsl:if test="local-name()!='replace-content'">
+                </xsl:for-each>
+                <xsl:if test="not(//dv:replace-content[@to-content=$current])">
                     <xsl:text>&#10;        </xsl:text>
                     <xsl:element name="xsl:copy">
+                        <xsl:element name="xsl:apply-templates">
+                            <xsl:attribute name="select">@*</xsl:attribute>
+                        </xsl:element>
+                        <xsl:for-each select="//dv:prepend-content[@to-content=$current]">
+                            <xsl:text>&#10;            </xsl:text>
+                            <xsl:call-template name="insert-into-content" />
+                        </xsl:for-each>
                         <xsl:text>&#10;            </xsl:text>
-                        <xsl:choose>
-                            <xsl:when test="local-name()='append-content'">
-                                <xsl:element name="xsl:apply-templates">
-                                    <xsl:attribute name="select">@*|node()</xsl:attribute>
-                                </xsl:element>
-                                <xsl:text>&#10;            </xsl:text>
-                                <xsl:call-template name="insert-into-content" />
-                            </xsl:when>
-                            <xsl:when test="local-name()='prepend-content'">
-                                <xsl:element name="xsl:apply-templates">
-                                    <xsl:attribute name="select">@*</xsl:attribute>
-                                </xsl:element>
-                                <xsl:text>&#10;            </xsl:text>
-                                <xsl:call-template name="insert-into-content" />
-                                <xsl:text>&#10;            </xsl:text>
-                                <xsl:element name="xsl:apply-templates">
-                                    <xsl:attribute name="select">node()</xsl:attribute>
-                                </xsl:element>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:element name="xsl:apply-templates">
-                                    <xsl:attribute name="select">@*|node()</xsl:attribute>
-                                </xsl:element>
-                            </xsl:otherwise>
-                        </xsl:choose>
+                        <xsl:element name="xsl:apply-templates">
+                            <xsl:attribute name="select">node()</xsl:attribute>
+                        </xsl:element>
+                        <xsl:for-each select="//dv:append-content[@to-content=$current]">
+                            <xsl:text>&#10;            </xsl:text>
+                            <xsl:call-template name="insert-into-content" />
+                        </xsl:for-each>
                         <xsl:text>&#10;        </xsl:text>
                     </xsl:element>
                 </xsl:if>
-                <xsl:if test="local-name()='after-content'">
+                <xsl:for-each select="//dv:after-content[@to-content=$current]">
                     <xsl:text>&#10;        </xsl:text>
                     <xsl:call-template name="insert-into-content" />
-                </xsl:if>
+                </xsl:for-each>
                 <xsl:text>&#10;    </xsl:text>
             </xsl:element>
             <xsl:text>&#10;</xsl:text>
