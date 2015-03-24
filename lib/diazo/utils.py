@@ -4,7 +4,12 @@ import sys
 
 from lxml import etree
 from optparse import OptionParser
-from six import string_types, integer_types
+from six import string_types, integer_types, PY3
+
+if PY3:
+    stdout = sys.stdout.buffer
+else:
+    stdout = sys.stdout
 
 strparam = etree.XSLT.strparam
 
@@ -109,7 +114,7 @@ def _createOptionParser(usage):
     parser = OptionParser(usage=usage)
     parser.add_option("-o", "--output", metavar="output.xsl",
                       help="Output filename (instead of stdout)",
-                      dest="output", default=sys.stdout)
+                      dest="output", default=stdout)
     parser.add_option("-p", "--pretty-print", action="store_true",
                       help="Pretty print output (may alter rendering in "
                            "browser)",
