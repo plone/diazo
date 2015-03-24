@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo"
+       xmlns:css="http://namespaces.plone.org/diazo/css">
+
+    <!-- local insert -->
+    <rules css:if-content=".not-found">
+	    <append-content css:to-content="#header" css:content="h2" />
+	</rules>
+
+    <!-- insert from external content to content -->
+    <rules css:if-content="#footer">
+    	<append-content css:to-content="#footer" css:content="#external1" href="extra.html"/>
+    </rules>
+
+    <!-- the resulting content can be used in regular theme rules -->
+    <copy css:theme="nav" css:content="h2" />
+
+    <after theme="//*[@id='marker2']" content="/html/body/*"/>
+
+</rules>
