@@ -1,0 +1,24 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+
+    <before css:content="#one">
+        <span>before</span>
+    </before>
+
+    <replace css:content="#one">
+        <span>replace</span>
+    </replace>
+
+    <after css:content=".after">
+        <span>after</span>
+    </after>
+
+    <replace
+        css:theme="#alpha"
+        css:content="#one"
+        />
+
+</rules>
