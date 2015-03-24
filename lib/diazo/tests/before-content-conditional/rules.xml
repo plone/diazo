@@ -4,20 +4,22 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
-    <after css:content="#one">
+    <before css:content="#one">
         <span>Uno</span>
-    </after>
+    </before>
 
-    <after
+    <before css:content="#one" css:if-content="#two">
+        <span>Un</span>
+    </before>
+
+    <before css:content="#one" css:if-content="#no-match">
+        <span>Uchi</span>
+    </before>
+    
+    <before
         css:theme="#alpha"
         css:content="#one"
         css:if-content="#two"
-        />
-
-    <after
-        css:theme="#beta"
-        css:content="#two"
-        css:if-content="#three"
         />
 
 </rules>

@@ -4,6 +4,10 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
+    <before css:content-children="#one">
+        <span>Uno</span>
+    </before>
+    
     <before
         css:theme="#alpha"
         css:content-children="#one"

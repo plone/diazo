@@ -251,7 +251,8 @@ Inline markup and XSLT may be combined with conditions::
 Modifying the content on the fly
 --------------------------------
 
-It is possible to modify the included content using ``<replace />``.
+It is possible to modify the included content using ``<replace />``,
+``<before />``, or ``<after />``.
 
 For example::
 
@@ -260,6 +261,10 @@ For example::
             <img src="images/search.png" alt="Search" />
         </button>
     </replace>
+
+    <before css:content="#content-core">
+        <a href="mailto:contact@diazo.org">Ask for help</a>
+    </before>
 
 This may be combined with conditions and inline XSLT.
 
