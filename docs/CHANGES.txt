@@ -4,7 +4,8 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Support for on-the-fly content modification with after and replace rules.
+  [ebrehault]
 
 
 1.1.1 (2015-03-21)
