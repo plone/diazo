@@ -268,6 +268,32 @@ For example::
 
 This may be combined with conditions and inline XSLT.
 
+Warning: it is not possible to both modify the content children and put them in
+the theme, for instance::
+
+    <before css:content-children="#one">
+        <span>Uno</span>
+    </before>
+
+    <before
+        css:theme="#alpha"
+        css:content-children="#one"
+        />
+
+would not work. But::
+
+    <before css:content-children="#one">
+        <span>Uno</span>
+    </before>
+
+    <before
+        css:theme="#alpha"
+        css:content="#one"
+        />
+
+would work (because the theme rule targets the `#one` content, not its
+children).
+
 Inline XSL directives
 ---------------------
 

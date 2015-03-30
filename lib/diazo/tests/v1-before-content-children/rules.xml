@@ -4,10 +4,16 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
+    <!-- will not work -->
     <before css:content-children="#one">
         <span>Uno</span>
     </before>
-    
+
+    <!-- will work -->
+    <before css:content-children="#two">
+        <span>Uno</span>
+    </before>
+
     <before
         css:theme="#alpha"
         css:content-children="#one"
@@ -15,7 +21,7 @@
 
     <before
         css:theme="#beta"
-        css:content-children="#two"
+        css:content="#two"
         />
 
     <before

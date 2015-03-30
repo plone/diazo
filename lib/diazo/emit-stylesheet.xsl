@@ -20,7 +20,7 @@
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
-    <xsl:variable name="before-replace-after-content-selectors" select="//dv:*[local-name()='before' or local-name()='replace' or local-name()='after'][@content and not(@theme)]/@content"/>
+    <xsl:variable name="before-replace-after-content-selectors" select="//dv:*[local-name()='before' or local-name()='replace' or local-name()='after'][@content and not(@theme) and not(@content-children)]/@content|//dv:*[local-name()='before' or local-name()='replace' or local-name()='after'][@content and not(@theme) and @content-children]/@content-children"/>
     <xsl:variable name="replace-content-children-rules" select="//dv:replace[@content-children and not(@theme)]"/>
     <xsl:variable name="inline-xsl" select="/dv:rules/xsl:*"/>
     <xsl:variable name="themes" select="//dv:theme"/>
@@ -336,134 +336,214 @@
     </xsl:template>
 
     <xsl:template name="before-replace-after-content">
-        <xsl:for-each select="$before-replace-after-content-selectors">
-            <xsl:variable name="current" select="."/>
-            <xsl:variable name="matching-before" select="//dv:before[@content=$current and not(@theme)]"/>
-            <xsl:variable name="matching-replace" select="//dv:replace[@content=$current and not(@theme)]"/>
-            <xsl:variable name="matching-after" select="//dv:after[@content=$current and not(@theme)]"/>
-            <!-- filter so we get each selector only once -->
-            <xsl:if test="generate-id() = generate-id($before-replace-after-content-selectors[. = $current][1])">
-                <xsl:text>&#10;    </xsl:text>
-                <xsl:element name="xsl:template">
-                    <xsl:attribute name="match">
-                        <xsl:value-of select="$current"/>
-                    </xsl:attribute>
-                    <xsl:if test="$matching-before">
-                        <xsl:text>&#10;        </xsl:text>
+        <xsl:if test="$before-replace-after-content-selectors">
+
+            <xsl:for-each select="$before-replace-after-content-selectors">
+                <xsl:variable name="current" select="."/>
+                <xsl:variable name="matching-before" select="//dv:before[@content=$current and not(@theme)]"/>
+                <xsl:variable name="matching-before-children" select="//dv:before[@content-children=$current and not(@theme)]"/>
+                <xsl:variable name="matching-replace" select="//dv:replace[(@content=$current or @content-children=$current) and not(@theme)]"/>
+                <xsl:variable name="matching-after" select="//dv:after[@content=$current and not(@theme)]"/>
+                <xsl:variable name="matching-after-children" select="//dv:after[@content-children=$current and not(@theme)]"/>
+
+                <!-- filter so we get each selector only once -->
+                <xsl:if test="generate-id() = generate-id($before-replace-after-content-selectors[. = $current][1])">
+                    <xsl:text>&#10;</xsl:text>
+                    <xsl:element name="xsl:template">
+                        <xsl:attribute name="match">
+                            <xsl:value-of select="$current"/>
+                        </xsl:attribute>
+                        <xsl:text>&#10;    </xsl:text>
                         <xsl:element name="xsl:apply-templates">
                             <xsl:attribute name="select">.</xsl:attribute>
                             <xsl:attribute name="mode">before-content</xsl:attribute>
                         </xsl:element>
-                    </xsl:if>
-                    <xsl:choose>
-                        <xsl:when test="$matching-replace">
-                            <xsl:text>&#10;        </xsl:text>
-                            <xsl:element name="xsl:apply-templates">
-                                <xsl:attribute name="select">.</xsl:attribute>
-                                <xsl:attribute name="mode">replace-content</xsl:attribute>
-                            </xsl:element>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:call-template name="include-content" />
-                        </xsl:otherwise>
-                    </xsl:choose>
-                    <xsl:if test="$matching-after">
-                        <xsl:text>&#10;        </xsl:text>
+                        <xsl:text>&#10;    </xsl:text>
+                        <xsl:element name="xsl:apply-templates">
+                            <xsl:attribute name="select">.</xsl:attribute>
+                            <xsl:attribute name="mode">replace-content</xsl:attribute>
+                        </xsl:element>
+                        <xsl:text>&#10;    </xsl:text>
                         <xsl:element name="xsl:apply-templates">
                             <xsl:attribute name="select">.</xsl:attribute>
                             <xsl:attribute name="mode">after-content</xsl:attribute>
                         </xsl:element>
+                        <xsl:text>&#10;</xsl:text>
+                    </xsl:element>
+                    <xsl:text>&#10;</xsl:text>
+
+                    <!-- non matching goes first -->
+                    <xsl:if test="not($matching-before)">
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">before-content</xsl:attribute>
+                        </xsl:element>
                     </xsl:if>
-                    <xsl:text>&#10;    </xsl:text>
-                </xsl:element>
-
-                <xsl:if test="$matching-before">
-                    <xsl:text>&#10;    </xsl:text>
-                    <xsl:element name="xsl:template">
-                        <xsl:attribute name="match">
-                            <xsl:value-of select="$current"/>
-                        </xsl:attribute>
-                        <xsl:attribute name="mode">before-content</xsl:attribute>
-                        <xsl:call-template name="include-all-with-condition">
-                            <xsl:with-param name="matching-rules" select="$matching-before" />
-                        </xsl:call-template>
-                    </xsl:element>
-                    <xsl:text>&#10;    </xsl:text>
+                    <xsl:text>&#10;</xsl:text>
+                    <xsl:if test="not($matching-before-children)">
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">before-content-children</xsl:attribute>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:text>&#10;</xsl:text>
+                    <xsl:if test="not($matching-after)">
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">after-content</xsl:attribute>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:text>&#10;</xsl:text>
+                    <xsl:if test="not($matching-after-children)">
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">after-content-children</xsl:attribute>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:text>&#10;</xsl:text>
                 </xsl:if>
+            </xsl:for-each>
 
-                <xsl:if test="$matching-replace">
-                    <xsl:text>&#10;    </xsl:text>
-                    <xsl:element name="xsl:template">
-                        <xsl:attribute name="match">
-                            <xsl:value-of select="$current"/>
-                        </xsl:attribute>
-                        <xsl:attribute name="mode">replace-content</xsl:attribute>
-                        <xsl:choose>
-                            <xsl:when test="$matching-replace[@merged-condition]">
-                                <xsl:element name="xsl:choose">
-                                    <xsl:for-each select="$matching-replace">
-                                        <xsl:text>&#10;        </xsl:text>
-                                        <xsl:choose>
-                                            <xsl:when test="@merged-condition">
-                                                <xsl:element name="xsl:when">
-                                                    <xsl:attribute name="test">
-                                                        <xsl:choose>
-                                                            <xsl:when test="contains(@merged-condition, '$')">
-                                                                <!-- variable references are not allowed in template match patterns -->
-                                                                <xsl:text>dyn:evaluate(</xsl:text>
-                                                                <xsl:call-template name="escape-string">
-                                                                    <xsl:with-param name="string" select="@merged-condition"/>
-                                                                </xsl:call-template>
-                                                                <xsl:text>)</xsl:text>
-                                                            </xsl:when>
-                                                            <xsl:otherwise><xsl:value-of select="@merged-condition"/></xsl:otherwise>
-                                                        </xsl:choose>
-                                                    </xsl:attribute>
+            <xsl:for-each select="$before-replace-after-content-selectors">
+                <xsl:variable name="current" select="."/>
+                <xsl:variable name="matching-before" select="//dv:before[@content=$current and not(@theme)]"/>
+                <xsl:variable name="matching-before-children" select="//dv:before[@content-children=$current and not(@theme)]"/>
+                <xsl:variable name="matching-replace" select="//dv:replace[(@content=$current or @content-children=$current) and not(@theme)]"/>
+                <xsl:variable name="matching-after" select="//dv:after[@content=$current and not(@theme)]"/>
+                <xsl:variable name="matching-after-children" select="//dv:after[@content-children=$current and not(@theme)]"/>
+
+                <!-- filter so we get each selector only once -->
+                <xsl:if test="generate-id() = generate-id($before-replace-after-content-selectors[. = $current][1])">
+                    <xsl:if test="$matching-before">
+                        <xsl:text>&#10;</xsl:text>
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">before-content</xsl:attribute>
+                            <xsl:call-template name="include-all-with-condition">
+                                <xsl:with-param name="matching-rules" select="$matching-before" />
+                            </xsl:call-template>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:text>&#10;</xsl:text>
+                    <xsl:if test="$matching-before-children">
+                        <xsl:text>&#10;</xsl:text>
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">before-content-children</xsl:attribute>
+                            <xsl:call-template name="include-all-with-condition">
+                                <xsl:with-param name="matching-rules" select="$matching-before-children" />
+                            </xsl:call-template>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:text>&#10;</xsl:text>
+
+                    <xsl:if test="$matching-replace">
+                        <xsl:text>&#10;</xsl:text>
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">replace-content</xsl:attribute>
+                            <xsl:choose>
+                                <xsl:when test="$matching-replace[@merged-condition]">
+                                    <xsl:element name="xsl:choose">
+                                        <xsl:for-each select="$matching-replace">
+                                            <xsl:text>&#10;    </xsl:text>
+                                            <xsl:choose>
+                                                <xsl:when test="@merged-condition">
+                                                    <xsl:element name="xsl:when">
+                                                        <xsl:attribute name="test">
+                                                            <xsl:choose>
+                                                                <xsl:when test="contains(@merged-condition, '$')">
+                                                                    <!-- variable references are not allowed in template match patterns -->
+                                                                    <xsl:text>dyn:evaluate(</xsl:text>
+                                                                    <xsl:call-template name="escape-string">
+                                                                        <xsl:with-param name="string" select="@merged-condition"/>
+                                                                    </xsl:call-template>
+                                                                    <xsl:text>)</xsl:text>
+                                                                </xsl:when>
+                                                                <xsl:otherwise><xsl:value-of select="@merged-condition"/></xsl:otherwise>
+                                                            </xsl:choose>
+                                                        </xsl:attribute>
+                                                        <xsl:copy-of select="node()"/>
+                                                    </xsl:element>
+                                                </xsl:when>
+                                                <xsl:otherwise>
                                                     <xsl:copy-of select="node()"/>
-                                                </xsl:element>
-                                            </xsl:when>
-                                            <xsl:otherwise>
-                                                <xsl:copy-of select="node()"/>
-                                            </xsl:otherwise>
-                                        </xsl:choose>
-                                    </xsl:for-each>
-                                    <xsl:element name="xsl:otherwise">
-                                        <xsl:call-template name="include-content" />
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                        </xsl:for-each>
+                                        <xsl:element name="xsl:otherwise">
+                                            <xsl:call-template name="include-content-with-children-rules" />
+                                        </xsl:element>
+                                        <xsl:text>&#10;</xsl:text>
                                     </xsl:element>
-                                    <xsl:text>&#10;    </xsl:text>
-                                </xsl:element>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:for-each select="$matching-replace">
-                                    <xsl:copy-of select="node()"/>
-                                </xsl:for-each>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:element>
-                    <xsl:text>&#10;    </xsl:text>
-                </xsl:if>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:for-each select="$matching-replace">
+                                        <xsl:copy-of select="node()"/>
+                                    </xsl:for-each>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:element>
+                        <xsl:text>&#10;</xsl:text>
+                    </xsl:if>
 
-                <xsl:if test="$matching-after">
-                    <xsl:text>&#10;    </xsl:text>
-                    <xsl:element name="xsl:template">
-                        <xsl:attribute name="match">
-                            <xsl:value-of select="$current"/>
-                        </xsl:attribute>
-                        <xsl:attribute name="mode">after-content</xsl:attribute>
-                        <xsl:call-template name="include-all-with-condition">
-                            <xsl:with-param name="matching-rules" select="$matching-after" />
-                        </xsl:call-template>
-                    </xsl:element>
-                    <xsl:text>&#10;    </xsl:text>
+                    <xsl:if test="$matching-after">
+                        <xsl:text>&#10;</xsl:text>
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">after-content</xsl:attribute>
+                            <xsl:call-template name="include-all-with-condition">
+                                <xsl:with-param name="matching-rules" select="$matching-after" />
+                            </xsl:call-template>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:text>&#10;</xsl:text>
+                    <xsl:if test="$matching-after-children">
+                        <xsl:text>&#10;</xsl:text>
+                        <xsl:element name="xsl:template">
+                            <xsl:attribute name="match">
+                                <xsl:value-of select="$current"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="mode">after-content-children</xsl:attribute>
+                            <xsl:call-template name="include-all-with-condition">
+                                <xsl:with-param name="matching-rules" select="$matching-after-children" />
+                            </xsl:call-template>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:text>&#10;</xsl:text>
                 </xsl:if>
-            </xsl:if>
-        </xsl:for-each>
+            </xsl:for-each>
+
+            <!-- default replace content rules if no match -->
+            <xsl:text>&#10;</xsl:text>
+            <xsl:element name="xsl:template">
+                <xsl:attribute name="match">*</xsl:attribute>
+                <xsl:attribute name="mode">replace-content</xsl:attribute>
+                <xsl:call-template name="include-content-with-children-rules" />
+                <xsl:text>&#10;</xsl:text>
+            </xsl:element>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template name="include-all-with-condition">
         <xsl:param name="matching-rules"/>
         <xsl:for-each select="$matching-rules">
-            <xsl:text>&#10;        </xsl:text>
             <xsl:choose>
                 <xsl:when test="@merged-condition">
                     <xsl:element name="xsl:if">
@@ -488,7 +568,6 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
-        <xsl:text>&#10;    </xsl:text>
     </xsl:template>
 
     <xsl:template name="replace-content-children">
@@ -527,13 +606,38 @@
     </xsl:template>
 
     <xsl:template name="include-content">
-        <xsl:text>&#10;            </xsl:text>
+        <xsl:text>&#10;    </xsl:text>
         <xsl:element name="xsl:copy">
-            <xsl:text>&#10;                </xsl:text>
+            <xsl:text>&#10;        </xsl:text>
             <xsl:element name="xsl:apply-templates">
                 <xsl:attribute name="select">@*|node()</xsl:attribute>
             </xsl:element>
-            <xsl:text>&#10;            </xsl:text>
+            <xsl:text>&#10;    </xsl:text>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template name="include-content-with-children-rules">
+        <xsl:text>&#10;</xsl:text>
+        <xsl:element name="xsl:copy">
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:apply-templates">
+                <xsl:attribute name="select">@*</xsl:attribute>
+            </xsl:element>
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:apply-templates">
+                <xsl:attribute name="select">.</xsl:attribute>
+                <xsl:attribute name="mode">before-content-children</xsl:attribute>
+            </xsl:element>
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:apply-templates">
+                <xsl:attribute name="select">node()</xsl:attribute>
+            </xsl:element>
+            <xsl:text>&#10;    </xsl:text>
+            <xsl:element name="xsl:apply-templates">
+                <xsl:attribute name="select">.</xsl:attribute>
+                <xsl:attribute name="mode">after-content-children</xsl:attribute>
+            </xsl:element>
+            <xsl:text>&#10;</xsl:text>
         </xsl:element>
     </xsl:template>
 
