@@ -18,6 +18,7 @@
     <xsl:param name="runtrace">0</xsl:param>
 
     <xsl:variable name="rules" select="//dv:*[@theme]"/>
+    <xsl:variable name="external-includes" select="//dv:rules[@external-includes]"/>
     <xsl:variable name="drop-content-rules" select="//dv:drop[@content]"/>
     <xsl:variable name="strip-content-rules" select="//dv:strip[@content]"/>
     <xsl:variable name="before-replace-after-content-selectors" select="//dv:*[local-name()='before' or local-name()='replace' or local-name()='after'][@content and not(@theme) and not(@content-children)]/@content|//dv:*[local-name()='before' or local-name()='replace' or local-name()='after'][@content and not(@theme) and @content-children]/@content-children"/>
@@ -62,7 +63,7 @@
             <xsl:text>&#10;&#10;</xsl:text>
             <xsl:apply-templates select="document($known_params_url)/xsl:stylesheet/node()" />
 
-            <xsl:if test="$rules[@method='document']">
+            <xsl:if test="$rules[@method='document']|$external-includes">
                 <xsl:choose>
                     <xsl:when test="$usebase">
                         <!-- When usebase is true, document() includes are resolved internally using the base tag -->
