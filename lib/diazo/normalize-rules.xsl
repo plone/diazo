@@ -31,6 +31,9 @@
     <xsl:template match="/diazo:rules">
         <xsl:element name="diazo:{local-name()}">
             <xsl:attribute name="css:dummy"/>
+            <xsl:if test=".//diazo:include[@href]">
+                <xsl:attribute name="external-includes">1</xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates select="@*|node()"/>
         </xsl:element>
     </xsl:template>
@@ -129,6 +132,24 @@
             </xsl:call-template>
         </xsl:if>
         <xsl:attribute name="mode">raw</xsl:attribute>
+    </xsl:template>
+
+    <xsl:template match="//diazo:include">
+        <xsl:element name="xsl:apply-templates">
+            <xsl:if test="@href">
+                <xsl:attribute name="method">document</xsl:attribute>
+            </xsl:if>
+            <xsl:attribute name="select">
+                <xsl:choose>
+                    <xsl:when test="@href">document('<xsl:value-of select="@href"/>', $diazo-base-document)<xsl:if test="not(starts-with(@content, '/'))">/</xsl:if><xsl:value-of select="@content"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="@content"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
+            <xsl:attribute name="mode">raw</xsl:attribute>
+        </xsl:element>
     </xsl:template>
 
     <!--
