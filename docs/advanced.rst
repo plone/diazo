@@ -251,7 +251,8 @@ Inline markup and XSLT may be combined with conditions::
 Modifying the content on the fly
 --------------------------------
 
-It is possible to modify the included content using ``<replace />``.
+It is possible to modify the included content using ``<replace />``,
+``<before />``, or ``<after />``.
 
 For example::
 
@@ -261,7 +262,51 @@ For example::
         </button>
     </replace>
 
-This may be combined with conditions and inline XSLT.
+    <before css:content="#content-core">
+        <a href="mailto:contact@diazo.org">Ask for help</a>
+    </before>
+
+The content can be inline HTML or it can be a piece of content from the document
+itself retrieved using the ``<include />`` tag. For instance::
+
+    <before css:content-children="#main">
+        <include css:content="#breadcrumbs" />
+    </before>
+
+The ``<include />`` tag accepts a ``href`` attribute, so it can retrieve a piece
+of content from another page. For instance::
+
+    <after css:content="#main">
+        <include css:content="form" href="contact.html" />
+    </after>
+
+This may also be combined with conditions and inline XSLT.
+
+Warning: it is not possible to both modify the content children and put them in
+the theme, for instance::
+
+    <before css:content-children="#one">
+        <span>Uno</span>
+    </before>
+
+    <before
+        css:theme="#alpha"
+        css:content-children="#one"
+        />
+
+would not work. But::
+
+    <before css:content-children="#one">
+        <span>Uno</span>
+    </before>
+
+    <before
+        css:theme="#alpha"
+        css:content="#one"
+        />
+
+would work (because the theme rule targets the `#one` content, not its
+children).
 
 Inline XSL directives
 ---------------------
