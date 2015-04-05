@@ -9,7 +9,10 @@ import sys
 import difflib
 from io import BytesIO, StringIO
 import unittest
-import configparser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 import pkg_resources
 
 import diazo.compiler
@@ -17,6 +20,7 @@ import diazo.run
 
 from diazo.utils import quote_param
 from formencode.doctest_xml_compare import xml_compare
+from future.builtins import str
 
 
 if __name__ == '__main__':
