@@ -7,9 +7,12 @@ from lxml import etree
 import os
 import sys
 import difflib
-from io import BytesIO
+from io import BytesIO, StringIO
 import unittest
-import configparser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 import pkg_resources
 
 import diazo.compiler
@@ -17,6 +20,7 @@ import diazo.run
 
 from diazo.utils import quote_param
 from formencode.doctest_xml_compare import xml_compare
+from future.builtins import str
 
 
 if __name__ == '__main__':
@@ -137,9 +141,9 @@ class DiazoTestCase(unittest.TestCase):
 
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = bytes(result)
+        self.themed_string = str(result)
         self.themed_content = etree.ElementTree(
-            file=BytesIO(self.themed_string), parser=etree.HTMLParser())
+            file=StringIO(self.themed_string), parser=etree.HTMLParser())
 
         # remove the extra meta content type
 
