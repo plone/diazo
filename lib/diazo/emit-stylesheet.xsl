@@ -371,44 +371,6 @@
                         <xsl:text>&#10;</xsl:text>
                     </xsl:element>
                     <xsl:text>&#10;</xsl:text>
-
-                    <!-- non matching goes first -->
-                    <xsl:if test="not($matching-before)">
-                        <xsl:element name="xsl:template">
-                            <xsl:attribute name="match">
-                                <xsl:value-of select="$current"/>
-                            </xsl:attribute>
-                            <xsl:attribute name="mode">before-content</xsl:attribute>
-                        </xsl:element>
-                    </xsl:if>
-                    <xsl:text>&#10;</xsl:text>
-                    <xsl:if test="not($matching-before-children)">
-                        <xsl:element name="xsl:template">
-                            <xsl:attribute name="match">
-                                <xsl:value-of select="$current"/>
-                            </xsl:attribute>
-                            <xsl:attribute name="mode">before-content-children</xsl:attribute>
-                        </xsl:element>
-                    </xsl:if>
-                    <xsl:text>&#10;</xsl:text>
-                    <xsl:if test="not($matching-after)">
-                        <xsl:element name="xsl:template">
-                            <xsl:attribute name="match">
-                                <xsl:value-of select="$current"/>
-                            </xsl:attribute>
-                            <xsl:attribute name="mode">after-content</xsl:attribute>
-                        </xsl:element>
-                    </xsl:if>
-                    <xsl:text>&#10;</xsl:text>
-                    <xsl:if test="not($matching-after-children)">
-                        <xsl:element name="xsl:template">
-                            <xsl:attribute name="match">
-                                <xsl:value-of select="$current"/>
-                            </xsl:attribute>
-                            <xsl:attribute name="mode">after-content-children</xsl:attribute>
-                        </xsl:element>
-                    </xsl:if>
-                    <xsl:text>&#10;</xsl:text>
                 </xsl:if>
             </xsl:for-each>
 
@@ -529,15 +491,6 @@
                     <xsl:text>&#10;</xsl:text>
                 </xsl:if>
             </xsl:for-each>
-
-            <!-- default replace content rules if no match -->
-            <xsl:text>&#10;</xsl:text>
-            <xsl:element name="xsl:template">
-                <xsl:attribute name="match">*</xsl:attribute>
-                <xsl:attribute name="mode">replace-content</xsl:attribute>
-                <xsl:call-template name="include-content-with-children-rules" />
-                <xsl:text>&#10;</xsl:text>
-            </xsl:element>
         </xsl:if>
     </xsl:template>
 
