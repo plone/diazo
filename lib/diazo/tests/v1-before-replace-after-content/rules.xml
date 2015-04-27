@@ -4,20 +4,21 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
-    <after css:content="#one">
-        <span>Uno</span>
+    <before css:content="#one">
+        <span>before</span>
+    </before>
+
+    <replace css:content="#one">
+        <span>replace</span>
+    </replace>
+
+    <after css:content=".after">
+        <span>after</span>
     </after>
 
-    <after
+    <replace
         css:theme="#alpha"
         css:content="#one"
-        css:if-content="#two"
-        />
-
-    <after
-        css:theme="#beta"
-        css:content="#two"
-        css:if-content="#three"
         />
 
 </rules>

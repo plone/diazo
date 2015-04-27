@@ -251,7 +251,8 @@ Inline markup and XSLT may be combined with conditions::
 Modifying the content on the fly
 --------------------------------
 
-It is possible to modify the included content using ``<replace />``.
+It is possible to modify the included content using ``<replace />``,
+``<before />``, or ``<after />``.
 
 For example::
 
@@ -261,7 +262,37 @@ For example::
         </button>
     </replace>
 
+    <before css:content="#content-core">
+        <a href="mailto:contact@diazo.org">Ask for help</a>
+    </before>
+
 This may be combined with conditions and inline XSLT.
+
+Warning: it is not possible to both modify the content children and put them in
+the theme, for instance::
+
+    <before css:content-children="#one">
+        <span>Uno</span>
+    </before>
+
+    <before
+        css:theme="#alpha"
+        css:content-children="#one"
+        />
+
+would not work. But::
+
+    <before css:content-children="#one">
+        <span>Uno</span>
+    </before>
+
+    <before
+        css:theme="#alpha"
+        css:content="#one"
+        />
+
+would work (because the theme rule targets the `#one` content, not its
+children).
 
 Inline XSL directives
 ---------------------

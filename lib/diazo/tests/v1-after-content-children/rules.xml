@@ -4,6 +4,16 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
 
+    <!-- will not work -->
+    <after css:content-children="#one">
+        <span>Uno</span>
+    </after>
+
+    <!-- will work -->
+    <after css:content-children="#two">
+        <span>Uno</span>
+    </after>
+
     <after
         css:theme="#alpha"
         css:content-children="#one"
@@ -11,7 +21,7 @@
 
     <after
         css:theme="#beta"
-        css:content-children="#two"
+        css:content="#two"
         />
 
     <after
