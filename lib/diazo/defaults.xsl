@@ -39,4 +39,17 @@
         <!-- Filter out -->
     </xsl:template>
 
+    <xsl:template match="*" mode="before-content"/>
+    <xsl:template match="*" mode="before-content-children"/>
+    <xsl:template match="*" mode="after-content"/>
+    <xsl:template match="*" mode="after-content-children"/>
+    <xsl:template match="*" mode="replace-content">
+        <xsl:copy>
+            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="." mode="before-content-children"/>
+            <xsl:apply-templates select="node()"/>
+            <xsl:apply-templates select="." mode="after-content-children"/>
+        </xsl:copy>
+    </xsl:template>
+
 </xsl:stylesheet>

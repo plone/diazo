@@ -7,11 +7,12 @@ from lxml import etree
 import os
 import sys
 import difflib
-from io import BytesIO
+from io import BytesIO, StringIO, open
 import unittest
-import future.standard_library
-with future.standard_library.hooks():
+try:
     import configparser
+except ImportError:
+    import ConfigParser as configparser
 import pkg_resources
 
 import diazo.compiler
@@ -19,6 +20,7 @@ import diazo.run
 
 from diazo.utils import quote_param
 from formencode.doctest_xml_compare import xml_compare
+from future.builtins import str
 
 
 if __name__ == '__main__':
@@ -98,7 +100,7 @@ class DiazoTestCase(unittest.TestCase):
         )
 
         # Serialize / parse the theme - this can catch problems with escaping.
-        cts = etree.tostring(ct)
+        cts = etree.tostring(ct, encoding='unicode')
         parser = etree.XMLParser()
         etree.fromstring(cts, parser=parser)
 
@@ -113,8 +115,8 @@ class DiazoTestCase(unittest.TestCase):
                         f.write(old)
                 if self.warnings:
                     print("WARNING:", "compiled.xsl has CHANGED")
-                    for line in difflib.unified_diff(old.split('\n'),
-                                                     new.split('\n'),
+                    for line in difflib.unified_diff(old.split(u'\n'),
+                                                     new.split(u'\n'),
                                                      xslfn, 'now'):
                         print(line)
 
@@ -139,9 +141,9 @@ class DiazoTestCase(unittest.TestCase):
 
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = bytes(result)
+        self.themed_string = str(result)
         self.themed_content = etree.ElementTree(
-            file=BytesIO(self.themed_string), parser=etree.HTMLParser())
+            file=StringIO(self.themed_string), parser=etree.HTMLParser())
 
         # remove the extra meta content type
 
@@ -172,8 +174,8 @@ class DiazoTestCase(unittest.TestCase):
                     etree.fromstring(new.strip())):
                 # if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
-                for line in difflib.unified_diff(old.split('\n'),
-                                                 new.split('\n'),
+                for line in difflib.unified_diff(old.split(u'\n'),
+                                                 new.split(u'\n'),
                                                  outputfn, 'now'):
                     print(line)
                 assert old == new, "output.html has CHANGED"

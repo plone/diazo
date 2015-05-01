@@ -6,6 +6,7 @@ dist
 *.pyc
 *.pyo
 *.egg-info
+.eggs/
 .installed.cfg
 .tox
 include
