@@ -50,29 +50,28 @@ To set up the proxy, we will use `Buildout`_.
     egg = lxml
 
     [versions]
-    # Lastest versions as of 2014-09-24
+    # Lastest versions as of 2015-04-24
     PasteDeploy = 1.5.2
     Tempita = 0.5.2
     WebOb = 1.4
-    argparse = 1.2.1
-    cliff = 1.7.0
-    cmd2 = 0.6.7
-    diazo = 1.0.6
+    argparse = 1.3.0
+    cliff = 1.12.0
+    cmd2 = 0.6.8
+    diazo = 1.1.1
     experimental.cssselect = 0.3
-    future = 0.13.1
-    gearbox = 0.0.6
-    lxml = 3.4.0
+    future = 0.14.3
+    gearbox = 0.0.7
+    lxml = 3.4.3
     prettytable = 0.7.2
-    pyparsing = 2.0.2
+    pyparsing = 2.0.3
     repoze.xmliter = 0.6
     rutter = 0.2
-    setuptools = 5.8
-    six = 1.8.0
-    stevedore = 1.0.0
+    setuptools = 15.1
+    six = 1.9.0
+    stevedore = 1.4.0
     webobentrypoints = 0.1.0
-    zc.buildout = 2.2.1
+    zc.buildout = 2.3.1
     zc.recipe.egg = 2.0.1
-
 
 4. Bootstrap the buildout (this is only required once)::
 
@@ -179,7 +178,7 @@ To set up the proxy, we will use `Buildout`_.
     # Serve the theme from disk from /static (as set up in [composite:main])
     [app:static]
     use = egg:webobentrypoints#staticdir
-    document_root = %(here)s/theme
+    path = %(here)s/theme
 
     # Serve the Diazo-transformed content everywhere else
     [pipeline:default]
@@ -196,12 +195,11 @@ To set up the proxy, we will use `Buildout`_.
     prefix = /static
     debug = true
 
-    # Proxy http://diazo.org as the content
-    # not using root level since there's a redirect in place
-    # to http://docs.diazo.org/en/latest/index.html
+    # Proxy the diazo docs hosted at http://docs.plone.org as content
+    # not using http://docs.diazo.org since there's a redirect in place
     [app:content]
     use = egg:webobentrypoints#proxy
-    address = http://docs.diazo.org/en/latest/index.html
+    address = http://docs.plone.org/external/diazo/docs/index.html
     suppress_http_headers = accept-encoding
 
 9. Run the proxy::
