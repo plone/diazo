@@ -16,6 +16,7 @@ from repoze.xmliter.utils import getHTMLSerializer
 from diazo.compiler import compile_theme
 from diazo.utils import pkg_parse
 from diazo.utils import quote_param
+from diazo.subtransform import SubTransform
 
 DIAZO_OFF_HEADER = 'X-Diazo-Off'
 
@@ -216,7 +217,11 @@ class XSLTMiddleware(object):
         self.access_control = etree.XSLTAccessControl(
             read_file=self.read_file, write_file=False, create_dir=False,
             read_network=self.read_network, write_network=False)
-        self.transform = etree.XSLT(tree, access_control=self.access_control)
+
+        extensions = {('dvext', 'sub'): SubTransform(global_conf)}
+        self.transform = etree.XSLT(tree,
+                                    extensions=extensions,
+                                    access_control=self.access_control)
         self.update_content_length = asbool(update_content_length)
         self.ignored_extensions = frozenset(ignored_extensions)
 

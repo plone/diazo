@@ -96,12 +96,21 @@ def expand_theme(element, theme_doc, absolute_prefix):
     apply_absolute_prefix(theme_doc, prefix)
     escape_curly_brackets(theme_doc)
     theme_root = theme_doc.getroot()
-    preceding = list(theme_root.itersiblings(preceding=True))
-    preceding.reverse()
-    following = list(theme_root.itersiblings(preceding=False))
-    element.extend(preceding)
-    element.append(theme_root)
-    element.extend(following)
+
+    # Allow path attribute on 'theme' element so as to further select
+    # an xpath into the given theme. This allows usage of snippets
+    # from a complete html file.
+    #
+    if element.get('path'):
+        theme_root = theme_doc.xpath(element.get('path'))[0]
+        element.append(theme_root)
+    else:
+        preceding = list(theme_root.itersiblings(preceding=True))
+        preceding.reverse()
+        following = list(theme_root.itersiblings(preceding=False))
+        element.extend(preceding)
+        element.append(theme_root)
+        element.extend(following)
 
 
 def expand_themes(rules_doc, parser=None, absolute_prefix=None,

@@ -19,7 +19,7 @@ long_desc = readme + '\n\n' + changes
 
 setup(
     name='diazo',
-    version='1.1.2.dev0',
+    version='666.1.2.dev0',
     description='''Diazo implements a Deliverance like language using a pure
         XSLT engine. With Diazo, you "compile" your theme and ruleset in one
         step, then use a superfast/simple transform on each request thereafter.
@@ -37,12 +37,6 @@ setup(
     license='New BSD',
     classifiers=[
         "Development Status :: 6 - Mature",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",

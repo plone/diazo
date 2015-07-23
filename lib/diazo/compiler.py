@@ -96,6 +96,7 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
       known to the compiled theme transform. The keys should be the parameter
       names. Values are default values.
     """
+
     if access_control is not None:
         read_network = access_control.options['read_network']
     rules_doc = process_rules(
