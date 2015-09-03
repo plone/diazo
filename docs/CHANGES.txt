@@ -4,6 +4,9 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
+* Allow inline content for after and before.
+  [ebrehault]
+
 * Fixed issue with remote themes via https connections
   [loechel]
 
