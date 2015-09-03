@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.0 (unreleased)
+1.2.0 (2015-09-03)
 ------------------
 
 * Extend cssselect instead of using experimental.cssselect
