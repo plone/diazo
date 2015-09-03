@@ -1,11 +1,18 @@
 Changelog
 =========
 
-1.1.2 (unreleased)
+1.2.0 (unreleased)
+------------------
+
+* Extend cssselect instead of using experimental.cssselect
+  [elro]
+
+
+1.1.2 (2015-09-03)
 ------------------
 
 * Allow inline content for after and before.
-  [ebrehault]
+  [ebrehault, elro]
 
 * Fixed issue with remote themes via https connections
   [loechel]
