@@ -51,7 +51,7 @@ setup(
     install_requires=[
         'setuptools',
         'lxml',
-        'experimental.cssselect',
+        'cssselect',
         'future',
         'six'],
     extras_require=extras_require,
