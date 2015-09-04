@@ -4,7 +4,8 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+* Absolute prefix support for srcset attributes
+  [huubbouma]
 
 
 1.2.0 (2015-09-03)

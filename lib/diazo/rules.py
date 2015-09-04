@@ -23,6 +23,7 @@ CONDITIONAL_SRC = re.compile(
     r'''(?P<before><[^>]*?(src|href)=(?P<quote>['"]?))'''
     r'''(?P<url>[^ \t\n\r\f\v>]+)(?P<after>(?P=quote)[^>]*?>)''',
     re.IGNORECASE)
+SRCSET = re.compile(r'(?P<descriptors>^\s*|\s*,\s*)(?P<url>[^\s]*)')
 
 
 update_transform = pkg_xsl('update-namespace.xsl')
@@ -138,6 +139,13 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
     for node in theme_doc.xpath('//*[@src]'):
         url = urljoin(absolute_prefix, node.get('src'))
         node.set('src', url)
+    for node in theme_doc.xpath('//*[@srcset]'):
+        srcset = node.get('srcset')
+        srcset = SRCSET.sub(
+            lambda match: match.group('descriptors') + urljoin(
+                absolute_prefix, match.group('url')),
+            srcset)
+        node.set('srcset', srcset)
     for node in theme_doc.xpath('//*[@href]'):
         url = anchor_safe_urljoin(absolute_prefix, node.get('href'))
         node.set('href', url)
