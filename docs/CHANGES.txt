@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.1 (unreleased)
+1.2.1 (2015-09-07)
 ------------------
 
 * Absolute prefix support for srcset attributes
