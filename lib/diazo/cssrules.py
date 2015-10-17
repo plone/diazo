@@ -12,13 +12,23 @@ RULES is a file defining a set of diazo rules in css syntax, e.g:
 from __future__ import absolute_import
 from optparse import OptionParser
 from lxml import etree
-from experimental.cssselect import css_to_xpath
+from cssselect import GenericTranslator
 from . import utils
 import sys
 import logging
 
 logger = logging.getLogger('diazo')
 usage = __doc__
+
+
+class LocationPathTranslator(GenericTranslator):
+    def xpath_descendant_combinator(self, left, right):
+        """right is a child, grand-child or further descendant of left"""
+        return left.join('//', right)
+
+
+_generic_translator = GenericTranslator()
+_location_path_translator = LocationPathTranslator()
 
 
 def convert_css_selectors(rules):
@@ -41,17 +51,17 @@ def convert_css_selectors(rules):
             if not value:
                 element.attrib[localname] = ""
                 continue
-            if css_prefix is not None:
-                prefix = css_prefix
-            elif (tag_namespace == utils.namespaces['diazo'] and
-                  localname in ('content', 'content-children', 'if-content',
-                                'if-not-content') or
+            if (tag_namespace == utils.namespaces['diazo'] and
+                localname in ('content', 'content-children', 'if-content',
+                              'if-not-content') or
                     (tag_namespace == utils.namespaces['xsl'] and
                      localname in ('match',))):
-                prefix = '//'
+                prefix = css_prefix or '//'
+                tr = _location_path_translator
             else:
-                prefix = 'descendant-or-self::'
-            element.attrib[localname] = css_to_xpath(value, prefix=prefix)
+                prefix = css_prefix or 'descendant-or-self::'
+                tr = _generic_translator
+            element.attrib[localname] = tr.css_to_xpath(value, prefix=prefix)
 
     return rules
 

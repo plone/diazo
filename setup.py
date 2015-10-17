@@ -19,7 +19,7 @@ long_desc = readme + '\n\n' + changes
 
 setup(
     name='diazo',
-    version='1.1.2.dev0',
+    version='1.2.2.dev0',
     description='''Diazo implements a Deliverance like language using a pure
         XSLT engine. With Diazo, you "compile" your theme and ruleset in one
         step, then use a superfast/simple transform on each request thereafter.
@@ -51,7 +51,7 @@ setup(
     install_requires=[
         'setuptools',
         'lxml',
-        'experimental.cssselect',
+        'cssselect',
         'future',
         'six'],
     extras_require=extras_require,
