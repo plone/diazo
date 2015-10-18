@@ -4,7 +4,8 @@ Changelog
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+* Allow content-to-content inclusion
+  [ebrehault]
 
 
 1.2.1 (2015-09-07)
@@ -26,17 +27,16 @@ Changelog
 
 * Allow inline content for after and before.
   [ebrehault, elro]
+>>>>>>> master
 
 * Fixed issue with remote themes via https connections
   [loechel]
-
 
 1.1.1 (2015-03-21)
 ------------------
 
 * Make flake8 happy by moving imports to top of file.
   [elro]
-
 
 1.1.0 (2014-10-23)
 ------------------

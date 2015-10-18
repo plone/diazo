@@ -266,7 +266,21 @@ For example::
         <a href="mailto:contact@diazo.org">Ask for help</a>
     </before>
 
-This may be combined with conditions and inline XSLT.
+The content can be inline HTML or it can be a piece of content from the document
+itself retrieved using the ``<include />`` tag. For instance::
+
+    <before css:content-children="#main">
+        <include css:content="#breadcrumbs" />
+    </before>
+
+The ``<include />`` tag accepts a ``href`` attribute, so it can retrieve a piece
+of content from another page. For instance::
+
+    <after css:content="#main">
+        <include css:content="form" href="contact.html" />
+    </after>
+
+This may also be combined with conditions and inline XSLT.
 
 Warning: it is not possible to both modify the content children and put them in
 the theme, for instance::
