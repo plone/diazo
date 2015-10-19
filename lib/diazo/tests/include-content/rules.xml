@@ -1,0 +1,28 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    >
+
+    <before css:content-children="#source-content">
+        <include css:content="#breadcrumbs" />
+    </before>
+
+    <after css:content="h1">
+        <include css:content="#date" />
+    </after>
+
+    <replace css:theme="#footer">
+        <include css:content="#portlet" href="extra.html" />
+    </replace>
+
+    <after css:content="section">
+        <include css:content="#related" href="extra.html" />
+    </after>
+    
+    <replace
+        css:theme="#target-content"
+        css:content="#source-content"
+        />
+
+</rules>

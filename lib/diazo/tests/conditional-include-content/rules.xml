@@ -1,0 +1,15 @@
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    >
+
+    <replace css:theme="body" css:content="body"/>
+
+    <before css:content-children="#target">
+        <include css:content="#a" if="true()"/>
+        <include css:content="#b" if="false()"/>
+    </before>
+
+    <drop css:content="#source"/>
+
+</rules>
