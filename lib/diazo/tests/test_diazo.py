@@ -7,7 +7,7 @@ from lxml import etree
 import os
 import sys
 import difflib
-from io import BytesIO, StringIO, open
+from io import BytesIO, StringIO
 import unittest
 try:
     import configparser
@@ -100,7 +100,7 @@ class DiazoTestCase(unittest.TestCase):
         )
 
         # Serialize / parse the theme - this can catch problems with escaping.
-        cts = etree.tostring(ct, encoding='unicode')
+        cts = etree.tostring(ct)
         parser = etree.XMLParser()
         etree.fromstring(cts, parser=parser)
 
@@ -115,8 +115,8 @@ class DiazoTestCase(unittest.TestCase):
                         f.write(old)
                 if self.warnings:
                     print("WARNING:", "compiled.xsl has CHANGED")
-                    for line in difflib.unified_diff(old.split(u'\n'),
-                                                     new.split(u'\n'),
+                    for line in difflib.unified_diff(old.split('\n'),
+                                                     new.split('\n'),
                                                      xslfn, 'now'):
                         print(line)
 
@@ -174,8 +174,8 @@ class DiazoTestCase(unittest.TestCase):
                     etree.fromstring(new.strip())):
                 # if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
-                for line in difflib.unified_diff(old.split(u'\n'),
-                                                 new.split(u'\n'),
+                for line in difflib.unified_diff(old.split('\n'),
+                                                 new.split('\n'),
                                                  outputfn, 'now'):
                     print(line)
                 assert old == new, "output.html has CHANGED"
