@@ -1,19 +1,11 @@
 include CHANGES.rst
 include LICENSE.txt
 include README.rst
-include bootstrap.py
-include buildout.cfg
-include checkdocs.cfg
-include nginx.cfg
-include setup.py
-include tox.ini
-include varnish.cfg
-include versions.cfg
 
-recursive-include docs *
+graft docs
 prune docs/_build
-recursive-include examples *
-recursive-include lib *
-recursive-include templates *
+graft examples
+graft lib*
+graft templates
 
 global-exclude *pyc
