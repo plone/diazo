@@ -4,7 +4,10 @@ Changelog
 1.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes:
+
+- Fixed tests on Python 2.6.
+  [maurits]
 
 
 1.1.2 (2015-09-03)
