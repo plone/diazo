@@ -13,241 +13,121 @@ Fixes:
 1.1.2 (2015-09-03)
 ------------------
 
-* Allow inline content for after and before.
+- Allow inline content for after and before.
   [ebrehault]
 
-* Fixed issue with remote themes via https connections
+- Fixed issue with remote themes via https connections
   [loechel]
 
 
 1.1.1 (2015-03-21)
 ------------------
 
-* Make flake8 happy by moving imports to top of file.
+- Make flake8 happy by moving imports to top of file.
   [elro]
 
 
 1.1.0 (2014-10-23)
 ------------------
 
-* Python 3 support.
+- Python 3 support.
   [regebro, elro]
 
 
 1.0.6 (2014-09-11)
 ------------------
 
-* Use formencode's xml_compare method to compare test results. This solves test
+- Use formencode's xml_compare method to compare test results. This solves test
   failures on several systems.
   [timo]
 
-* Also evaluate if-not-content. However, we are at risk of replicating
+- Also evaluate if-not-content. However, we are at risk of replicating
   apply-conditions.xsl in it's entirety. this needs refactoring.
   [lentinj]
 
-* Remove any xml:lang attribute from content to prevent multiple
+- Remove any xml:lang attribute from content to prevent multiple
   xml:lang attributes when the html tag's attributes are copied.
   [danjacka]
+
 
 1.0.5 (2014-01-27)
 ------------------
 
-* Escape curly brackets on theme attributes.
+- Escape curly brackets on theme attributes.
   [TracyWebTech]
+
 
 1.0.4 (2013-08-14)
 ------------------
 
-* Provide the request's query string as the ``$query_string`` variable
+- Provide the request's query string as the ``$query_string`` variable
   for use in the rules file.
   [davidjb]
 
-* Fix ``diazo.scheme`` definition to be correct. Previously, this was
+- Fix ``diazo.scheme`` definition to be correct. Previously, this was
   defined as ``request.host``.
   [davidjb]
+
 
 1.0.3 (2012-11-11)
 ------------------
 
-* Support selectors matching multiple elements for merge attributes, e.g.
+- Support selectors matching multiple elements for merge attributes, e.g.
   ``<merge attributes="class" css:theme="body" css:content="#one, #two"/>``
   [elro]
 
-* Also evaluate merged-condition. This means a rule tag will turn red
+- Also evaluate merged-condition. This means a rule tag will turn red
   when a condition on an outer rules tag doesn't match.
   [lentinj]
 
-* use boolean(), not count() for if-content. Otherwise we
+- use boolean(), not count() for if-content. Otherwise we
   generate expressions like "count(nodeset and other_nodeset)",
   which aren't valid.
   [lentinj]
 
-* Output contents of error log as part of debugging output
+- Output contents of error log as part of debugging output
   [lentinj]
 
-* Debugging output.
+- Debugging output.
   [lentinj]
 
-* Don't close the response unless Diazo is transforming it.
+- Don't close the response unless Diazo is transforming it.
   [mitchellrj]
 
-* fix error caused by empty style tag e.g. <style/>
+- fix error caused by empty style tag e.g. <style/>
   [djay]
+
 
 1.0.2 (2012-08-30)
 ------------------
 
-* Handle error when serializing empty responses by returning an unthemed
+- Handle error when serializing empty responses by returning an unthemed
   response. Previously, empty text/html responses resulted in an raised
   exception, resulting in a 500 response and no output.
   [davidjb]
 
-* Allow attributes (i.e. xml:id) to pass through on drop @attribute nodes
+- Allow attributes (i.e. xml:id) to pass through on drop @attribute nodes
   [lentinj]
+
 
 1.0.1 (2012-05-09)
 ------------------
 
-* Fixed to not apply absolute prefix for relative urls starting with '#'.
+- Fixed to not apply absolute prefix for relative urls starting with '#'.
   [datakurre]
+
 
 1.0 (2012-04-15)
 ----------------
 
-* Preserve resolvers in the rules document when updating from an old namespace.
+- Preserve resolvers in the rules document when updating from an old namespace.
 
-* Add javascript / css include support to WSGIResolver.
+- Add javascript / css include support to WSGIResolver.
 
-* Refactoring if WSGI middleware to use WebOb better and fix corner cases.
+- Refactoring if WSGI middleware to use WebOb better and fix corner cases.
 
-* Use same xpath prefix for css:if-not-content and css:if-content.
+- Use same xpath prefix for css:if-not-content and css:if-content.
 
-* Add support for @if-not-path.
+- Add support for @if-not-path.
 
-1.0rc4 - 2011-11-02
--------------------
-
-* Add support for @if-not and @if-not-content.
-
-* Add support for specifying mode on inclusion rules.
-
-* Preserve comments preceding/following html tag in theme. Closes #12249.
-
-* Fix quote_param to always use lxml.etree.XSLT.strparam.
-
-* Handle rules file without a theme to allow drop or replace content.
-
-1.0rc3 - 2011-07-04
--------------------
-
-* Support for ``filter_xpath`` requests for ESI/SSI includes.
-
-* Do not try to transform HEAD requests, otherwise you get:
-  ``XMLSyntaxError: no element found``.
-  [maurits]
-
-1.0rc2 - 2011-06-08
--------------------
-
-* Fix detection of Content-Type.
-
-* Add doctype option to wsgi middleware to support HTML5 output.
-
-* Fix line endings for included external content.
-
-1.0rc1 - 2011-05-24
--------------------
-
-* Fix diazocompiler --output option.
-
-1.0b4 - 2011-05-17
-------------------
-
-* Implement drop theme-children.
-
-1.0b3 - 2011-05-16
-------------------
-
-* Filter out additional xmlns with notheme.
-
-1.0b2 - 2011-04-27
-------------------
-
-* Enable attribute to be included from external documents.
-
-* Enable use of variables/parameters in drop/strip/replace content rule
-  conditions.
-
-* Fix a bug whereby a theme could not be loaded from a network location
-  even if read_network was enabled.
-
-1.0b1 - 2011-04-22
-------------------
-
-* Updated css namespace url to http://namespaces.plone.org/diazo/css
-
-* Added <replace content="...">...</replace> directive.
-
-* Added the ``wsgi`` module, which contains a WSGI middleware filter for
-  applying a Diazo themes, as well as a lower level one for applying an
-  XSLT transformation to HTML output.
-
-* Moved documentation from the README to the diazo.org website. See
-  http://svn.plone.org/svn/plone/plone.org/diazo-docs/trunk.
-
-* Added ``<merge />`` directive
-
-* Added ``<notheme />`` directive
-
-* Added ``<strip />`` directive
-
-* Revised rule set to be based on ``theme-children`` and ``content-children``
-  and an explicit ``attributes`` parameter. ``<copy />`` is now only used for
-  copying of attributes. ``<prepend />`` and ``<append />`` are deprecated
-  in favour of ``<before />`` and ``<after />`` using ``theme-children``.
-
-* Use experimental.cssselect to better work with location paths.
-
-* Renamed XDV to Diazo.
-
-0.4b3 - 2010-09-09
-------------------
-
-* Path conditions with @if-path.
-
-* Serialize using XSLT method in diazorun to respect <xsl:output method="html"/>
-
-* Fix for default theme.
-
-* Fix for themes in nested rules tags.
-
-0.4b2 - 2010-08-16
-------------------
-
-* When no conditional themes match, pass the document through without theming.
-
-* Fix loading of compiler stylesheets so as not to be affected by resolvers.
-
-0.4b1 - 2010-08-06
-------------------
-
-* Multistage compiler breaks down work into smaller, more easily debugged
-  chunks. (In the spirit of the original DVNG prototype.)
-
-* Refactoring of generated XSLT to perform its work in a single pass, bringing
-  a 30-50% speedup.
-
-* Multiple theme support using the new <theme> directive.
-
-* Nested <rules> and condition merging allows for condition grouping.
-
-* Allow comments to be selected in the theme.
-
-* Tweaked ``ssi`` includemode for Apache compatibility. The previous
-  ``wait="yes"`` behaviour no longer seems necessary with current versions of
-  Nginx, but is available using the ``ssiwait`` includemode.
-
-* CSS expressions are now converted to relative rather than absolute xpaths.
-  While this makes no difference to their use in diazo directives (which are
-  executed in the context of the root node), more flexibility is available
-  when used with inline XSL.
+Note: for older changes, see ``docs/changelog.rst``.
