@@ -28,6 +28,7 @@ SRCSET = re.compile(r'(?P<descriptors>^\s*|\s*,\s*)(?P<url>[^\s]*)')
 
 update_transform = pkg_xsl('update-namespace.xsl')
 normalize_rules = pkg_xsl('normalize-rules.xsl')
+include = pkg_xsl('include.xsl')
 apply_conditions = pkg_xsl('apply-conditions.xsl')
 merge_conditions = pkg_xsl('merge-conditions.xsl')
 annotate_themes = pkg_xsl('annotate-themes.xsl')
@@ -264,8 +265,11 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True,
     rules_doc = annotate_themes(rules_doc)
     if stop == 11:
         return rules_doc
-    rules_doc = annotate_rules(rules_doc)
+    rules_doc = include(rules_doc)
     if stop == 12:
+        return rules_doc
+    rules_doc = annotate_rules(rules_doc)
+    if stop == 13:
         return rules_doc
     rules_doc = apply_rules(rules_doc, trace=trace)
     return rules_doc
