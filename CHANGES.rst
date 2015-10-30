@@ -4,7 +4,9 @@ Changelog
 1.2.2 (unreleased)
 ------------------
 
-* Allow content-to-content inclusion
+New:
+
+* Allowed content-to-content inclusion.
   [elro, ebrehault]
 
 
