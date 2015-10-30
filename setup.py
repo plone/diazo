@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-import os.path
 import sys
 
 extras_require = {
@@ -14,7 +13,7 @@ if sys.version_info < (2, 7):
     extras_require['test'].append('unittest2')
 
 readme = open("README.rst").read()
-changes = open(os.path.join("docs", "CHANGES.txt")).read()
+changes = open("CHANGES.rst").read()
 long_desc = readme + '\n\n' + changes
 
 setup(
