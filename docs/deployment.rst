@@ -226,7 +226,7 @@ Nginx may also be configured as a transforming proxy server::
 Removing the Accept-Encoding header is sometimes necessary to prevent the
 backend server compressing the response (and preventing transformation). The
 response may be compressed in Nginx by setting ``gzip on;`` - see the `gzip
-module documentation <http://wiki.Nginx.org/NginxHttpGzipModule>`_ for
+module documentation <https://www.nginx.com/resources/admin-guide/compression-and-decompression/>`_ for
 details.
 
 In this example an X-Diazo header was set so the backend server may choose to
