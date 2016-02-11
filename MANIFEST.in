@@ -1,6 +1,5 @@
-include CHANGES.rst
+include *.rst
 include LICENSE.txt
-include README.rst
 
 graft docs
 prune docs/_build
