@@ -6,13 +6,8 @@ Changelog
 
 New:
 
-- *add item here*
 - Add absolute url prefix to xlink:href attributes
   [krissik]
-
-Fixes:
-
-- *add item here*
 
 
 1.2.2 (2015-10-30)
