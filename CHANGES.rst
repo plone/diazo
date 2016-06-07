@@ -7,6 +7,8 @@ Changelog
 New:
 
 - *add item here*
+- Add absolute url prefix to xlink:href attributes
+  [krissik]
 
 Fixes:
 
