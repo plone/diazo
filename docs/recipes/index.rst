@@ -9,6 +9,7 @@ Recipes
    adding-an-attribute/index
    modifying-an-attribute/index
    modifying-text/index
+   add-caption-ti-images/index
    create-list-from-anchors/index
 
 Contributing a recipe
