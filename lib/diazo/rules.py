@@ -142,7 +142,7 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         node.set('src', url)
     for xlink_attr in theme_doc.xpath('//@*[local-name()="xlink:href"]'):
         node = xlink_attr.getparent()
-        url = urljoin(absolute_prefix, node.get('xlink:href'))
+        url = anchor_safe_urljoin(absolute_prefix, node.get('xlink:href'))
         node.set('xlink:href', url)
     for node in theme_doc.xpath('//*[@srcset]'):
         srcset = node.get('srcset')
