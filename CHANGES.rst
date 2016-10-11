@@ -12,6 +12,10 @@ New features:
 
 - *add item here*
 
+- only add absolute prefix for xlink:href attributes if url doesn't start
+  with a '#' (use anchor_safe_urljoin)
+  [huubbouma]
+
 Bug fixes:
 
 - *add item here*
