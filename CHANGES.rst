@@ -1,7 +1,6 @@
 Changelog
 =========
 
-
 1.2.4 (unreleased)
 ------------------
 
@@ -11,8 +10,7 @@ Breaking changes:
 
 New features:
 
-- Improve docs with image caption recipe
-  [davilima6]
+- *add item here*
 
 Bug fixes:
 
@@ -90,13 +88,11 @@ New:
   xml:lang attributes when the html tag's attributes are copied.
   [danjacka]
 
-
 1.0.5 (2014-01-27)
 ------------------
 
 * Escape curly brackets on theme attributes.
   [TracyWebTech]
-
 
 1.0.4 (2013-08-14)
 ------------------
@@ -108,7 +104,6 @@ New:
 * Fix ``diazo.scheme`` definition to be correct. Previously, this was
   defined as ``request.host``.
   [davidjb]
-
 
 1.0.3 (2012-11-11)
 ------------------
@@ -138,7 +133,6 @@ New:
 * fix error caused by empty style tag e.g. <style/>
   [djay]
 
-
 1.0.2 (2012-08-30)
 ------------------
 
@@ -150,13 +144,11 @@ New:
 * Allow attributes (i.e. xml:id) to pass through on drop @attribute nodes
   [lentinj]
 
-
 1.0.1 (2012-05-09)
 ------------------
 
 * Fixed to not apply absolute prefix for relative urls starting with '#'.
   [datakurre]
-
 
 1.0 (2012-04-15)
 ----------------
