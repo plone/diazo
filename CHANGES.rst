@@ -4,21 +4,11 @@ Changelog
 1.2.4 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
-
-- *add item here*
 
 - only add absolute prefix for xlink:href attributes if url doesn't start
   with a '#' (use anchor_safe_urljoin)
   [huubbouma]
-
-Bug fixes:
-
-- *add item here*
 
 
 1.2.3 (2016-06-07)
