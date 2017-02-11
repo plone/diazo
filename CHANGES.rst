@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix test with webob 1.7
+  [davisagli]
 
 
 1.2.4 (2016-11-17)
