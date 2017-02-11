@@ -14,6 +14,7 @@ def testfile(filename):
     return '/'.join(('file://',) + os.path.split(os.path.abspath(
         os.path.dirname(__file__))) + ('test_wsgi_files', filename,))
 
+
 HTML = b"""\
 <html>
     <body>
@@ -221,8 +222,6 @@ class TestXSLTMiddleware(unittest.TestCase):
         response = request.get_response(app)
 
         # Response headers for HEAD request must be updated.
-        self.assertEqual(response.headers['Content-Type'],
-                         'text/html; charset=UTF-8')
         self.assertEqual(response.headers.get('Content-Length'), None)
         self.assertFalse(response.body)
 
