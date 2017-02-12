@@ -4,14 +4,6 @@ Changelog
 1.2.5 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Fix test with webob 1.7
