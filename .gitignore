@@ -15,3 +15,5 @@ dist/
 include
 lib/python2.7
 .python-version
+.cache/
+coverage*
