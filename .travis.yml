@@ -1,11 +1,28 @@
 language: python
-python:
-  - 2.7
-  - 3.3
-  - 3.4
-  - 3.5
+sudo: false
+
+cache:
+  pip: true
+
+matrix:
+    include:
+        - python: "2.7"
+          env: TOXENV=flake8,isort
+        - python: "2.7"
+          env: TOXENV=py27
+        - python: "3.4"
+        env: TOXENV=py34
+        - python: "3.5"
+        env: TOXENV=py35
+        - python: "3.6"
+        env: TOXENV=py36
+
 install:
-  - pip install flake8
+    - travis_retry pip install -U setuptools==33.1.1 tox coveralls coverage
+
 script:
-  - flake8 lib setup.py
-  - python setup.py test
+    - travis_retry tox
+
+after_success:
+    - coverage combine
+    - coveralls
