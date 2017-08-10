@@ -38,7 +38,7 @@ _location_path_translator = LocationPathTranslator()
 def convert_css_selectors(rules):
     """Convert css rules to xpath rules element tree in place
     """
-    # XXX: There is a :root pseudo-class
+    # XXX: There is a :root pseudo-class  # NOQA: T000
     # http://www.w3.org/TR/css3-selectors/#root-pseudo
     # We may wish to add support to lxml.cssselect for it some day.
     for element in rules.xpath(
@@ -54,7 +54,7 @@ def convert_css_selectors(rules):
         )
         for name, value in element.attrib.items():
             if not name.startswith(
-                '{%s}' % utils.namespaces['css'],
+                '{%s}' % utils.namespaces['css'],  # NOQA: S001
             ):
                 continue
             localname = utils.localname(name)

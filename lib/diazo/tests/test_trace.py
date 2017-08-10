@@ -8,18 +8,14 @@ import diazo.run
 import diazo.runtrace
 import os.path
 import sys
+import unittest
 
-
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 
 if __name__ == '__main__':
     __file__ = sys.argv[0]
 
 
-def testfile(filename):
+def _testfile(filename):
     return os.path.join(
         os.path.abspath(os.path.dirname(__file__)),
         'test_wsgi_files',
@@ -80,153 +76,226 @@ class TestDebug(unittest.TestCase):
 
     def test_internal(self):
         processor = self.compile()
-        processor(etree.fromstring("""\
+        processor(
+            etree.fromstring(
+                """\
 <html><body id="theme-on" class="male">
   <h1>Content</h1>
   <div class="bovine" id="#cow-daisy">I am frank the bull</div>
   <div class="pig" id="#pig-george">I am daisy the pig</div>
 </body></html>
-        """))
+""",
+            ),
+        )
         runtrace_doc = diazo.runtrace.generate_runtrace(
             rules=BytesIO(self.rules_str),
             error_log=processor.error_log,
         )
-        self.assertXPath(runtrace_doc, "/d:rules/d:theme/@runtrace-if-content",
-                         "false")
-        self.assertXPath(runtrace_doc, "/d:rules/d:rules/@runtrace-if-content",
-                         "true")
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:theme/@runtrace-if-content',
+            'false',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/@runtrace-if-content',
+            'true',
+        )
         # <replace css:content="div.bovine"
         #          css:theme="div.cow"
         #          css:if-content="body.female" />
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[1]/@runtrace-if-content",
-                         "false")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[1]/@runtrace-content",
-                         "1")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[1]/@runtrace-theme", "1")
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[1]/@runtrace-merged-condition",
-            "false")
+            '/d:rules/d:rules/d:replace[1]/@runtrace-if-content',
+            'false',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[1]/@runtrace-content',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[1]/@runtrace-theme',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[1]/@runtrace-merged-condition',
+            'false',
+        )
         # <replace css:content="div.bovine"
         #          css:theme="div.bull"
         #          css:if-content="body.male" />
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[2]/@runtrace-if-content",
-                         "true")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[2]/@runtrace-content",
-                         "1")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[2]/@runtrace-theme", "1")
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[2]/@runtrace-merged-condition",
-            "true")
+            '/d:rules/d:rules/d:replace[2]/@runtrace-if-content',
+            'true',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[2]/@runtrace-content',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[2]/@runtrace-theme',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[2]/@runtrace-merged-condition',
+            'true',
+        )
         # <replace css:content="div.pig" css:theme="div.pig" />
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[3]/@runtrace-content",
-                         "1")
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[3]/@runtrace-merged-condition",
-            "true")
+            '/d:rules/d:rules/d:replace[3]/@runtrace-content',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[3]/@runtrace-merged-condition',
+            'true',
+        )
         # <replace css:content="div.antelope" css:theme="div.antelope" />
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[4]/@runtrace-content",
-                         "0")
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[4]/@runtrace-merged-condition",
-            "true")
+            '/d:rules/d:rules/d:replace[4]/@runtrace-content',
+            '0',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[4]/@runtrace-merged-condition',
+            'true',
+        )
         # <replace css:content="div.iguana" css:theme="div.bull"
         #          css:if-not-content="body.male" />
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[6]/@runtrace-if-not-content",
-            "false")
+            '/d:rules/d:rules/d:replace[6]/@runtrace-if-not-content',
+            'false',
+        )
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[6]/@runtrace-merged-condition",
-            "false")
+            '/d:rules/d:rules/d:replace[6]/@runtrace-merged-condition',
+            'false',
+        )
 
     def test_external(self):
         processor = self.compile()
-        processor(etree.fromstring("""\
+        processor(
+            etree.fromstring(
+                """\
 <html><body id="theme-on" class="female external">
   <h1>Content</h1>
   <div class="bovine" id="#cow-daisy">I am daisy the cow</div>
   <div class="pig" id="#pig-george">I am daisy the pig</div>
 </body></html>
-        """))
+""",
+            ),
+        )
         runtrace_doc = diazo.runtrace.generate_runtrace(
             rules=BytesIO(self.rules_str),
             error_log=processor.error_log,
         )
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:theme/@runtrace-if-content", "true")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/@runtrace-if-content", "true")
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:theme/@runtrace-if-content',
+            'true',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/@runtrace-if-content',
+            'true',
+        )
         # <replace css:content="div.bovine"
         #          css:theme="div.cow"
         #          css:if-content="body.female" />
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[1]/@runtrace-if-content",
-                         "true")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[1]/@runtrace-content",
-                         "1")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[1]/@runtrace-theme", "1")
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[1]/@runtrace-merged-condition", "true")
+            '/d:rules/d:rules/d:replace[1]/@runtrace-if-content',
+            'true',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[1]/@runtrace-content',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[1]/@runtrace-theme',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[1]/@runtrace-merged-condition',
+            'true',
+        )
         # <replace css:content="div.bovine"
         #          css:theme="div.bull"
         #          css:if-content="body.male" />
         # The external theme only has the cow slot
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[2]/@runtrace-if-content",
-                         "false")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[2]/@runtrace-content",
-                         "1")
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[2]/@runtrace-theme", "0")
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[2]/@runtrace-merged-condition",
-            "false")
+            '/d:rules/d:rules/d:replace[2]/@runtrace-if-content',
+            'false',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[2]/@runtrace-content',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[2]/@runtrace-theme',
+            '0',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[2]/@runtrace-merged-condition',
+            'false',
+        )
         # <replace css:content="div.pig" css:theme="div.pig" />
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[3]/@runtrace-content",
-                         "1")
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[3]/@runtrace-merged-condition", "true")
+            '/d:rules/d:rules/d:replace[3]/@runtrace-content',
+            '1',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[3]/@runtrace-merged-condition',
+            'true',
+        )
         # <replace css:content="div.antelope" css:theme="div.antelope" />
-        self.assertXPath(runtrace_doc,
-                         "/d:rules/d:rules/d:replace[4]/@runtrace-content",
-                         "0")
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[4]/@runtrace-merged-condition", "true")
+            '/d:rules/d:rules/d:replace[4]/@runtrace-content',
+            '0',
+        )
+        self.assertXPath(
+            runtrace_doc,
+            '/d:rules/d:rules/d:replace[4]/@runtrace-merged-condition',
+            'true',
+        )
         # <replace css:content="div.iguana" css:theme="div.bull"
         #          css:if-not-content="body.male" />
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[6]/@runtrace-if-not-content",
-            "true")
+            '/d:rules/d:rules/d:replace[6]/@runtrace-if-not-content',
+            'true',
+        )
         self.assertXPath(
             runtrace_doc,
-            "/d:rules/d:rules/d:replace[6]/@runtrace-merged-condition",
-            "true")
+            '/d:rules/d:rules/d:replace[6]/@runtrace-merged-condition',
+            'true',
+        )
 
     def test_htmlformat(self):
         html_string = etree.tostring(
-            diazo.runtrace.runtrace_to_html(etree.fromstring("""\
+            diazo.runtrace.runtrace_to_html(
+                etree.fromstring(
+                    """\
 <rules xmlns="http://namespaces.plone.org/diazo"
        xmlns:css="http://namespaces.plone.org/diazo/css"
        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -248,7 +317,10 @@ class TestDebug(unittest.TestCase):
               runtrace-theme="2" />
     </rules>
 </rules>
-        """)))
+""",
+                ),
+            ),
+        )
         # First rule has an if-content condition
         self.assertIn(
             b"""<pre class="runtrace"><span class="node match" """
@@ -313,7 +385,8 @@ class TestDebug(unittest.TestCase):
         self.assertEqual(
             doc.xpath(
                 xpath,
-                namespaces=(dict(d="http://namespaces.plone.org/diazo")))[0],
+                namespaces=(dict(d='http://namespaces.plone.org/diazo')),
+            )[0],
             expected,
         )
 

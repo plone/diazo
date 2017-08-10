@@ -3,8 +3,6 @@
 from setuptools import find_packages
 from setuptools import setup
 
-import sys
-
 
 extras_require = {
     'wsgi': [
@@ -18,8 +16,6 @@ extras_require = {
     ],
 }
 
-if sys.version_info < (2, 7):
-    extras_require['test'].append('unittest2')
 
 readme = open('README.rst').read()
 changes = open('CHANGES.rst').read()
@@ -46,11 +42,12 @@ setup(
     classifiers=[
         'Development Status :: 6 - Mature',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',

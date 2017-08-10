@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
 from diazo.utils import quote_param
 from formencode.doctest_xml_compare import xml_compare
@@ -26,20 +28,23 @@ except ImportError:
     import ConfigParser as configparser
 
 
-
-
 if __name__ == '__main__':
     __file__ = sys.argv[0]
 
-defaultsfn = pkg_resources.resource_filename('diazo.tests',
-                                             'default-options.cfg')
+
+defaultsfn = pkg_resources.resource_filename(
+    'diazo.tests',
+    'default-options.cfg',
+)
 
 
 class DiazoTestCase(unittest.TestCase):
 
     writefiles = os.environ.get('DiazoTESTS_WRITE_FILES', False)
     warnings = os.environ.get(
-        'DiazoTESTS_WARN', "1").lower() not in ('0', 'false', 'off')
+        'DiazoTESTS_WARN',
+        '1',
+    ).lower() not in ('0', 'false', 'off')
 
     testdir = None  # override
 
@@ -59,25 +64,33 @@ class DiazoTestCase(unittest.TestCase):
             if not os.path.isfile(contentpath):
                 continue
 
-            test_cls = type('%s-%s' % (prefix, name), (DiazoTestCase,),
-                            dict(testdir=path))
+            test_cls = type(
+                '{prefix:s}-{name:s}'.format(
+                    prefix=prefix,
+                    name=name,
+                ),
+                (DiazoTestCase,),
+                dict(testdir=path),
+            )
             suite.addTest(unittest.makeSuite(test_cls))
         return suite
 
     def testAll(self):
         self.errors = BytesIO()
         config = configparser.ConfigParser()
-        config.read([defaultsfn, os.path.join(self.testdir, "options.cfg")])
+        config.read([defaultsfn, os.path.join(self.testdir, 'options.cfg')])
 
         themefn = None
         if config.get('diazotest', 'theme'):
-            themefn = os.path.join(self.testdir, config.get('diazotest',
-                                                            'theme'))
-        contentfn = os.path.join(self.testdir, "content.html")
-        rulesfn = os.path.join(self.testdir, "rules.xml")
-        xpathsfn = os.path.join(self.testdir, "xpaths.txt")
-        xslfn = os.path.join(self.testdir, "compiled.xsl")
-        outputfn = os.path.join(self.testdir, "output.html")
+            themefn = os.path.join(
+                self.testdir,
+                config.get('diazotest', 'theme'),
+            )
+        contentfn = os.path.join(self.testdir, 'content.html')
+        rulesfn = os.path.join(self.testdir, 'rules.xml')
+        xpathsfn = os.path.join(self.testdir, 'xpaths.txt')
+        xslfn = os.path.join(self.testdir, 'compiled.xsl')
+        outputfn = os.path.join(self.testdir, 'output.html')
 
         xsl_params = {}
         extra_params = config.get('diazotest', 'extra-params')
@@ -90,8 +103,11 @@ class DiazoTestCase(unittest.TestCase):
         if not os.path.exists(rulesfn):
             return
 
-        contentdoc = etree.parse(source=contentfn, base_url=contentfn,
-                                 parser=etree.HTMLParser())
+        contentdoc = etree.parse(
+            source=contentfn,
+            base_url=contentfn,
+            parser=etree.HTMLParser(),
+        )
 
         # Make a compiled version
         theme_parser = etree.HTMLParser()
@@ -119,10 +135,13 @@ class DiazoTestCase(unittest.TestCase):
                     with open(xslfn + '.old', 'w') as f:
                         f.write(old)
                 if self.warnings:
-                    print("WARNING:", "compiled.xsl has CHANGED")
-                    for line in difflib.unified_diff(old.split(u'\n'),
-                                                     new.split(u'\n'),
-                                                     xslfn, 'now'):
+                    print('WARNING:', 'compiled.xsl has CHANGED')
+                    for line in difflib.unified_diff(
+                        old.split(u'\n'),
+                        new.split(u'\n'),
+                        xslfn,
+                        'now',
+                    ):
                         print(line)
 
         # Write the compiled xsl out to catch unexpected changes
@@ -134,7 +153,9 @@ class DiazoTestCase(unittest.TestCase):
         theme_parser.resolvers.add(diazo.run.RunResolver(self.testdir))
         processor = etree.XSLT(ct)
         params = {}
-        params['path'] = "'%s'" % config.get('diazotest', 'path')
+        params['path'] = "'{path:s}'".format(
+            path=config.get('diazotest', 'path'),
+        )
 
         for key in xsl_params:
             try:
@@ -148,7 +169,9 @@ class DiazoTestCase(unittest.TestCase):
         # If we had xslt 2.0 then we could use xpath-default-namespace.
         self.themed_string = str(result)
         self.themed_content = etree.ElementTree(
-            file=StringIO(self.themed_string), parser=etree.HTMLParser())
+            file=StringIO(self.themed_string),
+            parser=etree.HTMLParser(),
+        )
 
         # remove the extra meta content type
 
@@ -166,8 +189,10 @@ class DiazoTestCase(unittest.TestCase):
                     this_xpath = xpath.strip()
                     if not this_xpath or this_xpath[0] == '#':
                         continue
-                    assert self.themed_content.xpath(this_xpath), "%s: %s" % (
-                        xpathsfn, this_xpath)
+                    assert self.themed_content.xpath(this_xpath), '{key:s}: {value:s}'.format(  # NOQA: E501
+                        key=xpathsfn,
+                        value=this_xpath,
+                    )
 
         # Compare to previous version
         if os.path.exists(outputfn):
@@ -175,15 +200,19 @@ class DiazoTestCase(unittest.TestCase):
                 old = f.read()
             new = self.themed_string
             if not xml_compare(
-                    etree.fromstring(old.strip()),
-                    etree.fromstring(new.strip())):
+                etree.fromstring(old.strip()),
+                etree.fromstring(new.strip()),
+            ):
                 # if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
-                for line in difflib.unified_diff(old.split(u'\n'),
-                                                 new.split(u'\n'),
-                                                 outputfn, 'now'):
+                for line in difflib.unified_diff(
+                    old.split(u'\n'),
+                    new.split(u'\n'),
+                    outputfn,
+                    'now',
+                ):
                     print(line)
-                assert old == new, "output.html has CHANGED"
+                assert old == new, 'output.html has CHANGED'
 
         # Write out the result to catch unexpected changes
         if self.writefiles:
@@ -197,8 +226,11 @@ def test_suite():
     tests_dir = os.path.join(dist.location, 'diazo', 'tests')
     suite.addTest(DiazoTestCase.suiteForParent(tests_dir, 'Test'))
     if dist.precedence == pkg_resources.DEVELOP_DIST:
-        recipes_dir = os.path.join(os.path.dirname(dist.location),
-                                   'docs', 'recipes')
+        recipes_dir = os.path.join(
+            os.path.dirname(dist.location),
+            'docs',
+            'recipes',
+        )
         if os.path.exists(os.path.join(recipes_dir, 'diazo-tests-marker.txt')):
             # Could still be a 'System' package.
             suite.addTest(DiazoTestCase.suiteForParent(recipes_dir, 'Recipe'))

@@ -26,14 +26,17 @@ def asbool(value):
         elif value in ('false', 'no', 'off', 'n', 'f', '0', ):
             return False
         else:
-            raise ValueError("String is not true/false: %r" % value)
+            raise ValueError(
+                'String is not true/false: {value:r}'.format(
+                    value=value,
+                ),
+            )
     else:
         return bool(value)
 
 
 class FilesystemResolver(etree.Resolver):
-    """Resolver for filesystem paths
-    """
+    """Resolver for filesystem paths"""
     def resolve(self, system_url, public_id, context):
         if '://' not in system_url and os.path.exists(system_url):
             return self.resolve_filename(system_url, context)
@@ -42,8 +45,7 @@ class FilesystemResolver(etree.Resolver):
 
 
 class NetworkResolver(etree.Resolver):
-    """Resolver for network urls
-    """
+    """Resolver for network urls"""
     def resolve(self, system_url, public_id, context):
         if '://' in system_url and system_url != 'file:///__diazo__':
             return self.resolve_filename(system_url, context)
@@ -52,8 +54,7 @@ class NetworkResolver(etree.Resolver):
 
 
 class PythonResolver(etree.Resolver):
-    """Resolver for python:// urls
-    """
+    """Resolver for python:// urls"""
 
     def resolve(self, system_url, public_id, context):
         if not system_url.lower().startswith('python://'):
@@ -67,8 +68,7 @@ class PythonResolver(etree.Resolver):
 
 
 class WSGIResolver(etree.Resolver):
-    """Resolver that performs a WSGI subrequest
-    """
+    """Resolver that performs a WSGI subrequest"""
 
     def __init__(self, app):
         self.app = app
@@ -165,7 +165,7 @@ class XSLTMiddleware(object):
         content_type=None,
         charset=None,
         remove_conditional_headers=False,
-        **params
+        **params  # NOQA: C816
     ):
         """Initialise, giving a filename or parsed XSLT tree.
 
@@ -216,14 +216,17 @@ class XSLTMiddleware(object):
         if content_type is None:
             mediatype = tree.xpath(
                 '/xsl:stylesheet/xsl:output/@media-type',
-                namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"))
+                namespaces=dict(xsl='http://www.w3.org/1999/XSL/Transform'),
+            )
             if mediatype:
                 content_type = mediatype[-1]
             else:
                 method = tree.xpath(
                     '/xsl:stylesheet/xsl:output/@method',
                     namespaces=dict(
-                        xsl="http://www.w3.org/1999/XSL/Transform"))
+                        xsl='http://www.w3.org/1999/XSL/Transform',
+                    ),
+                )
                 if method:
                     method = method[-1]
                     if method.lower() == 'html':
@@ -237,24 +240,30 @@ class XSLTMiddleware(object):
         if charset is None:
             encoding = tree.xpath(
                 '/xsl:stylesheet/xsl:output/@encoding',
-                namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"))
+                namespaces=dict(xsl='http://www.w3.org/1999/XSL/Transform'),
+            )
             if encoding:
                 charset = encoding[-1]
             else:
-                charset = "UTF-8"
+                charset = 'UTF-8'
         self.charset = charset
 
         self.read_network = asbool(read_network)
         self.read_file = asbool(read_file)
         self.access_control = etree.XSLTAccessControl(
-            read_file=self.read_file, write_file=False, create_dir=False,
-            read_network=self.read_network, write_network=False)
+            read_file=self.read_file,
+            write_file=False,
+            create_dir=False,
+            read_network=self.read_network,
+            write_network=False,
+        )
         self.transform = etree.XSLT(tree, access_control=self.access_control)
         self.update_content_length = asbool(update_content_length)
         self.ignored_extensions = frozenset(ignored_extensions)
 
         self.ignored_pattern = re.compile(
-            "^.*\.(%s)$" % '|'.join(ignored_extensions))
+            '^.*\.({ext:s})$'.format(ext='|'.join(ignored_extensions)),
+        )
 
         self.environ_param_map = environ_param_map or {}
         if isinstance(unquoted_params, string_types):
@@ -379,7 +388,8 @@ class XSLTMiddleware(object):
             return False
 
         status_code, reason = response.status.split(None, 1)
-        if (status_code.startswith('3') or
+        if (
+            status_code.startswith('3') or
             status_code == '204' or
             status_code == '401'
         ):
@@ -459,7 +469,7 @@ class DiazoMiddleware(object):
         doctype=None,
         content_type=None,
         filter_xpath=False,
-        **params
+        **params  # NOQA: C816
     ):
         """Create the middleware. The parameters are:
 
@@ -599,7 +609,7 @@ class DiazoMiddleware(object):
             doctype=self.doctype,
             content_type=self.content_type,
             unquoted_params=self.unquoted_params,
-            **self.params
+            **self.params  # NOQA: C815,S101
         )
 
     def get_filter_middleware(self):
@@ -615,7 +625,8 @@ class DiazoMiddleware(object):
             environ_param_map={'diazo.filter_xpath': 'xpath'},
             doctype='',
             content_type=self.content_type,
-            unquoted_params=['xpath'])
+            unquoted_params=['xpath'],
+        )
 
     def __call__(self, environ, start_response):
         if self.filter_xpath:

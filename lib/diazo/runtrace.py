@@ -15,12 +15,16 @@ _runtrace_to_html = pkg_xsl('runtrace_to_html.xsl')
 
 def log_to_xml_string(error_log):
     return """
-<runtrace xmlns:css="http://namespaces.plone.org/diazo/css">%s</runtrace>
-    """ % "".join(
-        l.message
-        for l
-        in error_log
-        if l.message.startswith('<runtrace ')
+<runtrace xmlns:css="http://namespaces.plone.org/diazo/css">
+    {message:s}
+</runtrace>
+""".format(
+        message=''.join(
+            l.message
+            for l
+            in error_log
+            if l.message.startswith('<runtrace '),
+        ),
     )
 
 
@@ -35,8 +39,11 @@ def generate_runtrace(rules, error_log, rules_parser=None):
                 continue
             return 'runtrace-' + k
 
-    rules_doc = process_rules(rules, rules_parser=rules_parser,
-                              stop='add_identifiers')
+    rules_doc = process_rules(
+        rules,
+        rules_parser=rules_parser,
+        stop='add_identifiers',
+    )
     trace_doc = etree.XML(log_to_xml_string(error_log))
 
     for trace in trace_doc.xpath('/runtrace/runtrace'):
@@ -62,13 +69,21 @@ def error_log_to_html(error_log):
             level_name=l.level_name,
             type_name=l.type_name,
         )
-        el.text = "%s [%d:%d]" % (l.message, l.line, l.column)
+        el.text = '{msg:s} [{line:d}:{column:d}]'.format(
+            msg=l.message,
+            line=l.line,
+            column=l.column,
+        )
         doc.append(el)
     return doc
 
 
-def generate_debug_html(base_url, rules=None, error_log=None,
-                        rules_parser=None):
+def generate_debug_html(
+    base_url,
+    rules=None,
+    error_log=None,
+    rules_parser=None,
+):
     """Generate an HTML node with debug info"""
     def newElement(tag, content, **kwargs):
         n = etree.Element(tag, **kwargs)

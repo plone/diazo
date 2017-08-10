@@ -11,14 +11,14 @@ matrix:
         - python: "2.7"
           env: TOXENV=py27
         - python: "3.4"
-        env: TOXENV=py34
+          env: TOXENV=py34
         - python: "3.5"
-        env: TOXENV=py35
+          env: TOXENV=py35
         - python: "3.6"
-        env: TOXENV=py36
+          env: TOXENV=py36
 
 install:
-    - travis_retry pip install -U setuptools==33.1.1 tox coveralls coverage
+    - travis_retry pip install -U tox coveralls coverage
 
 script:
     - travis_retry tox

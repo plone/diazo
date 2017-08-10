@@ -2,18 +2,14 @@
 
 import os.path
 import sys
+import unittest
 
-
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 
 if __name__ == '__main__':
     __file__ = sys.argv[0]
 
 
-def testfile(filename):
+def _testfile(filename):
     return '/'.join(
         ('file://',) + os.path.split(
             os.path.abspath(
@@ -372,10 +368,10 @@ class TestXSLTMiddleware(unittest.TestCase):
         def application(environ, start_response):
             status = '200 OK'
             content_length = len(HTML)
-            content_range = 'bytes %d-%d/%d' % (
-                0,
-                content_length - 1,
-                content_length,
+            content_range = 'bytes {start:d}-{end:d}/{length:d}'.format(
+                start=0,
+                end=content_length - 1,
+                length=content_length,
             )
             response_headers = [
                 ('Content-Type', 'text/html'),
@@ -1020,7 +1016,7 @@ class TestDiazoMiddleware(unittest.TestCase):
         app = DiazoMiddleware(
             application,
             {},
-            testfile('simple_transform.xml'),
+            _testfile('simple_transform.xml'),
         )
         request = Request.blank('/')
         response = request.get_response(app)
@@ -1046,7 +1042,7 @@ class TestDiazoMiddleware(unittest.TestCase):
         app = DiazoMiddleware(
             application,
             {},
-            testfile('simple_transform.xml'),
+            _testfile('simple_transform.xml'),
             doctype='<!DOCTYPE html>',
         )
         request = Request.blank('/')
@@ -1067,8 +1063,8 @@ class TestDiazoMiddleware(unittest.TestCase):
         app = DiazoMiddleware(
             application,
             {},
-            testfile('explicit_theme.xml'),
-            theme=testfile('theme.html'),
+            _testfile('explicit_theme.xml'),
+            theme=_testfile('theme.html'),
         )
         request = Request.blank('/')
         response = request.get_response(app)
@@ -1094,7 +1090,7 @@ class TestDiazoMiddleware(unittest.TestCase):
         app = DiazoMiddleware(
             application,
             {},
-            testfile('simple_transform.xml'),
+            _testfile('simple_transform.xml'),
         )
         request = Request.blank('/')
         response = request.get_response(app)
@@ -1112,7 +1108,7 @@ class TestDiazoMiddleware(unittest.TestCase):
 
         app = DiazoMiddleware(
             application, {},
-            testfile('simple_transform.xml'),
+            _testfile('simple_transform.xml'),
             prefix='/static',
         )
         request = Request.blank('/')
@@ -1140,7 +1136,7 @@ class TestDiazoMiddleware(unittest.TestCase):
             start_response(status, response_headers)
             return [HTML]
 
-        app = DiazoMiddleware(application, {}, testfile('path_param.xml'))
+        app = DiazoMiddleware(application, {}, _testfile('path_param.xml'))
         request = Request.blank('/')
         response = request.get_response(app)
 
@@ -1176,7 +1172,7 @@ class TestDiazoMiddleware(unittest.TestCase):
         app = DiazoMiddleware(
             application,
             {},
-            testfile('custom_param.xml'),
+            _testfile('custom_param.xml'),
             environ_param_map={'test.param1': 'someparam'},
         )
 
@@ -1228,7 +1224,7 @@ class TestDiazoMiddleware(unittest.TestCase):
         app = DiazoMiddleware(
             application,
             {},
-            testfile('custom_param.xml'),
+            _testfile('custom_param.xml'),
             someparam='value1',
         )
         request = Request.blank('/')
@@ -1245,7 +1241,7 @@ class TestDiazoMiddleware(unittest.TestCase):
         app = DiazoMiddleware(
             application,
             {},
-            testfile('custom_param.xml'),
+            _testfile('custom_param.xml'),
             someparam='value2',
         )
         request = Request.blank('/')
@@ -1274,7 +1270,7 @@ class TestDiazoMiddleware(unittest.TestCase):
             else:
                 return [HTML]
 
-        app = DiazoMiddleware(application, {}, testfile('subrequest.xml'))
+        app = DiazoMiddleware(application, {}, _testfile('subrequest.xml'))
         request = Request.blank('/')
         response = request.get_response(app)
 
@@ -1304,7 +1300,7 @@ class TestDiazoMiddleware(unittest.TestCase):
         app = DiazoMiddleware(
             application,
             {},
-            testfile('esi.xml'),
+            _testfile('esi.xml'),
             filter_xpath=True,
         )
         request = Request.blank('/')

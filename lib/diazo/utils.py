@@ -41,7 +41,7 @@ def namespace(name):
 
 
 def fullname(namespace, name):
-    return '{%s}%s' % (namespace, name)
+    return '{%s}%s' % (namespace, name)  # NOQA: S001
 
 
 AC_READ_FILE = etree.XSLTAccessControl(

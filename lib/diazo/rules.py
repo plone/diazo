@@ -24,12 +24,15 @@ logger = logging.getLogger('diazo')
 usage = __doc__
 
 IMPORT_STYLESHEET = re.compile(
-    r'''(?P<before>@import[ \t]+(?P<paren>url\([ \t]?)?(?P<quote>['"]?))'''
-    r'''(?P<url>\S+)(?P<after>(?P=quote)(?(paren)\)))''', re.IGNORECASE)
+    r"""(?P<before>@import[ \t]+(?P<paren>url\([ \t]?)?(?P<quote>['"]?))"""
+    r"""(?P<url>\S+)(?P<after>(?P=quote)(?(paren)\)))""",
+    re.IGNORECASE,
+)
 CONDITIONAL_SRC = re.compile(
-    r'''(?P<before><[^>]*?(src|href)=(?P<quote>['"]?))'''
-    r'''(?P<url>[^ \t\n\r\f\v>]+)(?P<after>(?P=quote)[^>]*?>)''',
-    re.IGNORECASE)
+    r"""(?P<before><[^>]*?(src|href)=(?P<quote>['"]?))"""
+    r"""(?P<url>[^ \t\n\r\f\v>]+)(?P<after>(?P=quote)[^>]*?>)""",
+    re.IGNORECASE,
+)
 SRCSET = re.compile(r'(?P<descriptors>^\s*|\s*,\s*)(?P<url>[^\s]*)')
 
 
@@ -54,7 +57,7 @@ def anchor_safe_urljoin(base, url):
 
 def add_identifiers(rules_doc):
     """Add identifiers to the rules for debugging"""
-    for i, elem in enumerate(
+    for index, elem in enumerate(
         rules_doc.xpath(
             '//diazo:rules | //diazo:rules/diazo:*'
             ' | //old1:rules | //old1:rules/old1:*'
@@ -62,7 +65,13 @@ def add_identifiers(rules_doc):
             namespaces=namespaces,
         ),
     ):
-        elem.set(fullname(namespaces['xml'], 'id'), 'r%s' % i)
+        elem.set(
+            fullname(
+                namespaces['xml'],
+                'id',
+            ),
+            'r{index}'.format(index=index),
+        )
     return rules_doc
 
 
@@ -71,7 +80,7 @@ def update_namespace(rules_doc):
     """
     update = False
     for ns in (namespaces['old1'], namespaces['old2']):
-        if rules_doc.xpath("//*[namespace-uri()='%s']" % ns):
+        if rules_doc.xpath("//*[namespace-uri()='{ns:s}']".format(ns=ns)):
             logger.warning(
                 'The %s namespace is deprecated, use %s instead.',
                 ns,
@@ -79,7 +88,7 @@ def update_namespace(rules_doc):
             )
             update = True
     for ns in (namespaces['oldcss1'], namespaces['oldcss2']):
-        if rules_doc.xpath("//@*[namespace-uri()='%s']" % ns):
+        if rules_doc.xpath("//@*[namespace-uri()='{ns:s}']".format(ns=ns)):
             logger.warning(
                 'The %s namespace is deprecated, use %s instead.',
                 ns,
@@ -174,8 +183,11 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         srcset = node.get('srcset')
         srcset = SRCSET.sub(
             lambda match: match.group('descriptors') + urljoin(
-                absolute_prefix, match.group('url')),
-            srcset)
+                absolute_prefix,
+                match.group('url'),
+            ),
+            srcset,
+        )
         node.set('srcset', srcset)
     for node in theme_doc.xpath('//*[@href]'):
         url = anchor_safe_urljoin(absolute_prefix, node.get('href'))
@@ -185,17 +197,26 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
             continue
         node.text = IMPORT_STYLESHEET.sub(
             lambda match: match.group('before') + urljoin(
-                absolute_prefix, match.group('url')) + match.group('after'),
-            node.text)
+                absolute_prefix,
+                match.group('url'),
+            ) + match.group('after'),
+            node.text,
+        )
     for node in theme_doc.xpath('//comment()[starts-with(., "[if")]'):
         node.text = IMPORT_STYLESHEET.sub(
             lambda match: match.group('before') + urljoin(
-                absolute_prefix, match.group('url')) + match.group('after'),
-            node.text)
+                absolute_prefix,
+                match.group('url'),
+            ) + match.group('after'),
+            node.text,
+        )
         node.text = CONDITIONAL_SRC.sub(
             lambda match: match.group('before') + urljoin(
-                absolute_prefix, match.group('url')) + match.group('after'),
-            node.text)
+                absolute_prefix,
+                match.group('url'),
+            ) + match.group('after'),
+            node.text,
+        )
 
 
 def add_extra(rules_doc, extra):
@@ -275,7 +296,7 @@ def process_rules(
     if parser is None:
         parser = etree.HTMLParser()
     if xinclude:
-        # XXX: read_network limitation not yet supported
+        # XXX: read_network limitation not yet supported  # NOQA: T000
         #   for xinclude
         rules_doc.xinclude()
     if stop == 1:
@@ -307,7 +328,7 @@ def process_rules(
         return rules_doc
     if includemode is None:
         includemode = 'document'
-    includemode = "'%s'" % includemode
+    includemode = "'{mode:s}'".format(mode=includemode)
     rules_doc = normalize_rules(rules_doc, includemode=includemode)
     if stop == 7:
         return rules_doc
