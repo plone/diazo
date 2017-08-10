@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Code Cleanup and enforcing Code Convertions
+  [loechel]
 
 
 1.2.5 (2017-02-12)
