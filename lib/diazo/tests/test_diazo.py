@@ -46,7 +46,7 @@ class DiazoTestCase(unittest.TestCase):
         '1',
     ).lower() not in ('0', 'false', 'off')
 
-    testdir = None  # override
+    testdir = os.path.realpath(__file__)
 
     @classmethod
     def suiteForParent(cls, parent, prefix):
