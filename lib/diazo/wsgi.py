@@ -1,21 +1,19 @@
-import re
-import pkg_resources
-import os.path
-
-from future.moves.urllib.parse import unquote_plus
-
-from webob import Request
-
-from lxml import etree
-
-from six import string_types
-
-from repoze.xmliter.serializer import XMLSerializer
-from repoze.xmliter.utils import getHTMLSerializer
+# -*- coding: utf-8 -*-
 
 from diazo.compiler import compile_theme
 from diazo.utils import pkg_parse
 from diazo.utils import quote_param
+from future.moves.urllib.parse import unquote_plus
+from lxml import etree
+from repoze.xmliter.serializer import XMLSerializer
+from repoze.xmliter.utils import getHTMLSerializer
+from six import string_types
+from webob import Request
+
+import os.path
+import pkg_resources
+import re
+
 
 DIAZO_OFF_HEADER = 'X-Diazo-Off'
 
@@ -23,9 +21,9 @@ DIAZO_OFF_HEADER = 'X-Diazo-Off'
 def asbool(value):
     if isinstance(value, string_types):
         value = value.strip().lower()
-        if value in ('true', 'yes', 'on', 'y', 't', '1',):
+        if value in ('true', 'yes', 'on', 'y', 't', '1', ):
             return True
-        elif value in ('false', 'no', 'off', 'n', 'f', '0'):
+        elif value in ('false', 'no', 'off', 'n', 'f', '0', ):
             return False
         else:
             raise ValueError("String is not true/false: %r" % value)
@@ -96,8 +94,10 @@ class WSGIResolver(etree.Resolver):
 
         result = response.text
 
-        if response.content_type in ('text/javascript',
-                                     'application/x-javascript'):
+        if response.content_type in (
+            'text/javascript',
+            'application/x-javascript',
+        ):
             result = u''.join([
                 u'<html><body><script type="text/javascript">',
                 result,
@@ -117,23 +117,56 @@ class XSLTMiddleware(object):
     """Apply XSLT in middleware
     """
 
-    def __init__(self, app, global_conf,
-                 filename=None, tree=None,
-                 read_network=False,
-                 read_file=True,
-                 update_content_length=False,
-                 ignored_extensions=(
-                     'js', 'css', 'gif', 'jpg', 'jpeg', 'pdf', 'ps', 'doc',
-                     'png', 'ico', 'mov', 'mpg', 'mpeg', 'mp3', 'm4a', 'txt',
-                     'rtf', 'swf', 'wav', 'zip', 'wmv', 'ppt', 'gz', 'tgz',
-                     'jar', 'xls', 'bmp', 'tif', 'tga', 'hqx', 'avi'),
-                 environ_param_map=None,
-                 unquoted_params=None,
-                 doctype=None,
-                 content_type=None,
-                 charset=None,
-                 remove_conditional_headers=False,
-                 **params):
+    def __init__(
+        self,
+        app,
+        global_conf,
+        filename=None,
+        tree=None,
+        read_network=False,
+        read_file=True,
+        update_content_length=False,
+        ignored_extensions=(
+            'js',
+            'css',
+            'gif',
+            'jpg',
+            'jpeg',
+            'pdf',
+            'ps',
+            'doc',
+            'png',
+            'ico',
+            'mov',
+            'mpg',
+            'mpeg',
+            'mp3',
+            'm4a',
+            'txt',
+            'rtf',
+            'swf',
+            'wav',
+            'zip',
+            'wmv',
+            'ppt',
+            'gz',
+            'tgz',
+            'jar',
+            'xls',
+            'bmp',
+            'tif',
+            'tga',
+            'hqx',
+            'avi',
+        ),
+        environ_param_map=None,
+        unquoted_params=None,
+        doctype=None,
+        content_type=None,
+        charset=None,
+        remove_conditional_headers=False,
+        **params
+    ):
         """Initialise, giving a filename or parsed XSLT tree.
 
         The parameters are:
@@ -261,8 +294,10 @@ class XSLTMiddleware(object):
 
             # Prepare the serializer
             try:
-                serializer = getHTMLSerializer(response.app_iter,
-                                               encoding=input_encoding)
+                serializer = getHTMLSerializer(
+                    response.app_iter,
+                    encoding=input_encoding,
+                )
             except etree.XMLSyntaxError:
                 # Abort transform on syntax error for empty response
                 # Headers should be left intact
@@ -344,9 +379,10 @@ class XSLTMiddleware(object):
             return False
 
         status_code, reason = response.status.split(None, 1)
-        if status_code.startswith('3') or \
-                status_code == '204' or \
-                status_code == '401':
+        if (status_code.startswith('3') or
+            status_code == '204' or
+            status_code == '401'
+        ):
             return False
 
         if response.content_length == 0:
@@ -373,25 +409,58 @@ class DiazoMiddleware(object):
     """Invoke the Diazo transform as middleware
     """
 
-    def __init__(self, app, global_conf, rules,
-                 theme=None,
-                 prefix=None,
-                 includemode='document',
-                 debug=False,
-                 read_network=False,
-                 read_file=True,
-                 update_content_length=False,
-                 ignored_extensions=(
-                     'js', 'css', 'gif', 'jpg', 'jpeg', 'pdf', 'ps', 'doc',
-                     'png', 'ico', 'mov', 'mpg', 'mpeg', 'mp3', 'm4a', 'txt',
-                     'rtf', 'swf', 'wav', 'zip', 'wmv', 'ppt', 'gz', 'tgz',
-                     'jar', 'xls', 'bmp', 'tif', 'tga', 'hqx', 'avi'),
-                 environ_param_map=None,
-                 unquoted_params=None,
-                 doctype=None,
-                 content_type=None,
-                 filter_xpath=False,
-                 **params):
+    def __init__(
+        self,
+        app,
+        global_conf,
+        rules,
+        theme=None,
+        prefix=None,
+        includemode='document',
+        debug=False,
+        read_network=False,
+        read_file=True,
+        update_content_length=False,
+        ignored_extensions=(
+            'js',
+            'css',
+            'gif',
+            'jpg',
+            'jpeg',
+            'pdf',
+            'ps',
+            'doc',
+            'png',
+            'ico',
+            'mov',
+            'mpg',
+            'mpeg',
+            'mp3',
+            'm4a',
+            'txt',
+            'rtf',
+            'swf',
+            'wav',
+            'zip',
+            'wmv',
+            'ppt',
+            'gz',
+            'tgz',
+            'jar',
+            'xls',
+            'bmp',
+            'tif',
+            'tga',
+            'hqx',
+            'avi',
+        ),
+        environ_param_map=None,
+        unquoted_params=None,
+        doctype=None,
+        content_type=None,
+        filter_xpath=False,
+        **params
+    ):
         """Create the middleware. The parameters are:
 
         * ``rules``, the rules file
@@ -457,8 +526,12 @@ class DiazoMiddleware(object):
         self.filter_xpath = asbool(filter_xpath)
 
         self.access_control = etree.XSLTAccessControl(
-            read_file=self.read_file, write_file=False, create_dir=False,
-            read_network=self.read_network, write_network=False)
+            read_file=self.read_file,
+            write_file=False,
+            create_dir=False,
+            read_network=self.read_network,
+            write_network=False,
+        )
         self.transform_middleware = None
         self.filter_middleware = self.get_filter_middleware()
 
@@ -501,42 +574,48 @@ class DiazoMiddleware(object):
             if value not in xsl_params:
                 xsl_params[value] = None
 
-        return compile_theme(self.rules,
-                             theme=self.theme,
-                             absolute_prefix=self.absolute_prefix,
-                             includemode=self.includemode,
-                             access_control=self.access_control,
-                             read_network=self.read_network,
-                             parser=theme_parser,
-                             rules_parser=rules_parser,
-                             xsl_params=xsl_params)
+        return compile_theme(
+            self.rules,
+            theme=self.theme,
+            absolute_prefix=self.absolute_prefix,
+            includemode=self.includemode,
+            access_control=self.access_control,
+            read_network=self.read_network,
+            parser=theme_parser,
+            rules_parser=rules_parser,
+            xsl_params=xsl_params,
+        )
 
     def get_transform_middleware(self):
-        return XSLTMiddleware(self.app, self.global_conf,
-                              tree=self.compile_theme(),
-                              read_network=self.read_network,
-                              read_file=self.read_file,
-                              update_content_length=self.update_content_length,
-                              ignored_extensions=self.ignored_extensions,
-                              environ_param_map=self.environ_param_map,
-                              doctype=self.doctype,
-                              content_type=self.content_type,
-                              unquoted_params=self.unquoted_params,
-                              **self.params)
+        return XSLTMiddleware(
+            self.app,
+            self.global_conf,
+            tree=self.compile_theme(),
+            read_network=self.read_network,
+            read_file=self.read_file,
+            update_content_length=self.update_content_length,
+            ignored_extensions=self.ignored_extensions,
+            environ_param_map=self.environ_param_map,
+            doctype=self.doctype,
+            content_type=self.content_type,
+            unquoted_params=self.unquoted_params,
+            **self.params
+        )
 
     def get_filter_middleware(self):
         tree = pkg_parse('filter_xhtml.xsl')
-        return XSLTMiddleware(self.app, self.global_conf,
-                              tree=tree,
-                              read_network=False,
-                              read_file=False,
-                              update_content_length=self.update_content_length,
-                              ignored_extensions=self.ignored_extensions,
-                              environ_param_map={'diazo.filter_xpath':
-                                                 'xpath'},
-                              doctype='',
-                              content_type=self.content_type,
-                              unquoted_params=['xpath'])
+        return XSLTMiddleware(
+            self.app,
+            self.global_conf,
+            tree=tree,
+            read_network=False,
+            read_file=False,
+            update_content_length=self.update_content_length,
+            ignored_extensions=self.ignored_extensions,
+            environ_param_map={'diazo.filter_xpath': 'xpath'},
+            doctype='',
+            content_type=self.content_type,
+            unquoted_params=['xpath'])
 
     def __call__(self, environ, start_response):
         if self.filter_xpath:
@@ -544,7 +623,9 @@ class DiazoMiddleware(object):
             query_string = environ.get('QUERY_STRING', '')
             if filter_xpath in query_string:
                 environ['QUERY_STRING'], xpath = query_string.rsplit(
-                    filter_xpath, 1)
+                    filter_xpath,
+                    1,
+                )
                 environ['diazo.filter_xpath'] = unquote_plus(xpath)
                 return self.filter_middleware(environ, start_response)
 

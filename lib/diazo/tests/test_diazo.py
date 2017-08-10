@@ -1,26 +1,31 @@
 from __future__ import print_function
+from diazo.utils import quote_param
+from formencode.doctest_xml_compare import xml_compare
+from future.builtins import str
+from io import BytesIO
+from io import open
+from io import StringIO
+from lxml import etree
+
+import diazo.compiler
+import diazo.run
+import difflib
+import os
+import pkg_resources
+import sys
+import unittest
+
+
 #
 # Simple test runner for validating different diazo scenarios
 #
 
-from lxml import etree
-import os
-import sys
-import difflib
-from io import BytesIO, StringIO, open
-import unittest
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
-import pkg_resources
 
-import diazo.compiler
-import diazo.run
 
-from diazo.utils import quote_param
-from formencode.doctest_xml_compare import xml_compare
-from future.builtins import str
 
 
 if __name__ == '__main__':

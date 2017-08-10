@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """\
 Usage: %prog [options] [-r] RULES [-t] THEME
 
@@ -9,28 +10,38 @@ Usage: %prog [options] [-r] RULES [-t] THEME
               theme="//div[@id='page-content']"/>
     </rules>\
 """
-import logging
-import pkg_resources
+
+from diazo.rules import process_rules
+from diazo.utils import _createOptionParser
+from diazo.utils import CustomResolver
+from diazo.utils import pkg_xsl
+from diazo.utils import quote_param
+from diazo.utils import split_params
 from lxml import etree
 from six import string_types
-from diazo.rules import process_rules
-from diazo.utils import pkg_xsl, _createOptionParser, CustomResolver
-from diazo.utils import quote_param, split_params
+
+import logging
+import pkg_resources
+
 
 logger = logging.getLogger('diazo')
 usage = __doc__
 
 
 def set_parser(stylesheet, parser, compiler_parser=None):
-    dummy_doc = etree.parse(open(
-        pkg_resources.resource_filename('diazo', 'dummy.html')), parser=parser)
+    dummy_doc = etree.parse(
+        open(
+            pkg_resources.resource_filename('diazo', 'dummy.html'),
+        ),
+        parser=parser,
+    )
     name = 'file:///__diazo__'
     resolver = CustomResolver({name: stylesheet})
     if compiler_parser is None:
         compiler_parser = etree.XMLParser()
     compiler_parser.resolvers.add(resolver)
     identity = pkg_xsl('identity.xsl', compiler_parser)
-    output_doc = identity(dummy_doc, docurl="'%s'" % name)
+    output_doc = identity(dummy_doc, docurl="'{name}'".format(name=name))
     compiler_parser.resolvers.remove(resolver)
     return output_doc
 
@@ -42,10 +53,13 @@ def build_xsl_params_document(xsl_params):
         xsl_params['path'] = ''
     known_params = etree.XML(
         '<xsl:stylesheet version="1.0" '
-        'xmlns:xsl="http://www.w3.org/1999/XSL/Transform" />')
+        'xmlns:xsl="http://www.w3.org/1999/XSL/Transform" />',
+    )
     for param_name, param_value in xsl_params.items():
         param_element = etree.SubElement(
-            known_params, "{http://www.w3.org/1999/XSL/Transform}param")
+            known_params,
+            '{http://www.w3.org/1999/XSL/Transform}param',
+        )
         param_element.attrib['name'] = param_name
         if isinstance(param_value, string_types):
             param_element.text = param_value
@@ -56,11 +70,25 @@ def build_xsl_params_document(xsl_params):
     return known_params
 
 
-def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
-                  absolute_prefix=None, update=True, trace=False,
-                  includemode=None, parser=None, compiler_parser=None,
-                  rules_parser=None, access_control=None, read_network=False,
-                  indent=None, xsl_params=None, runtrace=False):
+def compile_theme(
+    rules,
+    theme=None,
+    extra=None,
+    css=True,
+    xinclude=True,
+    absolute_prefix=None,
+    update=True,
+    trace=False,
+    includemode=None,
+    parser=None,
+    compiler_parser=None,
+    rules_parser=None,
+    access_control=None,
+    read_network=False,
+    indent=None,
+    xsl_params=None,
+    runtrace=False,
+):
     """Invoke the diazo compiler.
 
     * ``rules`` is the rules file
@@ -120,7 +148,8 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
     # Create a pseudo resolver for this
     known_params_url = 'file:///__diazo_known_params__'
     emit_stylesheet_resolver = CustomResolver({
-        known_params_url: etree.tostring(known_params)})
+        known_params_url: etree.tostring(known_params),
+    })
     emit_stylesheet_parser = etree.XMLParser()
     emit_stylesheet_parser.resolvers.add(emit_stylesheet_resolver)
 
@@ -133,10 +162,15 @@ def compile_theme(rules, theme=None, extra=None, css=True, xinclude=True,
 
     # Run the final stage compiler
     emit_stylesheet = pkg_xsl(
-        'emit-stylesheet.xsl', parser=emit_stylesheet_parser)
+        'emit-stylesheet.xsl',
+        parser=emit_stylesheet_parser,
+    )
     compiled_doc = emit_stylesheet(rules_doc, **params)
-    compiled_doc = set_parser(etree.tostring(compiled_doc), parser,
-                              compiler_parser)
+    compiled_doc = set_parser(
+        etree.tostring(compiled_doc),
+        parser,
+        compiler_parser,
+    )
 
     return compiled_doc
 
@@ -153,9 +187,9 @@ def main():
         elif len(args) == 1:
             options.rules, = args
         else:
-            parser.error("Wrong number of arguments.")
+            parser.error('Wrong number of arguments.')
     elif args:
-        parser.error("Wrong number of arguments.")
+        parser.error('Wrong number of arguments.')
 
     if options.trace:
         logger.setLevel(logging.DEBUG)
@@ -172,13 +206,16 @@ def main():
         absolute_prefix=options.absolute_prefix,
         includemode=options.includemode,
         read_network=options.read_network,
-        xsl_params=xsl_params
+        xsl_params=xsl_params,
     )
     root = output_xslt.getroot()
     if not root.tail:
         root.tail = '\n'
-    output_xslt.write(options.output, encoding='utf-8',
-                      pretty_print=options.pretty_print)
+    output_xslt.write(
+        options.output,
+        encoding='utf-8',
+        pretty_print=options.pretty_print,
+    )
 
 
 if __name__ == '__main__':

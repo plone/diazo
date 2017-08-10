@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
+
 from io import BytesIO
-import sys
-import os.path
 from lxml import etree
 
-import diazo.runtrace
 import diazo.compiler
 import diazo.run
+import diazo.runtrace
+import os.path
+import sys
+
 
 try:
     import unittest2 as unittest
@@ -17,8 +20,11 @@ if __name__ == '__main__':
 
 
 def testfile(filename):
-    return os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                        'test_wsgi_files', filename)
+    return os.path.join(
+        os.path.abspath(os.path.dirname(__file__)),
+        'test_wsgi_files',
+        filename,
+    )
 
 
 class TestDebug(unittest.TestCase):
@@ -246,45 +252,69 @@ class TestDebug(unittest.TestCase):
         # First rule has an if-content condition
         self.assertIn(
             b"""<pre class="runtrace"><span class="node match" """
-            b"""title="Matches: if-content:true ">&lt;rules""", html_string)
+            b"""title="Matches: if-content:true ">&lt;rules""",
+            html_string,
+        )
         # HTML comments are included and escaped
-        self.assertIn(b"""&lt;!-- Rules, lots of rules --&gt;""", html_string)
+        self.assertIn(
+            b"""&lt;!-- Rules, lots of rules --&gt;""",
+            html_string,
+        )
         # Rules tag has children
-        self.assertIn(b"""<span class="node unrelated">&lt;rules """
-                      b"""<span class="attr">xml:id="r4"</span>&gt;</span>""",
-                      html_string)
+        self.assertIn(
+            b"""<span class="node unrelated">&lt;rules """
+            b"""<span class="attr">xml:id="r4"</span>&gt;</span>""",
+            html_string,
+        )
         # Theme tag has no conditions, is a singleton
-        self.assertIn(b"""<span class="node unrelated">&lt;theme <span """
-                      b"""class="attr">href="index.html"</span> <span """
-                      b"""class="attr">xml:id="r1"</span>/&gt;</span>""",
-                      html_string)
+        self.assertIn(
+            b"""<span class="node unrelated">&lt;theme <span """
+            b"""class="attr">href="index.html"</span> <span """
+            b"""class="attr">xml:id="r1"</span>/&gt;</span>""",
+            html_string,
+        )
         # Whitespace is preserved
-        self.assertIn(b"""xml:id=\"r4\"</span>&gt;</span>\n        <span """
-                      b"""class="comment">&lt;!-- Rules, lots of rules """
-                      b"""--&gt;</span>""", html_string)
+        self.assertIn(
+            b"""xml:id=\"r4\"</span>&gt;</span>\n        <span """
+            b"""class="comment">&lt;!-- Rules, lots of rules """
+            b"""--&gt;</span>""",
+            html_string,
+        )
         # Neither theme or content matched
-        self.assertIn(b"""<span class="node no-match" title="Matches: """
-                      b"""content:0 theme:0 ">&lt;copy <span class="attr">"""
-                      b"""xml:id="r5"</span>""", html_string)
+        self.assertIn(
+            b"""<span class="node no-match" title="Matches: """
+            b"""content:0 theme:0 ">&lt;copy <span class="attr">"""
+            b"""xml:id="r5"</span>""",
+            html_string,
+        )
         # Just content matched, still not good enough
-        self.assertIn(b"""<span class="node no-match" title="Matches: """
-                      b"""content:1 theme:0 ">&lt;copy <span class="attr">"""
-                      b"""xml:id="r6"</span>""", html_string)
+        self.assertIn(
+            b"""<span class="node no-match" title="Matches: """
+            b"""content:1 theme:0 ">&lt;copy <span class="attr">"""
+            b"""xml:id="r6"</span>""",
+            html_string,
+        )
         # Full match
-        self.assertIn(b"""<span class="node match" title="Matches: """
-                      b"""content:1 theme:1 ">&lt;copy <span class="attr">"""
-                      b"""xml:id="r7"</span>""", html_string)
+        self.assertIn(
+            b"""<span class="node match" title="Matches: """
+            b"""content:1 theme:1 ">&lt;copy <span class="attr">"""
+            b"""xml:id="r7"</span>""",
+            html_string,
+        )
         # More than one match still fine
-        self.assertIn(b"""<span class="node match" title="Matches: """
-                      b"""content:1 theme:2 ">&lt;copy <span class="attr">"""
-                      b"""xml:id="r8"</span>""", html_string)
+        self.assertIn(
+            b"""<span class="node match" title="Matches: """
+            b"""content:1 theme:2 ">&lt;copy <span class="attr">"""
+            b"""xml:id="r8"</span>""",
+            html_string,
+        )
 
     def assertXPath(self, doc, xpath, expected):
         self.assertEqual(
             doc.xpath(
                 xpath,
                 namespaces=(dict(d="http://namespaces.plone.org/diazo")))[0],
-            expected
+            expected,
         )
 
 
