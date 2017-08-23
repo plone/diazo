@@ -14,7 +14,7 @@ New features:
 
 Bug fixes:
 
-- Code Cleanup and enforcing Code Convertions
+- Code Cleanup and enforcing Code Conversions
   [loechel]
 
 

@@ -87,7 +87,7 @@ def generate_debug_html(
     """Generate an HTML node with debug info"""
     def newElement(tag, content, **kwargs):
         n = etree.Element(tag, **kwargs)
-        if hasattr(content, 'tag'):
+        if getattr(content, 'tag', None):
             n.append(content)
         else:
             n.text = content

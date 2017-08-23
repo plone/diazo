@@ -312,7 +312,7 @@ class XSLTMiddleware(object):
                 # Headers should be left intact
                 return response(environ, start_response)
         finally:
-            if hasattr(response.app_iter, 'close'):
+            if getattr(response.app_iter, 'close', None):
                 response.app_iter.close()
 
         self.reset_headers(response)
