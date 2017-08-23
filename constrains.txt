@@ -1,6 +1,14 @@
 # Constrains for testing Diazo / Plone Packages
 # ---------------------------------------------
 
+# tox (Test invocation tool) + virtualenv:
+tox==2.7.0
+virtualenv==15.1.0
+
+# coverage and coveralls:
+coverage==4.4.1
+coveralls==1.2.0
+
 # lint tools (flake8, isort + plugins):
 flake8==3.4.1
 flake8-blind-except==0.1.1
