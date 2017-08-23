@@ -20,7 +20,7 @@ matrix:
           env: TOXENV=py36
 
 install:
-    - travis_retry pip install -U -c constrains.txt tox coveralls coverage
+    - travis_retry pip install -U -c constraints.txt tox coveralls coverage
 
 script:
     - travis_retry tox
