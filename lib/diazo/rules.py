@@ -1,28 +1,38 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """\
 Usage: %prog [-r] RULES
 
 Preprocess RULES, an diazo rules file
 """
-import logging
-import re
-from lxml import etree
-from six import string_types
+
+from diazo.cssrules import convert_css_selectors
+from diazo.utils import _createOptionParser
+from diazo.utils import fullname
+from diazo.utils import namespaces
+from diazo.utils import pkg_xsl
 from future.moves.urllib.parse import urljoin
 from future.moves.urllib.request import urlopen
-from diazo.cssrules import convert_css_selectors
-from diazo.utils import namespaces, fullname, pkg_xsl, _createOptionParser
+from lxml import etree
+from six import string_types
+
+import logging
+import re
+
 
 logger = logging.getLogger('diazo')
 usage = __doc__
 
 IMPORT_STYLESHEET = re.compile(
-    r'''(?P<before>@import[ \t]+(?P<paren>url\([ \t]?)?(?P<quote>['"]?))'''
-    r'''(?P<url>\S+)(?P<after>(?P=quote)(?(paren)\)))''', re.IGNORECASE)
+    r"""(?P<before>@import[ \t]+(?P<paren>url\([ \t]?)?(?P<quote>['"]?))"""
+    r"""(?P<url>\S+)(?P<after>(?P=quote)(?(paren)\)))""",
+    re.IGNORECASE,
+)
 CONDITIONAL_SRC = re.compile(
-    r'''(?P<before><[^>]*?(src|href)=(?P<quote>['"]?))'''
-    r'''(?P<url>[^ \t\n\r\f\v>]+)(?P<after>(?P=quote)[^>]*?>)''',
-    re.IGNORECASE)
+    r"""(?P<before><[^>]*?(src|href)=(?P<quote>['"]?))"""
+    r"""(?P<url>[^ \t\n\r\f\v>]+)(?P<after>(?P=quote)[^>]*?>)""",
+    re.IGNORECASE,
+)
 SRCSET = re.compile(r'(?P<descriptors>^\s*|\s*,\s*)(?P<url>[^\s]*)')
 
 
@@ -47,11 +57,21 @@ def anchor_safe_urljoin(base, url):
 
 def add_identifiers(rules_doc):
     """Add identifiers to the rules for debugging"""
-    for i, elem in enumerate(rules_doc.xpath(
+    for index, elem in enumerate(
+        rules_doc.xpath(
             '//diazo:rules | //diazo:rules/diazo:*'
             ' | //old1:rules | //old1:rules/old1:*'
-            ' | //old2:rules | //old2:rules/old1:*', namespaces=namespaces)):
-        elem.set(fullname(namespaces['xml'], 'id'), 'r%s' % i)
+            ' | //old2:rules | //old2:rules/old1:*',
+            namespaces=namespaces,
+        ),
+    ):
+        elem.set(
+            fullname(
+                namespaces['xml'],
+                'id',
+            ),
+            'r{index}'.format(index=index),
+        )
     return rules_doc
 
 
@@ -60,14 +80,20 @@ def update_namespace(rules_doc):
     """
     update = False
     for ns in (namespaces['old1'], namespaces['old2']):
-        if rules_doc.xpath("//*[namespace-uri()='%s']" % ns):
-            logger.warning('The %s namespace is deprecated, use %s instead.' %
-                           (ns, namespaces['diazo']))
+        if rules_doc.xpath("//*[namespace-uri()='{ns:s}']".format(ns=ns)):
+            logger.warning(
+                'The %s namespace is deprecated, use %s instead.',
+                ns,
+                namespaces['diazo'],
+            )
             update = True
     for ns in (namespaces['oldcss1'], namespaces['oldcss2']):
-        if rules_doc.xpath("//@*[namespace-uri()='%s']" % ns):
-            logger.warning('The %s namespace is deprecated, use %s instead.' %
-                           (ns, namespaces['css']))
+        if rules_doc.xpath("//@*[namespace-uri()='{ns:s}']".format(ns=ns)):
+            logger.warning(
+                'The %s namespace is deprecated, use %s instead.',
+                ns,
+                namespaces['css'],
+            )
             update = True
     if update:
         new_doc = update_transform(rules_doc)
@@ -106,8 +132,12 @@ def expand_theme(element, theme_doc, absolute_prefix):
     element.extend(following)
 
 
-def expand_themes(rules_doc, parser=None, absolute_prefix=None,
-                  read_network=False):
+def expand_themes(
+    rules_doc,
+    parser=None,
+    absolute_prefix=None,
+    read_network=False,
+):
     """Expand <theme href='...'/> nodes with the theme html.
     """
     if absolute_prefix is None:
@@ -115,13 +145,18 @@ def expand_themes(rules_doc, parser=None, absolute_prefix=None,
     base = rules_doc.docinfo.URL
     if parser is None:
         parser = etree.HTMLParser()
-    for element in rules_doc.xpath('//diazo:theme[@href]',
-                                   namespaces=namespaces):
+    for element in rules_doc.xpath(
+        '//diazo:theme[@href]',
+        namespaces=namespaces,
+    ):
         url = urljoin(base, element.get('href'))
         if not read_network and \
                 url.startswith(('ftp://', 'ftps://', 'http://', 'https://')):
-            raise ValueError("Supplied theme '%s', "
-                             "but network access denied." % url)
+            raise ValueError(
+                "Supplied theme '{url}', but network access denied.".format(
+                    url=url,
+                ),
+            )
         elif read_network and \
                 url.startswith(('ftp://', 'ftps://', 'http://', 'https://')):
             theme = urlopen(url)
@@ -148,8 +183,11 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
         srcset = node.get('srcset')
         srcset = SRCSET.sub(
             lambda match: match.group('descriptors') + urljoin(
-                absolute_prefix, match.group('url')),
-            srcset)
+                absolute_prefix,
+                match.group('url'),
+            ),
+            srcset,
+        )
         node.set('srcset', srcset)
     for node in theme_doc.xpath('//*[@href]'):
         url = anchor_safe_urljoin(absolute_prefix, node.get('href'))
@@ -159,34 +197,53 @@ def apply_absolute_prefix(theme_doc, absolute_prefix):
             continue
         node.text = IMPORT_STYLESHEET.sub(
             lambda match: match.group('before') + urljoin(
-                absolute_prefix, match.group('url')) + match.group('after'),
-            node.text)
+                absolute_prefix,
+                match.group('url'),
+            ) + match.group('after'),
+            node.text,
+        )
     for node in theme_doc.xpath('//comment()[starts-with(., "[if")]'):
         node.text = IMPORT_STYLESHEET.sub(
             lambda match: match.group('before') + urljoin(
-                absolute_prefix, match.group('url')) + match.group('after'),
-            node.text)
+                absolute_prefix,
+                match.group('url'),
+            ) + match.group('after'),
+            node.text,
+        )
         node.text = CONDITIONAL_SRC.sub(
             lambda match: match.group('before') + urljoin(
-                absolute_prefix, match.group('url')) + match.group('after'),
-            node.text)
+                absolute_prefix,
+                match.group('url'),
+            ) + match.group('after'),
+            node.text,
+        )
 
 
 def add_extra(rules_doc, extra):
     root = rules_doc.getroot()
-    extra_elements = extra.xpath('/xsl:stylesheet/xsl:*',
-                                 namespaces=namespaces)
+    extra_elements = extra.xpath(
+        '/xsl:stylesheet/xsl:*',
+        namespaces=namespaces,
+    )
     root.extend(extra_elements)
     return rules_doc
 
 
-def add_theme(rules_doc, theme, parser=None, absolute_prefix=None,
-              read_network=False):
+def add_theme(
+    rules_doc,
+    theme,
+    parser=None,
+    absolute_prefix=None,
+    read_network=False,
+):
     if not read_network and \
             isinstance(theme, string_types) and \
             theme[:6] in ('ftp://', 'http:/', 'https:'):
-        raise ValueError("Supplied theme '%s', "
-                         "but network access denied." % theme)
+        raise ValueError(
+            "Supplied theme '{theme}', but network access denied.".format(
+                theme=theme,
+            ),
+        )
     if absolute_prefix is None:
         absolute_prefix = ''
     if parser is None:
@@ -206,14 +263,27 @@ def fixup_theme_comment_selectors(rules):
     """
     for element in rules.xpath("//@theme[contains(., 'comment()')]/.."):
         element.attrib['theme'] = element.attrib['theme'].replace(
-            'comment()', 'xsl:comment')
+            'comment()',
+            'xsl:comment',
+        )
     return rules
 
 
-def process_rules(rules, theme=None, extra=None, trace=None, css=True,
-                  xinclude=True, absolute_prefix=None, includemode=None,
-                  update=True, parser=None, rules_parser=None,
-                  read_network=False, stop=None):
+def process_rules(
+    rules,
+    theme=None,
+    extra=None,
+    trace=None,
+    css=True,
+    xinclude=True,
+    absolute_prefix=None,
+    includemode=None,
+    update=True,
+    parser=None,
+    rules_parser=None,
+    read_network=False,
+    stop=None,
+):
     if trace:
         trace = '1'
     else:
@@ -226,7 +296,7 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True,
     if parser is None:
         parser = etree.HTMLParser()
     if xinclude:
-        # XXX: read_network limitation not yet supported
+        # XXX: read_network limitation not yet supported  # NOQA: T000
         #   for xinclude
         rules_doc.xinclude()
     if stop == 1:
@@ -247,13 +317,18 @@ def process_rules(rules, theme=None, extra=None, trace=None, css=True,
         return rules_doc
     rules_doc = expand_themes(rules_doc, parser, absolute_prefix, read_network)
     if theme is not None:
-        rules_doc = add_theme(rules_doc, theme, parser, absolute_prefix,
-                              read_network)
+        rules_doc = add_theme(
+            rules_doc,
+            theme,
+            parser,
+            absolute_prefix,
+            read_network,
+        )
     if stop == 6:
         return rules_doc
     if includemode is None:
         includemode = 'document'
-    includemode = "'%s'" % includemode
+    includemode = "'{mode:s}'".format(mode=includemode)
     rules_doc = normalize_rules(rules_doc, includemode=includemode)
     if stop == 7:
         return rules_doc
@@ -283,9 +358,15 @@ def main():
     """Called from console script
     """
     parser = _createOptionParser(usage=usage)
-    parser.add_option("-s", "--stop", metavar="n", type="int",
-                      help="Stop preprocessing at stage n",
-                      dest="stop", default=None)
+    parser.add_option(
+        '-s',
+        '--stop',
+        metavar='n',
+        type='int',
+        help='Stop preprocessing at stage n',
+        dest='stop',
+        default=None,
+    )
     (options, args) = parser.parse_args()
 
     if options.rules is None:
@@ -294,9 +375,9 @@ def main():
         elif len(args) == 1:
             options.rules, = args
         else:
-            parser.error("Wrong number of arguments.")
+            parser.error('Wrong number of arguments.')
     elif args:
-        parser.error("Wrong number of arguments.")
+        parser.error('Wrong number of arguments.')
 
     if options.trace:
         logger.setLevel(logging.DEBUG)

@@ -1,10 +1,15 @@
+# -*- coding: utf-8 -*-
+
+from lxml import etree
+from optparse import OptionParser
+from six import integer_types
+from six import PY3
+from six import string_types
+
 import logging
 import pkg_resources
 import sys
 
-from lxml import etree
-from optparse import OptionParser
-from six import string_types, integer_types, PY3
 
 if PY3:
     stdout = sys.stdout.buffer
@@ -16,14 +21,14 @@ strparam = etree.XSLT.strparam
 logger = logging.getLogger('diazo')
 
 namespaces = dict(
-    diazo="http://namespaces.plone.org/diazo",
-    css="http://namespaces.plone.org/diazo/css",
-    old1="http://openplans.org/deliverance",
-    old2="http://namespaces.plone.org/xdv",
-    oldcss1="http://namespaces.plone.org/xdv+css",
-    oldcss2="http://namespaces.plone.org/diazo+css",
-    xml="http://www.w3.org/XML/1998/namespace",
-    xsl="http://www.w3.org/1999/XSL/Transform",
+    diazo='http://namespaces.plone.org/diazo',
+    css='http://namespaces.plone.org/diazo/css',
+    old1='http://openplans.org/deliverance',
+    old2='http://namespaces.plone.org/xdv',
+    oldcss1='http://namespaces.plone.org/xdv+css',
+    oldcss2='http://namespaces.plone.org/diazo+css',
+    xml='http://www.w3.org/XML/1998/namespace',
+    xsl='http://www.w3.org/1999/XSL/Transform',
 )
 
 
@@ -36,15 +41,23 @@ def namespace(name):
 
 
 def fullname(namespace, name):
-    return '{%s}%s' % (namespace, name)
+    return '{%s}%s' % (namespace, name)  # NOQA: S001
 
 
 AC_READ_FILE = etree.XSLTAccessControl(
-    read_file=True, write_file=False, create_dir=False, read_network=False,
-    write_network=False)
+    read_file=True,
+    write_file=False,
+    create_dir=False,
+    read_network=False,
+    write_network=False,
+)
 AC_READ_NET = etree.XSLTAccessControl(
-    read_file=True, write_file=False, create_dir=False, read_network=True,
-    write_network=False)
+    read_file=True,
+    write_file=False,
+    create_dir=False,
+    read_network=True,
+    write_network=False,
+)
 
 
 class CustomResolver(etree.Resolver):
@@ -96,7 +109,7 @@ def quote_param(value):
     elif value is None:
         return '/..'
     else:
-        raise ValueError("Cannot convert %s", value)
+        raise ValueError('Cannot convert %s', value)
 
 
 def split_params(s):
@@ -112,40 +125,87 @@ def split_params(s):
 
 def _createOptionParser(usage):
     parser = OptionParser(usage=usage)
-    parser.add_option("-o", "--output", metavar="output.xsl",
-                      help="Output filename (instead of stdout)",
-                      dest="output", default=stdout)
-    parser.add_option("-p", "--pretty-print", action="store_true",
-                      help="Pretty print output (may alter rendering in "
-                           "browser)",
-                      dest="pretty_print", default=False)
-    parser.add_option("--trace", action="store_true",
-                      help="Compiler trace logging",
-                      dest="trace", default=False)
-    parser.add_option("-a", "--absolute-prefix", metavar="/",
-                      help="relative urls in the theme file will be made into "
-                           "absolute links with this prefix.",
-                      dest="absolute_prefix", default=None)
-    parser.add_option("-i", "--includemode", metavar="INC",
-                      help="include mode (document, ssi, ssiwait or esi)",
-                      dest="includemode", default=None)
-    parser.add_option("-n", "--network", action="store_true",
-                      help="Allow reads to the network to fetch resources",
-                      dest="read_network", default=False)
-    parser.add_option("-t", "--theme", metavar="theme.html",
-                      help="Theme file",
-                      dest="theme", default=None)
-    parser.add_option("-r", "--rules", metavar="rules.xml",
-                      help="Diazo rules file",
-                      dest="rules", default=None)
-    parser.add_option("-c", "--custom-parameters",
-                      metavar="param1,param2=defaultval",
-                      help="Comma-separated list of custom parameter names "
-                           "with optional default values that the compiled "
-                           "theme will be able accept when run",
-                      dest="xsl_params", default=None)
-    parser.add_option("-e", "--extra", metavar="extra.xsl",
-                      help="Extra XSL to be included in the transform "
-                           "(depracated, use inline xsl in the rules instead)",
-                      dest="extra", default=None)
+    parser.add_option(
+        '-o',
+        '--output',
+        metavar='output.xsl',
+        help='Output filename (instead of stdout)',
+        dest='output',
+        default=stdout,
+    )
+    parser.add_option(
+        '-p',
+        '--pretty-print',
+        action='store_true',
+        help='Pretty print output (may alter rendering in browser)',
+        dest='pretty_print',
+        default=False,
+    )
+    parser.add_option(
+        '--trace',
+        action='store_true',
+        help='Compiler trace logging',
+        dest='trace',
+        default=False,
+    )
+    parser.add_option(
+        '-a',
+        '--absolute-prefix',
+        metavar='/',
+        help='relative urls in the theme file will be made into absolute '
+             'links with this prefix.',
+        dest='absolute_prefix',
+        default=None,
+    )
+    parser.add_option(
+        '-i',
+        '--includemode',
+        metavar='INC',
+        help='include mode (document, ssi, ssiwait or esi)',
+        dest='includemode',
+        default=None,
+    )
+    parser.add_option(
+        '-n',
+        '--network',
+        action='store_true',
+        help='Allow reads to the network to fetch resources',
+        dest='read_network',
+        default=False,
+    )
+    parser.add_option(
+        '-t',
+        '--theme',
+        metavar='theme.html',
+        help='Theme file',
+        dest='theme',
+        default=None,
+    )
+    parser.add_option(
+        '-r',
+        '--rules',
+        metavar='rules.xml',
+        help='Diazo rules file',
+        dest='rules',
+        default=None,
+    )
+    parser.add_option(
+        '-c',
+        '--custom-parameters',
+        metavar='param1,param2=defaultval',
+        help='Comma-separated list of custom parameter names with optional '
+             'default values that the compiled theme will be able accept '
+             'when run',
+        dest='xsl_params',
+        default=None,
+    )
+    parser.add_option(
+        '-e',
+        '--extra',
+        metavar='extra.xsl',
+        help='Extra XSL to be included in the transform '
+             '(depracated, use inline xsl in the rules instead)',
+        dest='extra',
+        default=None,
+    )
     return parser

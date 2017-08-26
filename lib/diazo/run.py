@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """\
 Usage: %prog -x TRANSFORM CONTENT
 
@@ -7,15 +8,21 @@ Usage: %prog -x TRANSFORM CONTENT
 
 Usage: %prog -r RULES [options] CONTENT
 """
-import logging
-import sys
-import os.path
+
+from diazo.compiler import compile_theme
+from diazo.utils import _createOptionParser
+from diazo.utils import AC_READ_FILE
+from diazo.utils import AC_READ_NET
+from diazo.utils import quote_param
+from diazo.utils import split_params
 from lxml import etree
 from six import string_types
-from diazo.compiler import compile_theme
-from diazo.utils import AC_READ_NET, AC_READ_FILE, _createOptionParser
-from diazo.utils import split_params, quote_param
+
 import diazo.runtrace
+import logging
+import os.path
+import sys
+
 
 logger = logging.getLogger('diazo')
 usage = __doc__
@@ -39,38 +46,49 @@ def main():
     """Called from console script
     """
     op = _createOptionParser(usage=usage)
-    op.add_option("-x", "--xsl",
-                  metavar="transform.xsl",
-                  help="XSL transform",
-                  dest="xsl",
-                  default=None)
-    op.add_option("--path",
-                  metavar="PATH",
-                  help="URI path",
-                  dest="path",
-                  default=None)
-    op.add_option("--parameters",
-                  metavar="param1=val1,param2=val2",
-                  help="Set the values of arbitrary parameters",
-                  dest="parameters",
-                  default=None)
-    op.add_option("--runtrace-xml",
-                  metavar="runtrace.xml",
-                  help="Write an xml format runtrace to file",
-                  dest="runtrace_xml",
-                  default=None)
-    op.add_option("--runtrace-html",
-                  metavar="runtrace.html",
-                  help="Write an html format runtrace to file",
-                  dest="runtrace_html",
-                  default=None)
+    op.add_option(
+        '-x',
+        '--xsl',
+        metavar='transform.xsl',
+        help='XSL transform',
+        dest='xsl',
+        default=None,
+    )
+    op.add_option(
+        '--path',
+        metavar='PATH',
+        help='URI path',
+        dest='path',
+        default=None,
+    )
+    op.add_option(
+        '--parameters',
+        metavar='param1=val1,param2=val2',
+        help='Set the values of arbitrary parameters',
+        dest='parameters',
+        default=None,
+    )
+    op.add_option(
+        '--runtrace-xml',
+        metavar='runtrace.xml',
+        help='Write an xml format runtrace to file',
+        dest='runtrace_xml',
+        default=None,
+    )
+    op.add_option(
+        '--runtrace-html',
+        metavar='runtrace.html',
+        help='Write an html format runtrace to file',
+        dest='runtrace_html',
+        default=None,
+    )
     (options, args) = op.parse_args()
 
     if len(args) > 2:
-        op.error("Wrong number of arguments.")
+        op.error('Wrong number of arguments.')
     elif len(args) == 2:
         if options.xsl or options.rules:
-            op.error("Wrong number of arguments.")
+            op.error('Wrong number of arguments.')
         path, content = args
         if path.lower().endswith('.xsl'):
             options.xsl = path
@@ -79,9 +97,9 @@ def main():
     elif len(args) == 1:
         content, = args
     else:
-        op.error("Wrong number of arguments.")
+        op.error('Wrong number of arguments.')
     if options.rules is None and options.xsl is None:
-        op.error("Must supply either options or rules")
+        op.error('Must supply either options or rules')
 
     if options.trace:
         logger.setLevel(logging.DEBUG)
@@ -96,7 +114,6 @@ def main():
     if options.xsl is not None:
         output_xslt = etree.parse(options.xsl)
     else:
-
         xsl_params = None
         if options.xsl_params:
             xsl_params = split_params(options.xsl_params)
@@ -126,7 +143,7 @@ def main():
     content_doc = etree.parse(content, parser=parser)
     params = {}
     if options.path is not None:
-        params['path'] = "'%s'" % options.path
+        params['path'] = "'{path}'".format(path=options.path)
 
     if options.parameters:
         for key, value in split_params(options.parameters).items():
@@ -142,14 +159,18 @@ def main():
     if runtrace:
         runtrace_doc = diazo.runtrace.generate_runtrace(
             rules=options.rules,
-            error_log=transform.error_log)
+            error_log=transform.error_log,
+        )
         if options.runtrace_xml:
             if options.runtrace_xml == '-':
                 out = sys.stdout
             else:
                 out = open(options.runtrace_xml, 'wt')
-            runtrace_doc.write(out, encoding='utf-8',
-                               pretty_print=options.pretty_print)
+            runtrace_doc.write(
+                out,
+                encoding='utf-8',
+                pretty_print=options.pretty_print,
+            )
         if options.runtrace_html:
             if options.runtrace_html == '-':
                 out = sys.stdout
