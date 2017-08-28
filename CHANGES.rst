@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Make tox env release check manifest before releasing
+  [loechel]
 
 
 1.2.7 (2017-08-28)
