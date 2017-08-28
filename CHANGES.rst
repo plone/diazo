@@ -4,12 +4,6 @@ Changelog
 1.2.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
-
-1.2.6 (2017-08-28)
-------------------
-
 Breaking changes:
 
 - *add item here*
@@ -17,6 +11,14 @@ Breaking changes:
 New features:
 
 - *add item here*
+
+Bug fixes:
+
+- *add item here*
+
+
+1.2.6 (2017-08-27)
+------------------
 
 Bug fixes:
 
