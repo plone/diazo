@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.7 (unreleased)
+1.2.8 (unreleased)
 ------------------
 
 Breaking changes:
@@ -16,6 +16,15 @@ Bug fixes:
 
 - Make tox env release check manifest before releasing
   [loechel]
+
+
+1.2.7 (2017-08-28)
+------------------
+
+Bug fixes:
+
+- Fix packaging error.
+  [esteele]
 
 
 1.2.6 (2017-08-27)
