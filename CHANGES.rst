@@ -4,17 +4,10 @@ Changelog
 1.2.7 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
-- *add item here*
+- Fix packaging error.
+  [esteele]
 
 
 1.2.6 (2017-08-27)
