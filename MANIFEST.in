@@ -1,20 +1,28 @@
-include *.rst
-include LICENSE.txt
+# MANIFEST.in - Definition which files should be included in a release:
+
+# Files to include:
 include *.txt
-recursive-include lib *.css
-recursive-include lib *.html
-recursive-include lib *.js
-recursive-include lib *.rst
-recursive-include lib *.txt
-recursive-include lib *.xml
-recursive-include lib *.xsl
-recursive-include lib *.zcml
+global-include *.rst
+global-include *.cfg
+global-include *.xsl
+global-include *.py
+global-include *.xsl
+global-include *.zcml
+global-include *.html
+global-include *.css
+global-include *.js
+global-include *.cfg
+global-include *.xml
 
-
+# Whitelist / Include Path completely:
 graft docs
-prune docs/_build
 graft examples
+graft lib
 graft lib*
 graft templates
 
+# Blacklist / Exclude Files and Path
+prune docs/_build
 global-exclude *pyc
+global-exclude *pyo
+global-exclude *pyd
