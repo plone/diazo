@@ -4,17 +4,10 @@ Changelog
 1.2.8 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
-- *add item here*
+- Make tox env release check manifest before releasing
+  [loechel]
 
 
 1.2.7 (2017-08-28)
