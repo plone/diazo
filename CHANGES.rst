@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Add compatibility for plone.app.testing for Python 3.
+  [icemac]
 
 
 1.2.8 (2017-08-28)
