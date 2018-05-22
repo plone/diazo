@@ -12,7 +12,11 @@ import sys
 
 
 if PY3:
-    stdout = sys.stdout.buffer
+    try:
+        stdout = sys.stdout.buffer
+    except AttributeError:
+        # This can happen in (doc-)tests e. g. in plone.app.testing:
+        stdout = None
 else:
     stdout = sys.stdout
 
