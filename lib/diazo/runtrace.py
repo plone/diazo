@@ -14,18 +14,12 @@ _runtrace_to_html = pkg_xsl('runtrace_to_html.xsl')
 
 
 def log_to_xml_string(error_log):
+    msgs = [l.message for l in error_log if l.message.startswith('<runtrace ')]
     return """
 <runtrace xmlns:css="http://namespaces.plone.org/diazo/css">
     {message:s}
 </runtrace>
-""".format(
-        message=''.join(
-            l.message
-            for l
-            in error_log
-            if l.message.startswith('<runtrace ')
-        ),
-    )
+""".format(message=''.join(msgs))
 
 
 def generate_runtrace(rules, error_log, rules_parser=None):
