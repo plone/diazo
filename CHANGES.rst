@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix diazo.debug console with Python 2.7.
+  [pbauer]
 
 
 1.2.9 (2018-06-20)

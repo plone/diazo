@@ -23,7 +23,7 @@ def log_to_xml_string(error_log):
             l.message
             for l
             in error_log
-            if l.message.startswith('<runtrace '),
+            if l.message.startswith('<runtrace ')
         ),
     )
 
