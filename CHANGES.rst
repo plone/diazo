@@ -4,14 +4,6 @@ Changelog
 1.2.10 (unreleased)
 -------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Fix diazo.debug console with Python 2.7.
