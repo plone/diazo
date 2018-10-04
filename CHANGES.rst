@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix unicode errors in tests
+  [petschki]
 
 
 1.2.10 (2018-09-28)
