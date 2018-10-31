@@ -4,14 +4,6 @@ Changelog
 1.2.11 (unreleased)
 -------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Fix unicode errors in tests
