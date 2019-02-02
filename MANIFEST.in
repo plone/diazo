@@ -9,3 +9,6 @@ graft lib*
 graft templates
 
 global-exclude *pyc
+include pyproject.toml
+recursive-exclude news *
+exclude news
