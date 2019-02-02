@@ -25,4 +25,6 @@ graft templates
 prune docs/_build
 global-exclude *pyc
 global-exclude *pyo
-global-exclude *pyd
+global-exclude *pydinclude pyproject.toml
+recursive-exclude news *
+exclude news
