@@ -29,12 +29,12 @@ usage = __doc__
 
 
 def set_parser(stylesheet, parser, compiler_parser=None):
-    dummy_doc = etree.parse(
-        open(
-            pkg_resources.resource_filename('diazo', 'dummy.html'),
-        ),
-        parser=parser,
-    )
+    file_obj = pkg_resources.resource_filename('diazo', 'dummy.html')
+    with open(file_obj) as file_handler:
+        dummy_doc = etree.parse(
+            file_handler,
+            parser=parser,
+        )
     name = 'file:///__diazo__'
     resolver = CustomResolver({name: stylesheet})
     if compiler_parser is None:
