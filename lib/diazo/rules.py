@@ -11,10 +11,10 @@ from diazo.utils import _createOptionParser
 from diazo.utils import fullname
 from diazo.utils import namespaces
 from diazo.utils import pkg_xsl
-from future.moves.urllib.parse import urljoin
-from future.moves.urllib.request import urlopen
 from lxml import etree
 from six import string_types
+from six.moves.urllib.parse import urljoin
+from six.moves.urllib.request import urlopen
 
 import logging
 import re
