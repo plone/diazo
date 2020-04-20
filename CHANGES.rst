@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+1.4.0 (2020-04-20)
+------------------
+
+New features:
+
+
+- Drop support for Python 3.4.  No code changes.
+  [maurits] (#78)
+
+
 1.3.0 (2019-06-27)
 ------------------
 
