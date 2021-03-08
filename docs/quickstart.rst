@@ -50,28 +50,6 @@ To set up the proxy, we will use `Buildout`_.
     egg = lxml
 
     [versions]
-    # Lastest versions as of 2015-04-24
-    PasteDeploy = 1.5.2
-    Tempita = 0.5.2
-    WebOb = 1.4
-    argparse = 1.3.0
-    cliff = 1.12.0
-    cmd2 = 0.6.8
-    diazo = 1.1.1
-    experimental.cssselect = 0.3
-    future = 0.14.3
-    gearbox = 0.0.7
-    lxml = 3.4.3
-    prettytable = 0.7.2
-    pyparsing = 2.0.3
-    repoze.xmliter = 0.6
-    rutter = 0.2
-    setuptools = 15.1
-    six = 1.9.0
-    stevedore = 1.4.0
-    webobentrypoints = 0.1.0
-    zc.buildout = 2.3.1
-    zc.recipe.egg = 2.0.1
 
 4. Bootstrap the buildout (this is only required once)::
 
