@@ -12,6 +12,7 @@ RULES is a file defining a set of diazo rules in css syntax, e.g:
 """
 
 from __future__ import absolute_import
+
 from cssselect import GenericTranslator
 from diazo import utils
 from lxml import etree

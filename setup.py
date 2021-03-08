@@ -6,13 +6,13 @@ from setuptools import setup
 
 extras_require = {
     'wsgi': [
-        'repoze.xmliter>=0.6',
-        'WebOb>=1.4',
+        'repoze.xmliter',
+        'WebOb',
     ],
     'test': [
         'formencode',
-        'repoze.xmliter>=0.6',
-        'WebOb>=1.4',
+        'repoze.xmliter',
+        'WebOb',
     ],
 }
 
@@ -50,13 +50,14 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',
         'Topic :: Text Processing :: Markup :: XML',
     ],
     install_requires=[
-        'setuptools',
+    #    'setuptools',
         'lxml',
         'cssselect',
         'future',

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+
 from diazo.utils import quote_param
 from formencode.doctest_xml_compare import xml_compare
 from future.builtins import str

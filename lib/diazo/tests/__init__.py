@@ -2,12 +2,11 @@
 
 
 def alltests():
+    from . import test_diazo
+    from . import test_trace
+    from . import test_wsgi
+
     import unittest
-    from . import (
-        test_trace,
-        test_wsgi,
-        test_diazo,
-    )
     modules = [
         test_trace,
         test_wsgi,

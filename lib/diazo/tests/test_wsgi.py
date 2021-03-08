@@ -154,11 +154,11 @@ XSLT_PARAM = b"""\
 class TestXSLTMiddleware(unittest.TestCase):
 
     def test_transform_filename(self):
-        import tempfile
-        import os
-
         from diazo.wsgi import XSLTMiddleware
         from webob import Request
+
+        import os
+        import tempfile
 
         _, filename = tempfile.mkstemp()
         with open(filename, 'wb') as fp:
@@ -190,9 +190,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_transform_tree(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -220,9 +219,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_head_request(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -250,9 +248,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertFalse(response.body)
 
     def test_update_content_length(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -277,9 +274,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertEqual(response.headers['Content-Length'], '178')
 
     def test_dont_update_content_length(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -303,9 +299,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertEqual(response.headers.get('Content-Length'), None)
 
     def test_content_length_zero(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -330,9 +325,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertEqual(response.headers['Content-Length'], '0')
 
     def test_content_empty(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -360,9 +354,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         )
 
     def test_content_range(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -393,9 +386,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertFalse('Content-Range' in response.headers)
 
     def test_no_content_length(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -417,9 +409,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertFalse('Content-Length' in response.headers)
 
     def test_doctype_html(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -443,9 +434,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         )
 
     def test_doctype_xhtml(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -469,9 +459,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         )
 
     def test_doctype_html5(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -493,9 +482,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(response.body.startswith(b'<!DOCTYPE html>\n<html'))
 
     def test_ignored_extension(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -525,9 +513,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_diazo_off_request_header(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -558,9 +545,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_diazo_off_response_header(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application1(environ, start_response):
@@ -603,9 +589,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_non_html_content_type(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application1(environ, start_response):
@@ -646,9 +631,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_content_encoding(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application1(environ, start_response):
@@ -688,9 +672,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_301(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application1(environ, start_response):
@@ -731,9 +714,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_302(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application1(environ, start_response):
@@ -774,9 +756,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_304(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application1(environ, start_response):
@@ -809,9 +790,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_204(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application1(environ, start_response):
@@ -844,9 +824,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_401(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application1(environ, start_response):
@@ -887,9 +866,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<title>Transformed</title>' in response.body)
 
     def test_html_serialization(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -938,9 +916,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<br/>' in response.body)
 
     def test_environ_param(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):
@@ -968,9 +945,8 @@ class TestXSLTMiddleware(unittest.TestCase):
         self.assertTrue(b'<p>value1</p>' in response.body)
 
     def test_params(self):
-        from lxml import etree
-
         from diazo.wsgi import XSLTMiddleware
+        from lxml import etree
         from webob import Request
 
         def application(environ, start_response):

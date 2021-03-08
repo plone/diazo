@@ -7,10 +7,8 @@ cache:
 dist: xenial
 matrix:
     include:
-        - python: "2.7"
-          env: TOXENV=lint-py2
         - python: "3.7"
-          env: TOXENV=lint-py3
+          env: TOXENV=lint
         - python: "2.7"
           env: TOXENV=py27
         - python: "3.5"
@@ -21,6 +19,8 @@ matrix:
           env: TOXENV=py37
         - python: "3.8"
           env: TOXENV=py38
+        - python: "3.9"
+          env: TOXENV=py39
 
 install:
     - travis_retry pip install -U -c constraints.txt tox coveralls coverage
