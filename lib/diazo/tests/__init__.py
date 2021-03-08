@@ -2,9 +2,9 @@
 
 
 def alltests():
-    from . import test_diazo
-    from . import test_trace
-    from . import test_wsgi
+    from diazo.tests import test_diazo
+    from diazo.tests import test_trace
+    from diazo.tests import test_wsgi
 
     import unittest
     modules = [
