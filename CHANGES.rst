@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+1.4.1 (2021-06-30)
+------------------
+
+Bug fixes:
+
+
+- Fix problems with tox4 and simplify tox and test setup.
+  [loechel] (#80)
+
+
 1.4.0 (2020-04-20)
 ------------------
 
