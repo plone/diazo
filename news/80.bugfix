@@ -1,3 +1,2 @@
-- fix #80 Problems with tox4
-  [loechel]
-  
+Fix problems with tox4 and simplify tox and test setup.
+[loechel]
