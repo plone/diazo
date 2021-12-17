@@ -10,7 +10,6 @@ extras_require = {
         'WebOb',
     ],
     'test': [
-        'formencode',
         'repoze.xmliter',
         'WebOb',
     ],
