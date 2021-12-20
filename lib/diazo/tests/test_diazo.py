@@ -3,7 +3,6 @@
 from __future__ import print_function
 
 from diazo.utils import quote_param
-from formencode.doctest_xml_compare import xml_compare
 from future.builtins import str
 from io import BytesIO
 from io import open
@@ -15,6 +14,7 @@ import diazo.run
 import difflib
 import os
 import pkg_resources
+import six
 import sys
 import unittest
 
@@ -37,6 +37,68 @@ defaultsfn = pkg_resources.resource_filename(
     'diazo.tests',
     'default-options.cfg',
 )
+
+
+def text_compare(t1, t2):
+    # Copied from formencode.doctest_xml_compare.text_compare 2.0.1.
+    # See note in xml_compare below.
+    if not t1 and not t2:
+        return True
+    if t1 == '*' or t2 == '*':
+        return True
+    return (t1 or '').strip() == (t2 or '').strip()
+
+
+def xml_compare(x1, x2):
+    """Compare two xml items.
+
+    Copied from formencode.doctest_xml_compare.xml_compare 2.0.1,
+    without the (unused by us) optional 'reporter' argument.
+
+    License: MIT
+
+    Copyright (c) 2015 Ian Bicking and FormEncode Contributors
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+    """
+    if x1.tag != x2.tag:
+        return False
+    for name, value in six.iteritems(x1.attrib):
+        if x2.attrib.get(name) != value:
+            return False
+    for name in x2.attrib:
+        if name not in x1.attrib:
+            return False
+    if not text_compare(x1.text, x2.text):
+        return False
+    if not text_compare(x1.tail, x2.tail):
+        return False
+    cl1 = list(x1)
+    cl2 = list(x2)
+    if len(cl1) != len(cl2):
+        return False
+    i = 0
+    for c1, c2 in zip(cl1, cl2):
+        i += 1
+        if not xml_compare(c1, c2):
+            return False
+    return True
 
 
 class DiazoTestCase(unittest.TestCase):
