@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+1.4.2 (2021-12-29)
+------------------
+
+Bug fixes:
+
+
+- Remove FormEncode test dependency.
+  [maurits] (#83)
+
+
 1.4.1 (2021-06-30)
 ------------------
 
