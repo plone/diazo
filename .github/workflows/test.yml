@@ -31,7 +31,7 @@ jobs:
 
       - name: Install package
         run: |
-          pip install -c constraints.txt tox coveralls coverage
+          pip install -c constraints.txt tox coverage
 
       - name: Run tests
         env:
@@ -40,6 +40,7 @@ jobs:
           tox
 
       - name: Run coverage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           coverage combine
-          coveralls

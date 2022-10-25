@@ -1305,4 +1305,4 @@ class TestDiazoMiddleware(unittest.TestCase):
 
 
 def test_suite():
-    return unittest.defaultTestLoader.loadTestsFromName(__name__)
+    unittest.defaultTestLoader.loadTestsFromName(__name__)

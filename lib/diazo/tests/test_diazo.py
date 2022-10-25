@@ -2,12 +2,12 @@
 
 from __future__ import print_function
 
+from builtins import str
 from diazo.utils import quote_param
 from io import BytesIO
 from io import open
 from io import StringIO
 from lxml import etree
-from six import ensure_str
 
 import diazo.compiler
 import diazo.run
@@ -230,7 +230,7 @@ class DiazoTestCase(unittest.TestCase):
 
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = ensure_str(result)
+        self.themed_string = str(result)
         self.themed_content = etree.ElementTree(
             file=StringIO(self.themed_string),
             parser=etree.HTMLParser(),
@@ -285,16 +285,13 @@ class DiazoTestCase(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    dist = pkg_resources.get_distribution('diazo')
-    tests_dir = os.path.join(dist.location, 'diazo', 'tests')
+    tests_dir = os.path.dirname(__file__)
     suite.addTest(DiazoTestCase.suiteForParent(tests_dir, 'Test'))
-    if dist.precedence == pkg_resources.DEVELOP_DIST:
-        recipes_dir = os.path.join(
-            os.path.dirname(dist.location),
-            'docs',
-            'recipes',
-        )
-        if os.path.exists(os.path.join(recipes_dir, 'diazo-tests-marker.txt')):
-            # Could still be a 'System' package.
-            suite.addTest(DiazoTestCase.suiteForParent(recipes_dir, 'Recipe'))
-    return suite
+    recipes_dir = os.path.join(
+        tests_dir,
+        "../../..",
+        "docs/recipes",
+    )
+    if os.path.exists(os.path.join(recipes_dir, 'diazo-tests-marker.txt')):
+        # Could still be a 'System' package.
+        suite.addTest(DiazoTestCase.suiteForParent(recipes_dir, 'Recipe'))

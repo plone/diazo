@@ -12,6 +12,7 @@ extras_require = {
     'test': [
         'repoze.xmliter',
         'WebOb',
+        'py',
     ],
 }
 
