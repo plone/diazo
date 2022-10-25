@@ -34,6 +34,8 @@ jobs:
           pip install -c constraints.txt tox coveralls coverage
 
       - name: Run tests
+        env:
+          TOXENV: py${{ matrix.python-version }}
         run: |
           tox
 
