@@ -3,11 +3,11 @@
 from __future__ import print_function
 
 from diazo.utils import quote_param
-from future.builtins import str
 from io import BytesIO
 from io import open
 from io import StringIO
 from lxml import etree
+from six import ensure_str
 
 import diazo.compiler
 import diazo.run
@@ -230,7 +230,7 @@ class DiazoTestCase(unittest.TestCase):
 
         # Read the whole thing to strip off xhtml namespace.
         # If we had xslt 2.0 then we could use xpath-default-namespace.
-        self.themed_string = str(result)
+        self.themed_string = ensure_str(result)
         self.themed_content = etree.ElementTree(
             file=StringIO(self.themed_string),
             parser=etree.HTMLParser(),
