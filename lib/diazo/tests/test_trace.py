@@ -392,4 +392,4 @@ class TestDebug(unittest.TestCase):
 
 
 def test_suite():
-    unittest.defaultTestLoader.loadTestsFromName(__name__)
+    return unittest.defaultTestLoader.loadTestsFromName(__name__)

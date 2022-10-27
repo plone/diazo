@@ -295,3 +295,4 @@ def test_suite():
     if os.path.exists(os.path.join(recipes_dir, 'diazo-tests-marker.txt')):
         # Could still be a 'System' package.
         suite.addTest(DiazoTestCase.suiteForParent(recipes_dir, 'Recipe'))
+    return suite
