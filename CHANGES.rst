@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+1.5.0 (2022-10-31)
+------------------
+
+New features:
+
+
+- Remove dependency on `future` package.
+  [petschki] (#85)
+
+
 1.4.2 (2021-12-29)
 ------------------
 
