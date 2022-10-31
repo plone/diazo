@@ -3,11 +3,11 @@
 from diazo.compiler import compile_theme
 from diazo.utils import pkg_parse
 from diazo.utils import quote_param
-from future.moves.urllib.parse import unquote_plus
 from lxml import etree
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from six import string_types
+from six.moves.urllib.parse import unquote_plus
 from webob import Request
 
 import os.path

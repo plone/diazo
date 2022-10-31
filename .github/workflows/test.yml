@@ -1,0 +1,46 @@
+name: Test
+
+on:
+  push:
+    branches-ignore:
+      - "master"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "2.7"
+          - "3.5"
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python ${{ matrix.python-version }}
+        id: setup
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install -c constraints.txt tox coverage
+
+      - name: Run tests
+        env:
+          TOXENV: py${{ matrix.python-version }}
+        run: |
+          tox
+
+      - name: Run coverage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          coverage combine

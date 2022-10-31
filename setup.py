@@ -12,6 +12,7 @@ extras_require = {
     'test': [
         'repoze.xmliter',
         'WebOb',
+        'py',
     ],
 }
 
@@ -50,6 +51,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',
@@ -59,7 +61,6 @@ setup(
     #    'setuptools',
         'lxml',
         'cssselect',
-        'future',
         'six',
     ],
     extras_require=extras_require,
