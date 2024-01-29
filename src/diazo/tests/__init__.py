@@ -4,6 +4,7 @@ def alltests():
     from diazo.tests import test_wsgi
 
     import unittest
+
     modules = [
         test_trace,
         test_wsgi,
