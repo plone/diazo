@@ -23,6 +23,7 @@ graft templates
 
 # Blacklist / Exclude Files and Path
 prune docs/_build
+prune .tox
 global-exclude *pyc
 global-exclude *pyo
 global-exclude *pydinclude pyproject.toml
