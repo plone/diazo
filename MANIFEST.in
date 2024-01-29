@@ -1,25 +1,12 @@
 # MANIFEST.in - Definition which files should be included in a release:
 
 # Files to include:
-include *.txt
-global-include *.rst
-global-include *.cfg
-global-include *.xsl
-global-include *.py
-global-include *.xsl
-global-include *.zcml
-global-include *.html
-global-include *.css
-global-include *.js
-global-include *.cfg
-global-include *.xml
+include *.rst
 
 # Whitelist / Include Path completely:
 graft docs
 graft examples
-graft lib
-graft lib*
-graft templates
+graft src
 
 # Blacklist / Exclude Files and Path
 prune docs/_build
