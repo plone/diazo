@@ -23,6 +23,8 @@ repos:
     rev: 3.1.0
     hooks:
     -   id: zpretty
+        # Various test failures when we change xml and html.
+        files: ".*.(zcml)$"
 
 ##
 # Add extra configuration options in .meta.toml:

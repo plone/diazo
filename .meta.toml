@@ -5,5 +5,11 @@
 template = "default"
 commit-id = "5d3e918e"
 
+[pre_commit]
+zpretty_extra_lines = """
+        # Various test failures when we change xml and html.
+        files: ".*.(zcml)$"
+"""
+
 [pyproject]
 codespell_skip = "*.po,*.min.js,*.graffle,src/diazo/tests/conditional-drop-in-append*"
