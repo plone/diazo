@@ -92,7 +92,7 @@ def compile_theme(
 
     * ``rules`` is the rules file
     * ``theme`` is the theme file
-    * ``extra`` is an optional XSLT file with Diazo extensions (depracated, use
+    * ``extra`` is an optional XSLT file with Diazo extensions (deprecated, use
       inline xsl in the rules instead)
     * ``css``   can be set to False to disable CSS syntax support (providing a
       moderate speed gain)

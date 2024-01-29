@@ -72,7 +72,7 @@ target-version = ["py38"]
 
 [tool.codespell]
 ignore-words-list = "discreet,"
-skip = "*.po,"
+skip = "*.po,*.po,*.min.js,*.graffle,src/diazo/tests/conditional-drop-in-append*"
 ##
 # Add extra configuration options in .meta.toml:
 #  [pyproject]

@@ -202,7 +202,7 @@ def _createOptionParser(usage):
         "--extra",
         metavar="extra.xsl",
         help="Extra XSL to be included in the transform "
-        "(depracated, use inline xsl in the rules instead)",
+        "(deprecated, use inline xsl in the rules instead)",
         dest="extra",
         default=None,
     )
