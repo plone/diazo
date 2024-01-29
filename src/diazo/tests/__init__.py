@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 def alltests():
     from diazo.tests import test_diazo
     from diazo.tests import test_trace

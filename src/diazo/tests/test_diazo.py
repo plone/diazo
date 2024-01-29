@@ -1,11 +1,5 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
-
-from builtins import str
 from diazo.utils import quote_param
 from io import BytesIO
-from io import open
 from io import StringIO
 from lxml import etree
 
@@ -79,7 +73,7 @@ def xml_compare(x1, x2):
     """
     if x1.tag != x2.tag:
         return False
-    for name, value in six.iteritems(x1.attrib):
+    for name, value in x1.attrib.items():
         if x2.attrib.get(name) != value:
             return False
     for name in x2.attrib:
@@ -135,7 +129,7 @@ class DiazoTestCase(unittest.TestCase):
                 (DiazoTestCase,),
                 dict(testdir=path),
             )
-            suite.addTest(unittest.makeSuite(test_cls))
+            suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(test_cls))
         return suite
 
     def testAll(self):
@@ -200,8 +194,8 @@ class DiazoTestCase(unittest.TestCase):
                 if self.warnings:
                     print('WARNING:', 'compiled.xsl has CHANGED')
                     for line in difflib.unified_diff(
-                        old.split(u'\n'),
-                        new.split(u'\n'),
+                        old.split('\n'),
+                        new.split('\n'),
                         xslfn,
                         'now',
                     ):
@@ -269,8 +263,8 @@ class DiazoTestCase(unittest.TestCase):
                 # if self.writefiles:
                 #    open(outputfn + '.old', 'w').write(old)
                 for line in difflib.unified_diff(
-                    old.split(u'\n'),
-                    new.split(u'\n'),
+                    old.split('\n'),
+                    new.split('\n'),
                     outputfn,
                     'now',
                 ):

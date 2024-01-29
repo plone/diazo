@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """\
 Usage: %prog [-r] RULES
 
@@ -13,8 +12,8 @@ from diazo.utils import namespaces
 from diazo.utils import pkg_xsl
 from lxml import etree
 from six import string_types
-from six.moves.urllib.parse import urljoin
-from six.moves.urllib.request import urlopen
+from urllib.parse import urljoin
+from urllib.request import urlopen
 
 import logging
 import re
@@ -70,7 +69,7 @@ def add_identifiers(rules_doc):
                 namespaces['xml'],
                 'id',
             ),
-            'r{index}'.format(index=index),
+            f'r{index}',
         )
     return rules_doc
 
@@ -80,7 +79,7 @@ def update_namespace(rules_doc):
     """
     update = False
     for ns in (namespaces['old1'], namespaces['old2']):
-        if rules_doc.xpath("//*[namespace-uri()='{ns:s}']".format(ns=ns)):
+        if rules_doc.xpath(f"//*[namespace-uri()='{ns:s}']"):
             logger.warning(
                 'The %s namespace is deprecated, use %s instead.',
                 ns,
@@ -88,7 +87,7 @@ def update_namespace(rules_doc):
             )
             update = True
     for ns in (namespaces['oldcss1'], namespaces['oldcss2']):
-        if rules_doc.xpath("//@*[namespace-uri()='{ns:s}']".format(ns=ns)):
+        if rules_doc.xpath(f"//@*[namespace-uri()='{ns:s}']"):
             logger.warning(
                 'The %s namespace is deprecated, use %s instead.',
                 ns,
@@ -237,7 +236,7 @@ def add_theme(
     read_network=False,
 ):
     if not read_network and \
-            isinstance(theme, string_types) and \
+            isinstance(theme, str) and \
             theme[:6] in ('ftp://', 'http:/', 'https:'):
         raise ValueError(
             "Supplied theme '{theme}', but network access denied.".format(
@@ -328,7 +327,7 @@ def process_rules(
         return rules_doc
     if includemode is None:
         includemode = 'document'
-    includemode = "'{mode:s}'".format(mode=includemode)
+    includemode = f"'{includemode:s}'"
     rules_doc = normalize_rules(rules_doc, includemode=includemode)
     if stop == 7:
         return rules_doc

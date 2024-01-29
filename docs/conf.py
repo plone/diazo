@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Diazo documentation build configuration file, created by
 # sphinx-quickstart on Tue Nov  2 18:58:07 2010.
@@ -40,8 +39,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Diazo'
-copyright = u'2011, Plone Foundation'
+project = 'Diazo'
+copyright = '2011, Plone Foundation'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -178,8 +177,8 @@ htmlhelp_basename = 'Diazodoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Diazo.tex', u'Diazo Documentation',
-   u'Plone Foundation', 'manual'),
+  ('index', 'Diazo.tex', 'Diazo Documentation',
+   'Plone Foundation', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -211,6 +210,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'diazo', u'Diazo Documentation',
-     [u'Plone Foundation'], 1)
+    ('index', 'diazo', 'Diazo Documentation',
+     ['Plone Foundation'], 1)
 ]

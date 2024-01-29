@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from diazo.rules import process_rules
 from diazo.utils import pkg_xsl

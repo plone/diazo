@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from lxml import etree
 from optparse import OptionParser
 from six import integer_types
@@ -11,14 +9,11 @@ import pkg_resources
 import sys
 
 
-if PY3:
-    try:
-        stdout = sys.stdout.buffer
-    except AttributeError:
-        # This can happen in (doc-)tests e. g. in plone.app.testing:
-        stdout = None
-else:
-    stdout = sys.stdout
+try:
+    stdout = sys.stdout.buffer
+except AttributeError:
+    # This can happen in (doc-)tests e. g. in plone.app.testing:
+    stdout = None
 
 strparam = etree.XSLT.strparam
 
@@ -45,7 +40,7 @@ def namespace(name):
 
 
 def fullname(namespace, name):
-    return '{%s}%s' % (namespace, name)  # NOQA: S001
+    return f'{{{namespace}}}{name}'  # NOQA: S001
 
 
 AC_READ_FILE = etree.XSLTAccessControl(
@@ -104,11 +99,11 @@ def quote_param(value):
     Works with strings, booleans, numbers and None.
     """
 
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         return strparam(value)
     elif isinstance(value, bool):
         return value and 'true()' or 'false()'
-    elif isinstance(value, integer_types + (float,)):
+    elif isinstance(value, (int,) + (float,)):
         value = repr(value)
     elif value is None:
         return '/..'

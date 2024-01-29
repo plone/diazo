@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """\
 Usage: %prog -x TRANSFORM CONTENT
 
@@ -143,15 +142,15 @@ def main():
     content_doc = etree.parse(content, parser=parser)
     params = {}
     if options.path is not None:
-        params['path'] = "'{path}'".format(path=options.path)
+        params['path'] = f"'{options.path}'"
 
     if options.parameters:
         for key, value in split_params(options.parameters).items():
             params[key] = quote_param(value)
 
     output_html = transform(content_doc, **params)
-    if isinstance(options.output, string_types):
-        out = open(options.output, 'wt')
+    if isinstance(options.output, str):
+        out = open(options.output, 'w')
     else:
         out = options.output
     out.write(str(output_html))
@@ -165,7 +164,7 @@ def main():
             if options.runtrace_xml == '-':
                 out = sys.stdout
             else:
-                out = open(options.runtrace_xml, 'wt')
+                out = open(options.runtrace_xml, 'w')
             runtrace_doc.write(
                 out,
                 encoding='utf-8',
@@ -175,7 +174,7 @@ def main():
             if options.runtrace_html == '-':
                 out = sys.stdout
             else:
-                out = open(options.runtrace_html, 'wt')
+                out = open(options.runtrace_html, 'w')
             out.write(str(diazo.runtrace.runtrace_to_html(runtrace_doc)))
 
     for msg in transform.error_log:

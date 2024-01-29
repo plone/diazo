@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from diazo.compiler import compile_theme
 from diazo.utils import pkg_parse
 from diazo.utils import quote_param
@@ -7,7 +5,7 @@ from lxml import etree
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from six import string_types
-from six.moves.urllib.parse import unquote_plus
+from urllib.parse import unquote_plus
 from webob import Request
 
 import os.path
@@ -19,7 +17,7 @@ DIAZO_OFF_HEADER = 'X-Diazo-Off'
 
 
 def asbool(value):
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         value = value.strip().lower()
         if value in ('true', 'yes', 'on', 'y', 't', '1', ):
             return True
@@ -98,22 +96,22 @@ class WSGIResolver(etree.Resolver):
             'text/javascript',
             'application/x-javascript',
         ):
-            result = u''.join([
-                u'<html><body><script type="text/javascript">',
+            result = ''.join([
+                '<html><body><script type="text/javascript">',
                 result,
-                u'</script></body></html>',
+                '</script></body></html>',
             ])
         elif response.content_type == 'text/css':
-            result = u''.join([
-                u'<html><body><style type="text/css">',
+            result = ''.join([
+                '<html><body><style type="text/css">',
                 result,
-                u'</style></body></html>',
+                '</style></body></html>',
             ])
 
         return self.resolve_string(result, context)
 
 
-class XSLTMiddleware(object):
+class XSLTMiddleware:
     """Apply XSLT in middleware
     """
 
@@ -262,11 +260,11 @@ class XSLTMiddleware(object):
         self.ignored_extensions = frozenset(ignored_extensions)
 
         self.ignored_pattern = re.compile(
-            '^.*\.({ext:s})$'.format(ext='|'.join(ignored_extensions)),
+            r'^.*\.({ext:s})$'.format(ext='|'.join(ignored_extensions)),
         )
 
         self.environ_param_map = environ_param_map or {}
-        if isinstance(unquoted_params, string_types):
+        if isinstance(unquoted_params, str):
             unquoted_params = unquoted_params.split()
         self.unquoted_params = unquoted_params and \
             frozenset(unquoted_params) or ()
@@ -415,7 +413,7 @@ class XSLTMiddleware(object):
             response.charset = self.charset
 
 
-class DiazoMiddleware(object):
+class DiazoMiddleware:
     """Invoke the Diazo transform as middleware
     """
 

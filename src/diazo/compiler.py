@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """\
 Usage: %prog [options] [-r] RULES [-t] THEME
 
@@ -41,7 +40,7 @@ def set_parser(stylesheet, parser, compiler_parser=None):
         compiler_parser = etree.XMLParser()
     compiler_parser.resolvers.add(resolver)
     identity = pkg_xsl('identity.xsl', compiler_parser)
-    output_doc = identity(dummy_doc, docurl="'{name}'".format(name=name))
+    output_doc = identity(dummy_doc, docurl=f"'{name}'")
     compiler_parser.resolvers.remove(resolver)
     return output_doc
 
@@ -61,7 +60,7 @@ def build_xsl_params_document(xsl_params):
             '{http://www.w3.org/1999/XSL/Transform}param',
         )
         param_element.attrib['name'] = param_name
-        if isinstance(param_value, string_types):
+        if isinstance(param_value, str):
             param_element.text = param_value
         else:
             param_element.attrib['select'] = str(quote_param(param_value))
