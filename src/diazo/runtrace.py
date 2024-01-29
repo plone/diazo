@@ -60,12 +60,12 @@ def error_log_to_html(error_log):
         if log.message.startswith("<runtrace "):
             continue
         el = etree.Element("li")
-        el.attrib[
-            "class"
-        ] = "domain_{domain_name} level_{level_name} type_{type_name}".format(  # NOQA: E501
-            domain_name=log.domain_name,
-            level_name=log.level_name,
-            type_name=log.type_name,
+        el.attrib["class"] = (
+            "domain_{domain_name} level_{level_name} type_{type_name}".format(  # NOQA: E501
+                domain_name=log.domain_name,
+                level_name=log.level_name,
+                type_name=log.type_name,
+            )
         )
         el.text = "{msg:s} [{line:d}:{column:d}]".format(
             msg=log.message,
