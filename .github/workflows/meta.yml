@@ -30,8 +30,6 @@ jobs:
     uses: plone/meta/.github/workflows/test.yml@main
   coverage:
     uses: plone/meta/.github/workflows/coverage.yml@main
-  dependencies:
-    uses: plone/meta/.github/workflows/dependencies.yml@main
   release_ready:
     uses: plone/meta/.github/workflows/release_ready.yml@main
   circular:
