@@ -3,12 +3,12 @@ from io import BytesIO
 from io import StringIO
 from lxml import etree
 
+import configparser
 import diazo.compiler
 import diazo.run
 import difflib
 import os
 import pkg_resources
-import six
 import sys
 import unittest
 
@@ -16,12 +16,6 @@ import unittest
 #
 # Simple test runner for validating different diazo scenarios
 #
-
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
-
 
 if __name__ == "__main__":
     __file__ = sys.argv[0]

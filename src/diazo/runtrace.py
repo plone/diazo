@@ -13,7 +13,7 @@ _runtrace_to_html = pkg_xsl("runtrace_to_html.xsl")
 
 
 def log_to_xml_string(error_log):
-    msgs = [l.message for l in error_log if l.message.startswith("<runtrace ")]
+    msgs = [log.message for log in error_log if log.message.startswith("<runtrace ")]
     return """
 <runtrace xmlns:css="http://namespaces.plone.org/diazo/css">
     {message:s}
@@ -56,21 +56,21 @@ def runtrace_to_html(runtrace_doc):
 def error_log_to_html(error_log):
     """Convert an error log into an HTML representation"""
     doc = etree.Element("ul")
-    for l in error_log:
-        if l.message.startswith("<runtrace "):
+    for log in error_log:
+        if log.message.startswith("<runtrace "):
             continue
         el = etree.Element("li")
         el.attrib[
             "class"
         ] = "domain_{domain_name} level_{level_name} type_{type_name}".format(  # NOQA: E501
-            domain_name=l.domain_name,
-            level_name=l.level_name,
-            type_name=l.type_name,
+            domain_name=log.domain_name,
+            level_name=log.level_name,
+            type_name=log.type_name,
         )
         el.text = "{msg:s} [{line:d}:{column:d}]".format(
-            msg=l.message,
-            line=l.line,
-            column=l.column,
+            msg=log.message,
+            line=log.line,
+            column=log.column,
         )
         doc.append(el)
     return doc

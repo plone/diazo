@@ -1,8 +1,5 @@
 from lxml import etree
 from optparse import OptionParser
-from six import integer_types
-from six import PY3
-from six import string_types
 
 import logging
 import pkg_resources

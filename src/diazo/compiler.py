@@ -17,7 +17,6 @@ from diazo.utils import pkg_xsl
 from diazo.utils import quote_param
 from diazo.utils import split_params
 from lxml import etree
-from six import string_types
 
 import logging
 import pkg_resources

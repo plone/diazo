@@ -11,7 +11,6 @@ from diazo.utils import fullname
 from diazo.utils import namespaces
 from diazo.utils import pkg_xsl
 from lxml import etree
-from six import string_types
 from urllib.parse import urljoin
 from urllib.request import urlopen
 

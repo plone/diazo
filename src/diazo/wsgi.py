@@ -4,7 +4,6 @@ from diazo.utils import quote_param
 from lxml import etree
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
-from six import string_types
 from urllib.parse import unquote_plus
 from webob import Request
 

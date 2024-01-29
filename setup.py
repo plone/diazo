@@ -56,7 +56,6 @@ setup(
         #    'setuptools',
         "lxml",
         "cssselect",
-        "six",
     ],
     extras_require=extras_require,
     test_suite="diazo.tests.alltests",
