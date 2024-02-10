@@ -127,7 +127,7 @@ For example, if the transform is set up to receive a string parameter
 
     <drop css:theme=".test-site-warning" if="$mode = 'live'" />
 
-Use the ``if-not`` attribute to negate the conditon, for example::
+Use the ``if-not`` attribute to negate the condition, for example::
 
     <drop css:theme=".test-site-warning" if-not="$mode = 'live'" />
 
@@ -344,7 +344,7 @@ the included WSGI middleware include a ``doctype`` option which may be set to
 XInclude
 --------
 
-You may wish to re-use elements of your rules file across multiple themes.
+You may wish to reuse elements of your rules file across multiple themes.
 This is particularly useful if you have multiple variations on the same theme
 used to style different pages on a particular website.
 

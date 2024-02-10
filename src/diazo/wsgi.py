@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
-
 from diazo.compiler import compile_theme
 from diazo.utils import pkg_parse
 from diazo.utils import quote_param
 from lxml import etree
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
-from six import string_types
-from six.moves.urllib.parse import unquote_plus
+from urllib.parse import unquote_plus
 from webob import Request
 
 import os.path
@@ -15,19 +12,33 @@ import pkg_resources
 import re
 
 
-DIAZO_OFF_HEADER = 'X-Diazo-Off'
+DIAZO_OFF_HEADER = "X-Diazo-Off"
 
 
 def asbool(value):
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         value = value.strip().lower()
-        if value in ('true', 'yes', 'on', 'y', 't', '1', ):
+        if value in (
+            "true",
+            "yes",
+            "on",
+            "y",
+            "t",
+            "1",
+        ):
             return True
-        elif value in ('false', 'no', 'off', 'n', 'f', '0', ):
+        elif value in (
+            "false",
+            "no",
+            "off",
+            "n",
+            "f",
+            "0",
+        ):
             return False
         else:
             raise ValueError(
-                'String is not true/false: {value:r}'.format(
+                "String is not true/false: {value:r}".format(
                     value=value,
                 ),
             )
@@ -37,8 +48,9 @@ def asbool(value):
 
 class FilesystemResolver(etree.Resolver):
     """Resolver for filesystem paths"""
+
     def resolve(self, system_url, public_id, context):
-        if '://' not in system_url and os.path.exists(system_url):
+        if "://" not in system_url and os.path.exists(system_url):
             return self.resolve_filename(system_url, context)
         else:
             return None
@@ -46,8 +58,9 @@ class FilesystemResolver(etree.Resolver):
 
 class NetworkResolver(etree.Resolver):
     """Resolver for network urls"""
+
     def resolve(self, system_url, public_id, context):
-        if '://' in system_url and system_url != 'file:///__diazo__':
+        if "://" in system_url and system_url != "file:///__diazo__":
             return self.resolve_filename(system_url, context)
         else:
             return None
@@ -57,11 +70,11 @@ class PythonResolver(etree.Resolver):
     """Resolver for python:// urls"""
 
     def resolve(self, system_url, public_id, context):
-        if not system_url.lower().startswith('python://'):
+        if not system_url.lower().startswith("python://"):
             return None
 
         spec = system_url[9:]
-        package, resource_name = spec.split('/', 1)
+        package, resource_name = spec.split("/", 1)
         filename = pkg_resources.resource_filename(package, resource_name)
 
         return self.resolve_filename(filename, context)
@@ -75,47 +88,50 @@ class WSGIResolver(etree.Resolver):
 
     def resolve(self, system_url, public_id, context):
         # Ignore URLs with a scheme
-        if '://' in system_url:
+        if "://" in system_url:
             return None
 
         # Ignore the special 'diazo:' resolvers
-        if system_url.startswith('diazo:'):
+        if system_url.startswith("diazo:"):
             return None
 
         subrequest = Request.blank(system_url)
         response = subrequest.get_response(self.app)
 
         status_code, reason = response.status.split(None, 1)
-        if not status_code == '200':
+        if not status_code == "200":
             return None
 
         if response.charset is None:
-            response.charset = 'UTF-8'  # Maybe this should be latin1?
+            response.charset = "UTF-8"  # Maybe this should be latin1?
 
         result = response.text
 
         if response.content_type in (
-            'text/javascript',
-            'application/x-javascript',
+            "text/javascript",
+            "application/x-javascript",
         ):
-            result = u''.join([
-                u'<html><body><script type="text/javascript">',
-                result,
-                u'</script></body></html>',
-            ])
-        elif response.content_type == 'text/css':
-            result = u''.join([
-                u'<html><body><style type="text/css">',
-                result,
-                u'</style></body></html>',
-            ])
+            result = "".join(
+                [
+                    '<html><body><script type="text/javascript">',
+                    result,
+                    "</script></body></html>",
+                ]
+            )
+        elif response.content_type == "text/css":
+            result = "".join(
+                [
+                    '<html><body><style type="text/css">',
+                    result,
+                    "</style></body></html>",
+                ]
+            )
 
         return self.resolve_string(result, context)
 
 
-class XSLTMiddleware(object):
-    """Apply XSLT in middleware
-    """
+class XSLTMiddleware:
+    """Apply XSLT in middleware"""
 
     def __init__(
         self,
@@ -127,37 +143,37 @@ class XSLTMiddleware(object):
         read_file=True,
         update_content_length=False,
         ignored_extensions=(
-            'js',
-            'css',
-            'gif',
-            'jpg',
-            'jpeg',
-            'pdf',
-            'ps',
-            'doc',
-            'png',
-            'ico',
-            'mov',
-            'mpg',
-            'mpeg',
-            'mp3',
-            'm4a',
-            'txt',
-            'rtf',
-            'swf',
-            'wav',
-            'zip',
-            'wmv',
-            'ppt',
-            'gz',
-            'tgz',
-            'jar',
-            'xls',
-            'bmp',
-            'tif',
-            'tga',
-            'hqx',
-            'avi',
+            "js",
+            "css",
+            "gif",
+            "jpg",
+            "jpeg",
+            "pdf",
+            "ps",
+            "doc",
+            "png",
+            "ico",
+            "mov",
+            "mpg",
+            "mpeg",
+            "mp3",
+            "m4a",
+            "txt",
+            "rtf",
+            "swf",
+            "wav",
+            "zip",
+            "wmv",
+            "ppt",
+            "gz",
+            "tgz",
+            "jar",
+            "xls",
+            "bmp",
+            "tif",
+            "tga",
+            "hqx",
+            "avi",
         ),
         environ_param_map=None,
         unquoted_params=None,
@@ -165,7 +181,7 @@ class XSLTMiddleware(object):
         content_type=None,
         charset=None,
         remove_conditional_headers=False,
-        **params  # NOQA: C816
+        **params,  # NOQA: C816
     ):
         """Initialise, giving a filename or parsed XSLT tree.
 
@@ -215,37 +231,37 @@ class XSLTMiddleware(object):
 
         if content_type is None:
             mediatype = tree.xpath(
-                '/xsl:stylesheet/xsl:output/@media-type',
-                namespaces=dict(xsl='http://www.w3.org/1999/XSL/Transform'),
+                "/xsl:stylesheet/xsl:output/@media-type",
+                namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"),
             )
             if mediatype:
                 content_type = mediatype[-1]
             else:
                 method = tree.xpath(
-                    '/xsl:stylesheet/xsl:output/@method',
+                    "/xsl:stylesheet/xsl:output/@method",
                     namespaces=dict(
-                        xsl='http://www.w3.org/1999/XSL/Transform',
+                        xsl="http://www.w3.org/1999/XSL/Transform",
                     ),
                 )
                 if method:
                     method = method[-1]
-                    if method.lower() == 'html':
-                        content_type = 'text/html'
-                    elif method.lower() == 'text':
-                        content_type = 'text/plain'
-                    elif method.lower() == 'xml':
-                        content_type = 'text/xml'
+                    if method.lower() == "html":
+                        content_type = "text/html"
+                    elif method.lower() == "text":
+                        content_type = "text/plain"
+                    elif method.lower() == "xml":
+                        content_type = "text/xml"
         self.content_type = content_type
 
         if charset is None:
             encoding = tree.xpath(
-                '/xsl:stylesheet/xsl:output/@encoding',
-                namespaces=dict(xsl='http://www.w3.org/1999/XSL/Transform'),
+                "/xsl:stylesheet/xsl:output/@encoding",
+                namespaces=dict(xsl="http://www.w3.org/1999/XSL/Transform"),
             )
             if encoding:
                 charset = encoding[-1]
             else:
-                charset = 'UTF-8'
+                charset = "UTF-8"
         self.charset = charset
 
         self.read_network = asbool(read_network)
@@ -262,14 +278,13 @@ class XSLTMiddleware(object):
         self.ignored_extensions = frozenset(ignored_extensions)
 
         self.ignored_pattern = re.compile(
-            '^.*\.({ext:s})$'.format(ext='|'.join(ignored_extensions)),
+            r"^.*\.({ext:s})$".format(ext="|".join(ignored_extensions)),
         )
 
         self.environ_param_map = environ_param_map or {}
-        if isinstance(unquoted_params, string_types):
+        if isinstance(unquoted_params, str):
             unquoted_params = unquoted_params.split()
-        self.unquoted_params = unquoted_params and \
-            frozenset(unquoted_params) or ()
+        self.unquoted_params = unquoted_params and frozenset(unquoted_params) or ()
         self.params = params
         self.doctype = doctype
         self.remove_conditional_headers = asbool(remove_conditional_headers)
@@ -297,7 +312,7 @@ class XSLTMiddleware(object):
             input_encoding = response.charset
 
             # Note, the Content-Length header will not be set
-            if request.method == 'HEAD':
+            if request.method == "HEAD":
                 self.reset_headers(response)
                 return response(environ, start_response)
 
@@ -312,7 +327,7 @@ class XSLTMiddleware(object):
                 # Headers should be left intact
                 return response(environ, start_response)
         finally:
-            if getattr(response.app_iter, 'close', None):
+            if getattr(response.app_iter, "close", None):
                 response.app_iter.close()
 
         self.reset_headers(response)
@@ -338,10 +353,10 @@ class XSLTMiddleware(object):
         # Set content type (normally inferred from stylesheet)
         # Unfortunately lxml does not expose docinfo.mediaType
         if self.content_type is None:
-            if tree.getroot().tag == 'html':
-                response.content_type = 'text/html'
+            if tree.getroot().tag == "html":
+                response.content_type = "text/html"
             else:
-                response.content_type = 'text/xml'
+                response.content_type = "text/xml"
         response.charset = tree.docinfo.encoding or self.charset
 
         # Return a repoze.xmliter XMLSerializer, which helps avoid re-parsing
@@ -357,10 +372,9 @@ class XSLTMiddleware(object):
         return response(environ, start_response)
 
     def should_ignore(self, request):
-        """Determine if we should ignore the request
-        """
+        """Determine if we should ignore the request"""
 
-        if asbool(request.headers.get(DIAZO_OFF_HEADER, 'no')):
+        if asbool(request.headers.get(DIAZO_OFF_HEADER, "no")):
             return True
 
         path = request.path_info
@@ -370,29 +384,28 @@ class XSLTMiddleware(object):
         return False
 
     def should_transform(self, response):
-        """Determine if we should transform the response
-        """
+        """Determine if we should transform the response"""
 
-        if asbool(response.headers.get(DIAZO_OFF_HEADER, 'no')):
+        if asbool(response.headers.get(DIAZO_OFF_HEADER, "no")):
             return False
 
-        content_type = response.headers.get('Content-Type')
+        content_type = response.headers.get("Content-Type")
         if not content_type or not (
-            content_type.lower().startswith('text/html') or
-            content_type.lower().startswith('application/xhtml+xml')
+            content_type.lower().startswith("text/html")
+            or content_type.lower().startswith("application/xhtml+xml")
         ):
             return False
 
-        content_encoding = response.headers.get('Content-Encoding')
-        if content_encoding in ('zip', 'deflate', 'compress',):
+        content_encoding = response.headers.get("Content-Encoding")
+        if content_encoding in (
+            "zip",
+            "deflate",
+            "compress",
+        ):
             return False
 
         status_code, reason = response.status.split(None, 1)
-        if (
-            status_code.startswith('3') or
-            status_code == '204' or
-            status_code == '401'
-        ):
+        if status_code.startswith("3") or status_code == "204" or status_code == "401":
             return False
 
         if response.content_length == 0:
@@ -415,9 +428,8 @@ class XSLTMiddleware(object):
             response.charset = self.charset
 
 
-class DiazoMiddleware(object):
-    """Invoke the Diazo transform as middleware
-    """
+class DiazoMiddleware:
+    """Invoke the Diazo transform as middleware"""
 
     def __init__(
         self,
@@ -426,50 +438,50 @@ class DiazoMiddleware(object):
         rules,
         theme=None,
         prefix=None,
-        includemode='document',
+        includemode="document",
         debug=False,
         read_network=False,
         read_file=True,
         update_content_length=False,
         ignored_extensions=(
-            'js',
-            'css',
-            'gif',
-            'jpg',
-            'jpeg',
-            'pdf',
-            'ps',
-            'doc',
-            'png',
-            'ico',
-            'mov',
-            'mpg',
-            'mpeg',
-            'mp3',
-            'm4a',
-            'txt',
-            'rtf',
-            'swf',
-            'wav',
-            'zip',
-            'wmv',
-            'ppt',
-            'gz',
-            'tgz',
-            'jar',
-            'xls',
-            'bmp',
-            'tif',
-            'tga',
-            'hqx',
-            'avi',
+            "js",
+            "css",
+            "gif",
+            "jpg",
+            "jpeg",
+            "pdf",
+            "ps",
+            "doc",
+            "png",
+            "ico",
+            "mov",
+            "mpg",
+            "mpeg",
+            "mp3",
+            "m4a",
+            "txt",
+            "rtf",
+            "swf",
+            "wav",
+            "zip",
+            "wmv",
+            "ppt",
+            "gz",
+            "tgz",
+            "jar",
+            "xls",
+            "bmp",
+            "tif",
+            "tga",
+            "hqx",
+            "avi",
         ),
         environ_param_map=None,
         unquoted_params=None,
         doctype=None,
         content_type=None,
         filter_xpath=False,
-        **params  # NOQA: C816
+        **params,  # NOQA: C816
     ):
         """Create the middleware. The parameters are:
 
@@ -546,12 +558,14 @@ class DiazoMiddleware(object):
         self.filter_middleware = self.get_filter_middleware()
 
         self.environ_param_map = environ_param_map or {}
-        self.environ_param_map.update({
-            'diazo.path': 'path',
-            'diazo.query_string': 'query_string',
-            'diazo.host': 'host',
-            'diazo.scheme': 'scheme',
-        })
+        self.environ_param_map.update(
+            {
+                "diazo.path": "path",
+                "diazo.query_string": "query_string",
+                "diazo.host": "host",
+                "diazo.scheme": "scheme",
+            }
+        )
 
         self.params = params.copy()
 
@@ -609,11 +623,11 @@ class DiazoMiddleware(object):
             doctype=self.doctype,
             content_type=self.content_type,
             unquoted_params=self.unquoted_params,
-            **self.params  # NOQA: C815,S101
+            **self.params,  # NOQA: C815,S101
         )
 
     def get_filter_middleware(self):
-        tree = pkg_parse('filter_xhtml.xsl')
+        tree = pkg_parse("filter_xhtml.xsl")
         return XSLTMiddleware(
             self.app,
             self.global_conf,
@@ -622,22 +636,22 @@ class DiazoMiddleware(object):
             read_file=False,
             update_content_length=self.update_content_length,
             ignored_extensions=self.ignored_extensions,
-            environ_param_map={'diazo.filter_xpath': 'xpath'},
-            doctype='',
+            environ_param_map={"diazo.filter_xpath": "xpath"},
+            doctype="",
             content_type=self.content_type,
-            unquoted_params=['xpath'],
+            unquoted_params=["xpath"],
         )
 
     def __call__(self, environ, start_response):
         if self.filter_xpath:
-            filter_xpath = ';filter_xpath='
-            query_string = environ.get('QUERY_STRING', '')
+            filter_xpath = ";filter_xpath="
+            query_string = environ.get("QUERY_STRING", "")
             if filter_xpath in query_string:
-                environ['QUERY_STRING'], xpath = query_string.rsplit(
+                environ["QUERY_STRING"], xpath = query_string.rsplit(
                     filter_xpath,
                     1,
                 )
-                environ['diazo.filter_xpath'] = unquote_plus(xpath)
+                environ["diazo.filter_xpath"] = unquote_plus(xpath)
                 return self.filter_middleware(environ, start_response)
 
         transform_middleware = self.transform_middleware
@@ -649,11 +663,11 @@ class DiazoMiddleware(object):
         # Set up variables, some of which are used as transform parameters
         request = Request(environ)
 
-        environ['diazo.rules'] = self.rules
-        environ['diazo.absolute_prefix'] = self.absolute_prefix
-        environ['diazo.path'] = request.path
-        environ['diazo.query_string'] = request.query_string
-        environ['diazo.host'] = request.host
-        environ['diazo.scheme'] = request.scheme
+        environ["diazo.rules"] = self.rules
+        environ["diazo.absolute_prefix"] = self.absolute_prefix
+        environ["diazo.path"] = request.path
+        environ["diazo.query_string"] = request.query_string
+        environ["diazo.host"] = request.host
+        environ["diazo.scheme"] = request.scheme
 
         return transform_middleware(environ, start_response)

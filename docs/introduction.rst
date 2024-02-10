@@ -42,7 +42,7 @@ Bear in mind that:
   be served from a static webserver, which is normally much faster than
   serving them from a dynamic application.
 * You can leave the original theme HTML untouched, which makes it easier to
-  re-use for other scenarios. For example, you can stitch two unrelated
+  reuse for other scenarios. For example, you can stitch two unrelated
   applications together by using a single theme file with separate rules
   files. This would result in two compiled XSLT files. You could use location
   match rules or similar techniques to choose which one to invoke for a given

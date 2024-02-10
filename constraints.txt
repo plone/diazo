@@ -1,3 +1,0 @@
-# Constrains for testing Diazo / Plone Packages
-# ---------------------------------------------
-
