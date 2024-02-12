@@ -8,6 +8,24 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.0 (2024-02-12)
+------------------
+
+Breaking changes:
+
+
+- Drop support for Pythons that are end of life.
+  Support Python 3.8-3.12.
+  [maurits] (#23)
+
+
+Internal:
+
+
+- Update configuration files.
+  [plone devs] (5d3e918e)
+
+
 1.5.0 (2022-10-31)
 ------------------
 
