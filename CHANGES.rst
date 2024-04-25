@@ -8,6 +8,17 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.1 (2024-04-25)
+------------------
+
+Tests
+
+
+- Fix test in combination with lxml 5+ due to namespace changes.
+  In this example, an xpath `/html/body/include` cannot be found because lxml 5 sees it as `/html/body/esi:include`, but this cannot easily be used as an xpath.
+  [maurits] (#87)
+
+
 2.0.0 (2024-02-12)
 ------------------
 
