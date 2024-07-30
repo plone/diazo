@@ -20,7 +20,7 @@ long_desc = readme + "\n\n" + changes
 
 setup(
     name="diazo",
-    version="2.0.2",
+    version="2.0.3.dev0",
     description="""Diazo implements a Deliverance like language using a pure
         XSLT engine. With Diazo, you "compile" your theme and ruleset in one
         step, then use a superfast/simple transform on each request thereafter.
