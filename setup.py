@@ -57,8 +57,6 @@ setup(
         "cssselect",
     ],
     extras_require=extras_require,
-    test_suite="diazo.tests.alltests",
-    tests_require=extras_require["test"],
     entry_points="""
         [console_scripts]
         diazocompiler = diazo.compiler:main
