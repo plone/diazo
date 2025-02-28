@@ -1,8 +1,8 @@
+from importlib.resources import files
 from lxml import etree
 from optparse import OptionParser
 
 import logging
-import pkg_resources
 import sys
 
 
@@ -82,7 +82,8 @@ class LoggingXSLTWrapper:
 
 
 def pkg_parse(name, parser=None):
-    with open(pkg_resources.resource_filename("diazo", name)) as f:
+    path = files("diazo") / name
+    with path.open() as f:
         return etree.parse(f, parser=parser)
 
 
