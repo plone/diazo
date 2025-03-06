@@ -1,4 +1,5 @@
 from diazo.utils import quote_param
+from importlib.resources import files
 from io import BytesIO
 from io import StringIO
 from lxml import etree
@@ -8,7 +9,6 @@ import diazo.compiler
 import diazo.run
 import difflib
 import os
-import pkg_resources
 import sys
 import unittest
 
@@ -21,10 +21,7 @@ if __name__ == "__main__":
     __file__ = sys.argv[0]
 
 
-defaultsfn = pkg_resources.resource_filename(
-    "diazo.tests",
-    "default-options.cfg",
-)
+defaultsfn = str(files("diazo") / "tests" / "default-options.cfg")
 
 
 def text_compare(t1, t2):

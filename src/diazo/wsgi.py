@@ -1,6 +1,7 @@
 from diazo.compiler import compile_theme
 from diazo.utils import pkg_parse
 from diazo.utils import quote_param
+from importlib.resources import files
 from lxml import etree
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
@@ -8,7 +9,6 @@ from urllib.parse import unquote_plus
 from webob import Request
 
 import os.path
-import pkg_resources
 import re
 
 
@@ -75,7 +75,7 @@ class PythonResolver(etree.Resolver):
 
         spec = system_url[9:]
         package, resource_name = spec.split("/", 1)
-        filename = pkg_resources.resource_filename(package, resource_name)
+        filename = str(files(package) / resource_name)
 
         return self.resolve_filename(filename, context)
 

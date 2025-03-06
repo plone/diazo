@@ -16,10 +16,10 @@ from diazo.utils import CustomResolver
 from diazo.utils import pkg_xsl
 from diazo.utils import quote_param
 from diazo.utils import split_params
+from importlib.resources import files
 from lxml import etree
 
 import logging
-import pkg_resources
 
 
 logger = logging.getLogger("diazo")
@@ -27,7 +27,7 @@ usage = __doc__
 
 
 def set_parser(stylesheet, parser, compiler_parser=None):
-    file_obj = pkg_resources.resource_filename("diazo", "dummy.html")
+    file_obj = files("diazo") / "dummy.html"
     with open(file_obj) as file_handler:
         dummy_doc = etree.parse(
             file_handler,
