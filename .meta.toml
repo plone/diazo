@@ -23,3 +23,6 @@ zpretty_extra_lines = """
 [pyproject]
 codespell_skip = "*.po,*.min.js,*.graffle,src/diazo/tests/conditional-drop-in-append*"
 dependencies_ignores = "['repoze.xmliter', 'webob']"
+
+[tox]
+use_mxdev = true
