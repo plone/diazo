@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rules xmlns="http://namespaces.plone.org/diazo">
-    <copy theme="/html/head/title" content="/html/head/title"/>
+    <copy theme="/html/body/div" content="/html/body/div"/>
 </rules>
