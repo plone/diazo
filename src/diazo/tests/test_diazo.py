@@ -244,7 +244,7 @@ class DiazoTestCase(unittest.TestCase):
 
         # Compare to previous version
         if os.path.exists(outputfn):
-            with open(outputfn, "rb") as f:
+            with open(outputfn) as f:
                 old = f.read()
             new = self.themed_string
             if not xml_compare(
