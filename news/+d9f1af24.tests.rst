@@ -1,4 +1,0 @@
-Do not test what happens when trying to put a title tag within a title tag.
-``lxml`` 6 wants only text within the title tag.
-Rewrite the test to use a div in the body.
-[mauritsvanrees]

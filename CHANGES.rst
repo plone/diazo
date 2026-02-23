@@ -8,6 +8,18 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.5 (2026-02-23)
+------------------
+
+Tests:
+
+
+- Do not test what happens when trying to put a title tag within a title tag.
+  ``lxml`` 6 wants only text within the title tag.
+  Rewrite the test to use a div in the body.
+  [mauritsvanrees]
+
+
 2.0.4 (2025-12-09)
 ------------------
 
