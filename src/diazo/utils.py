@@ -5,7 +5,6 @@ from optparse import OptionParser
 import logging
 import sys
 
-
 try:
     stdout = sys.stdout.buffer
 except AttributeError:

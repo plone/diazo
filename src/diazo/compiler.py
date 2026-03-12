@@ -21,7 +21,6 @@ from lxml import etree
 
 import logging
 
-
 logger = logging.getLogger("diazo")
 usage = __doc__
 

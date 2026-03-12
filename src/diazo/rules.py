@@ -17,7 +17,6 @@ from urllib.request import urlopen
 import logging
 import re
 
-
 logger = logging.getLogger("diazo")
 usage = __doc__
 

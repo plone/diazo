@@ -1,7 +1,6 @@
 from setuptools import find_packages
 from setuptools import setup
 
-
 extras_require = {
     "wsgi": [
         "repoze.xmliter",

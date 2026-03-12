@@ -11,7 +11,6 @@ from webob import Request
 import os.path
 import re
 
-
 DIAZO_OFF_HEADER = "X-Diazo-Off"
 
 

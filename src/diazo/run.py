@@ -21,7 +21,6 @@ import logging
 import os.path
 import sys
 
-
 logger = logging.getLogger("diazo")
 usage = __doc__
 

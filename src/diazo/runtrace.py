@@ -6,7 +6,6 @@ from lxml import etree
 
 import logging
 
-
 logger = logging.getLogger("diazo")
 
 _runtrace_to_html = pkg_xsl("runtrace_to_html.xsl")

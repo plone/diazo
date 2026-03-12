@@ -12,7 +12,6 @@ import os
 import sys
 import unittest
 
-
 #
 # Simple test runner for validating different diazo scenarios
 #
