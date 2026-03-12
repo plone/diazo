@@ -372,7 +372,7 @@ def main():
         dest="stop",
         default=None,
     )
-    (options, args) = parser.parse_args()
+    options, args = parser.parse_args()
 
     if options.rules is None:
         if len(args) == 2 and options.theme is None:
