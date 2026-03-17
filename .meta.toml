@@ -3,16 +3,7 @@
 # See the inline comments on how to expand/tweak this configuration file
 [meta]
 template = "default"
-commit-id = "2.5.1"
-
-[github]
-jobs = [
-    "qa",
-    "test",
-    "coverage",
-    "release_ready",
-    "circular",
-    ]
+commit-id = "2.6.1.dev0"
 
 [pre_commit]
 zpretty_extra_lines = """
