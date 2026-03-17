@@ -10,7 +10,6 @@ RULES is a file defining a set of diazo rules in css syntax, e.g:
 </rules>\
 """
 
-
 from cssselect import GenericTranslator
 from diazo import utils
 from lxml import etree
@@ -18,7 +17,6 @@ from optparse import OptionParser
 
 import logging
 import sys
-
 
 logger = logging.getLogger("diazo")
 usage = __doc__
@@ -103,7 +101,7 @@ def main():
         dest="pretty_print",
         default=False,
     )
-    (options, args) = parser.parse_args()
+    options, args = parser.parse_args()
 
     if len(args) != 1:
         parser.error("Invalid number of arguments")

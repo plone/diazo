@@ -21,7 +21,6 @@ import logging
 import os.path
 import sys
 
-
 logger = logging.getLogger("diazo")
 usage = __doc__
 
@@ -79,7 +78,7 @@ def main():
         dest="runtrace_html",
         default=None,
     )
-    (options, args) = op.parse_args()
+    options, args = op.parse_args()
 
     if len(args) > 2:
         op.error("Wrong number of arguments.")
