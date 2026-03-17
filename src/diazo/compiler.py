@@ -177,7 +177,7 @@ def compile_theme(
 def main():
     """Called from console script"""
     parser = _createOptionParser(usage=usage)
-    (options, args) = parser.parse_args()
+    options, args = parser.parse_args()
 
     if options.rules is None:
         if len(args) == 2 and options.theme is None:
