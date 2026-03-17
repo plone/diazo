@@ -5,15 +5,6 @@
 template = "default"
 commit-id = "2.6.1.dev0"
 
-[github]
-jobs = [
-    "qa",
-    "test",
-    "coverage",
-    "release_ready",
-    "circular",
-    ]
-
 [pre_commit]
 zpretty_extra_lines = """
         # Various test failures when we change xml and html.

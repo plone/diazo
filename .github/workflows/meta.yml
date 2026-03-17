@@ -20,10 +20,10 @@ on:
 jobs:
   qa:
     uses: plone/meta/.github/workflows/qa.yml@2.x
-  test:
-    uses: plone/meta/.github/workflows/test.yml@2.x
   coverage:
     uses: plone/meta/.github/workflows/coverage.yml@2.x
+  dependencies:
+    uses: plone/meta/.github/workflows/dependencies.yml@2.x
   release_ready:
     uses: plone/meta/.github/workflows/release_ready.yml@2.x
   circular:
