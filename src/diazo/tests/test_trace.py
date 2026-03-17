@@ -8,7 +8,6 @@ import os.path
 import sys
 import unittest
 
-
 if __name__ == "__main__":
     __file__ = sys.argv[0]
 

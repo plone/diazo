@@ -19,7 +19,6 @@ from optparse import OptionParser
 import logging
 import sys
 
-
 logger = logging.getLogger("diazo")
 usage = __doc__
 
