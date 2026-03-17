@@ -2,7 +2,7 @@
 # https://github.com/plone/meta/tree/main/src/plone/meta/default
 # See the inline comments on how to expand/tweak this configuration file
 [build-system]
-requires = ["setuptools>=68.2,<80", "wheel"]
+requires = ["setuptools>=68.2,<83", "wheel"]
 
 [tool.towncrier]
 directory = "news/"
@@ -60,7 +60,7 @@ profile = "plone"
 ##
 
 [tool.black]
-target-version = ["py38"]
+target-version = ["py310"]
 
 ##
 # Add extra configuration options in .meta.toml:
