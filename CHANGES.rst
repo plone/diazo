@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.6 (2026-03-23)
+------------------
+
+Internal:
+
+
+- Update action workflows and other configuration files.
+  [plone devs]
+
+
 2.0.5 (2026-02-23)
 ------------------
 
