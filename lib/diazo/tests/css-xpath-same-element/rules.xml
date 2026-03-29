@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo"
+       xmlns:css="http://namespaces.plone.org/diazo/css">
+
+    <rules css:if-content=".front-page">
+        <replace content="//*[contains(@class, 'placeholder')]">
+            <include content="//*[contains(@class, 'actual-content')]"/>
+        </replace>
+        <drop content="//*[contains(@class, 'wrapper')]" />
+    </rules>
+
+    <rules css:if-content=".community">
+        <replace css:content=".placeholder">
+            <include css:content=".actual-content"/>
+        </replace>
+        <drop css:content=".wrapper" />
+    </rules>
+
+   <replace css:content=".content" css:theme=".content"/>
+
+</rules>
